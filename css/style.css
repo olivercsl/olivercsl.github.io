@@ -681,6 +681,7 @@ button:not(:disabled),
 .bg-gradient {
   background-image: var(--bs-gradient) !important;
 }
+
 html {
   scroll-padding-top: 3.5rem;
 }
@@ -713,7 +714,7 @@ li {
 }
 
 #welcome-section {
-    background-image: url("assets/welcome1.png");
-    background-size: cover;
-    background-position: center;
+    background-size:cover;
+    background-position:center;
+    height:100vh;
 }
