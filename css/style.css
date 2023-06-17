@@ -228,6 +228,7 @@ button:not(:disabled),
 .lead {
   font-size: 1.25rem;
   font-weight: 300;
+  text-align: center;
 }
 
 .container {
@@ -749,4 +750,30 @@ li {
   padding-top:20px;
   padding-bottom: 50px; 
   background-repeat: no-repeat;
+}
+
+.services-offering{
+  vertical-align: middle;
+}
+
+.services-offering-image{
+  vertical-align: middle;
+  margin-right:1%;
+  float:left;
+  background-size: 40px 40px; 
+  height:40px; 
+  width:40px; 
+}
+
+.services-offering-text{
+  width:400px;
+  line-height:5px;
+  vertical-align: middle;
+
+}
+
+.services-offering-container{
+float:left;
+vertical-align: middle;
+margin-bottom: 10px;
 }
