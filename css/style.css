@@ -489,6 +489,7 @@ button:not(:disabled),
   flex-basis: 100%;
   flex-grow: 1;
   align-items: center;
+  z-index: 1000;
 }
 
 .navbar-toggler {
@@ -776,4 +777,14 @@ li {
 float:left;
 vertical-align: middle;
 margin-bottom: 10px;
+}
+
+.navbar-toggler:active {
+  background-color: rgba(255, 255, 255, 0.774);
+}
+
+.collapse.show {
+  background-color: rgba(255, 255, 255, 0.774);
+  height: 300px;
+  width: 50%;
 }
