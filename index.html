@@ -22,7 +22,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
+                <div class="collapse navbar-collapse" id="navbarResponsive" >
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="#publiccloud">Public Cloud</a></li>
                         <li class="nav-item"><a class="nav-link" href="#consultingservices">Consulting</a></li>
@@ -35,31 +35,80 @@
         <!-- Header-->
         <header class="bg-primary text-white" style="background-image: url('assets/welcome3.png');" id="welcome-section">
             <div class="container px-4 text-center">
-                <h1 class="fw-bolder">Welcome to Cloudzeta</h1>
-                <p class="lead">Your gateway to public cloud services</p>
-                <a class="btn btn-lg btn-light" href="#publiccloud">Get Started</a>
+                <h1 class="fw-bolder" style="text-align:left;margin-left:10%;" >Welcome to Cloudzeta</h1>
+                <p class="lead" style="text-align:left; margin-left:10%;margin-top:3%; margin-bottom: 3%;" >Your gateway to public cloud services</p>
+                <a class="btn btn-lg btn-light" href="#publiccloud" style="float:left; margin-left:10%">Get Started</a>
             </div>
         </header>
         <!-- About section-->
         <section id="publiccloud">
             <div class="container px-4">
-                <div class="row gx-4 justify-content-center">
-                    <div class="col-lg-8">
-                        <h2>Public Cloud services available:</h2>
-                        <p class="lead"></p>
-                        <ul>
-                            <li>Alibaba Cloud (discount tiers available)</li>
-                            <li>Amazon Webservices (coming soon)</li>
-                            <li>Microsoft Azure (coming soon)</li>
-                            <li>Google Cloud Platform (coming soon)</li>
-                            <li>Tencent Cloud (coming soon)</li>
-                            <li>Huawei Cloud (coming soon)</li>
-                            <li>More options (coming soon)</li>
-                        </ul>
+              <div class="row gx-4 justify-content-center">
+                <div class="col-lg-8">
+                    <h2 style="text-align: center; vertical-align: top;">Public Cloud services available:</h2> 
+                </div>
+                <p>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/alibaba_l.png'); background-size: 83px 51px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>Alibaba Cloud</h3>
+                        <p>Available with discounts</p>
                     </div>
                 </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/aws_l.png'); background-size: 135px 51px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>AWS</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/azure_l.png'); background-size: 60px 60px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>Azure</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/gcp_l.png'); background-size: 73px 59px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>GCP</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/tencent_l.png'); background-size: 73px 59px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>Tencent Cloud</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/huawei_l.png'); background-size: 73px 59px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>Huawei Cloud</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                <div class="cloud-box">
+                    <div class="cloud-box-image" style="background-image: url('assets/more_l.png'); background-size: 60px 60px; ">
+                    </div>
+                    <div class="cloud-box-text">
+                        <h3>More options</h3>
+                        <p>Coming soon</p>
+                    </div>
+                </div>
+                </p>
+              </div>
             </div>
-        </section>
+          </section>
+          
         <!-- Services section-->
         <section class="bg-light" id="consultingservices">
             <div class="container px-4">
