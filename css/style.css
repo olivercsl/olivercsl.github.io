@@ -489,7 +489,6 @@ button:not(:disabled),
   flex-basis: 100%;
   flex-grow: 1;
   align-items: center;
-  z-index: 1000;
 }
 
 .navbar-toggler {
@@ -787,4 +786,10 @@ margin-bottom: 10px;
   background-color: rgba(255, 255, 255, 0.774);
   height: 300px;
   width: 50%;
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar {
+    width: 100%;
+  }
 }
