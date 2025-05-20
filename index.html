@@ -8,6 +8,66 @@
   <meta name="description" content="Secure, cost-efficient cloud and licensing solutions for financial services. AWS, Microsoft, Azure, and Cloudflare specialist." />
   <link href="https://fonts.googleapis.com/css?family=Inter:400,600,800&display=swap" rel="stylesheet">
   <style>
+    @media (max-width: 700px) {
+      .main-nav {
+        display: none;
+        position: absolute;
+        top: 62px;
+        right: 16px;
+        background: #fff;
+        flex-direction: column;
+        box-shadow: 0 2px 12px rgba(34,80,162,0.09);
+        padding: 16px 24px;
+        border-radius: 9px;
+        z-index: 1001;
+      }
+      .main-nav.open { display: flex; }
+      .hamburger {
+        display: block;
+        background: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 8px;
+        margin-left: 10px;
+        z-index: 1100;
+      }
+      .hamburger span {
+        display: block;
+        width: 27px;
+        height: 4px;
+        margin: 4px 0;
+        background: #2250a2;
+        border-radius: 2px;
+        transition: all 0.22s;
+      }
+      .hero-flexblock {
+        flex-direction: column;
+        gap: 24px;
+        min-width: unset;
+        padding: 0 8px;
+      }
+      .hero-content-col {
+        min-width: unset;
+        width: 100%;
+        padding: 0 2px;
+      }
+      .hero-img-col {
+        margin-top: 18px;
+        width: 100%;
+        justify-content: center;
+      }
+      .hero-dashboard-img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+      }
+    }
+    @media (min-width: 701px) {
+      .hamburger { display: none; }
+    }
     :root {
       --primary: #2250a2;
       --primary-light: #f6faff;
@@ -65,7 +125,6 @@
       letter-spacing: -1px;
     }
     .main-nav {
-      display: flex;
       gap: 32px;
     }
     .main-nav a {
@@ -390,6 +449,11 @@
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </nav>
+      <button class="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </header>
 
@@ -542,5 +606,49 @@ With a transparent, client-first approach and deep experience in financial servi
   <footer>
     &copy; 2025 Cloudzeta Solutions. All rights reserved.
   </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.querySelector('.main-nav');
+      const isOpen = nav.classList.contains('open');
+      if (isOpen) {
+        nav.classList.remove('open');
+        nav.style.display = 'none';
+      } else {
+        nav.classList.add('open');
+        nav.style.display = 'flex';
+      }
+    }
+    document.querySelectorAll('.main-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        const nav = document.querySelector('.main-nav');
+        nav.classList.remove('open');
+        nav.style.display = 'none';
+      });
+    });
+    document.addEventListener('click', function(event) {
+      const nav = document.querySelector('.main-nav');
+      const burger = document.querySelector('.hamburger');
+      if (nav.classList.contains('open') &&
+          !nav.contains(event.target) &&
+          !burger.contains(event.target)) {
+        nav.classList.remove('open');
+        nav.style.display = 'none';
+      }
+    });
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('.main-nav');
+      nav.classList.remove('open');
+      nav.style.display = 'none';
+    });
+    // Ensure menu is closed on initial page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const nav = document.querySelector('.main-nav');
+      if (nav) {
+        nav.classList.remove('open');
+        nav.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
