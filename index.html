@@ -256,6 +256,51 @@
       .about, .contact-section { padding: 22px 8px 14px 8px; }
       h2 { font-size: 1.25rem; margin-bottom: 16px; }
     }
+
+    .partners-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: left;
+      margin-top: 32px;
+    }
+    .partner-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(34,80,162,0.08);
+      padding: 24px 24px 10px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 148px;
+      min-height: 130px;
+      transition: box-shadow 0.15s;
+      border: 1px solid #e7eefe;
+    }
+    .partner-card img {
+      height: 48px;
+      margin-bottom: 14px;
+      object-fit: contain;
+    }
+    .partner-name {
+      font-size: 1.04rem;
+      color: #214c8b;
+      font-weight: 600;
+      text-align: center;
+    }
+    .partner-card.upcoming img {
+      opacity: 0.4;
+    }
+    @media (max-width: 900px) {
+      .partners-grid { justify-content: center; }
+      .partner-card { width: 120px; }
+    }
+    @media (max-width: 600px) {
+      .partners-grid { gap: 16px; }
+      .partner-card { width: 95px; padding: 13px 5px 5px 5px; }
+      .partner-name { font-size: 0.91rem; }
+      .partner-card img { height: 34px; }
+    }
   </style>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://cloudzeta.solutions/" />
@@ -347,6 +392,38 @@
           <div class="service-desc">
             Boost efficiency and resilience in your cloud operations. Our experts help you lower expenses, respond faster to business needs, and safeguard your systems with proactive security enhancements.
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="partners">
+    <div class="section-inner">
+      <h2>Our Partnerships</h2>
+      <div class="partners-grid">
+        <div class="partner-card">
+          <img src="assets/aws_l.png" alt="AWS Partner" />
+          <div class="partner-name">AWS Partner</div>
+        </div>
+        <div class="partner-card">
+          <img src="assets/azure_l.png" alt="Microsoft Azure Partner" />
+          <div class="partner-name">Azure Partner</div>
+        </div>
+        <div class="partner-card">
+          <img src="assets/gcp_l.png" alt="Google Cloud Partner" />
+          <div class="partner-name">GCP Partner</div>
+        </div>
+        <div class="partner-card">
+          <img src="assets/cloudflare_s.png" alt="Cloudflare Partner" />
+          <div class="partner-name">Cloudflare Partner</div>
+        </div>
+        <div class="partner-card">
+          <img src="assets/tencent_l.png" alt="Tencent Cloud Partner" />
+          <div class="partner-name">Tencent Cloud Partner</div>
+        </div>
+        <div class="partner-card">
+          <img src="assets/huawei_l.png" alt="Huawei Cloud Partner" />
+          <div class="partner-name">Huawei Cloud Partner</div>
         </div>
       </div>
     </div>
