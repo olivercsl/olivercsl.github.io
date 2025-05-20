@@ -334,11 +334,17 @@
   align-items: center;
   justify-content: center;
 }
+/* Ensure no border, no box-shadow, and no rounded corners on hero dashboard image */
 .hero-dashboard-img {
   width: 700px;
   max-width: 100%;
-  border-radius: 14px;
-  box-shadow: 0 4px 18px #dde6f9;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: none !important;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 @media (max-width: 900px) {
   .hero-flexblock {
@@ -397,7 +403,7 @@
         <a href="#services" class="cta-button">Explore Services</a>
       </div>
       <div class="hero-img-col">
-        <img src="assets/dashboard.png" alt="Cloud dashboard illustration" class="hero-dashboard-img" />
+        <img src="assets/dashboard_transparent.png" alt="Cloud dashboard illustration" class="hero-dashboard-img" />
       </div>
     </div>
   </section>
