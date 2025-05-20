@@ -30,110 +30,90 @@
       flex-direction: column;
     }
 
-    /* HERO */
-    .hero-section {
+    /* HEADER + NAV + HERO */
+    .main-header {
       width: 100%;
-      background: var(--bg);
-      box-shadow: 0 2px 16px rgba(34,80,162,0.06);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(34,80,162,0.06);
       padding: 0;
-      margin: 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    .hero-centerblock {
-      max-width: 620px;
+    .header-inner {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 64px 20px 32px 20px;
+      padding: 0 32px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 0;
+      justify-content: space-between;
+      height: 74px;
     }
-    .hero-logo-title {
+    .header-brand {
       display: flex;
       align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .header-logo {
+      height: 40px;
+    }
+    .header-name {
+      font-size: 1.3rem;
+      color: #2250a2;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .main-nav {
+      display: flex;
+      gap: 32px;
+    }
+    .main-nav a {
+      color: #2250a2;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      opacity: 0.9;
+      transition: opacity 0.16s;
+    }
+    .main-nav a:hover { opacity: 1; }
+
+    .hero-section {
+      background: #f6faff;
+      padding: 70px 0 64px 0;
+      display: flex;
       justify-content: center;
-      gap: 18px;
-      margin-bottom: 18px;
+      align-items: center;
     }
-    .hero-logo-title .logo {
-      height: 44px;
-      width: auto;
-      margin: 0;
-    }
-    .hero-logo-title .hero-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 0;
-      letter-spacing: -1.5px;
-      text-align: left;
-    }
-    @media (max-width: 500px) {
-      .hero-logo-title {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .hero-logo-title .hero-title {
-        text-align: center;
-      }
-    }
-    .logo {
-      height: 37px;
-      width: auto;
-      background: none;
-      border-radius: 0;
-      border: none;
-      box-shadow: none;
-      margin: 0 0 22px 0;
-      display: block;
+    .hero-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 32px;
     }
     .hero-title {
       font-size: 2.7rem;
       font-weight: 800;
-      color: var(--primary);
-      margin: 0 0 14px 0;
-      letter-spacing: -1.5px;
-      text-align: center;
-    }
-    .hero-desc {
-      font-size: 1.27rem;
-      margin-bottom: 28px;
-      font-weight: 400;
-      color: #2e3540;
-      text-align: center;
-    }
-    .cta {
-      background: var(--accent);
-      color: #1c1c1c;
-      font-weight: 700;
-      text-decoration: none;
-      font-size: 1.18rem;
-      border-radius: 999px;
-      padding: 14px 44px;
-      box-shadow: 0 2px 8px rgba(34,80,162,0.06);
-      transition: background 0.2s;
-      border: none;
-      display: inline-block;
+      color: #2250a2;
       margin-bottom: 16px;
     }
-    .cta:hover { background: #ffd868; }
-    nav {
-      display: flex;
-      gap: 36px;
-      margin: 26px 0 0 0;
-      font-size: 1.09rem;
-      justify-content: center;
+    .hero-subtitle {
+      font-size: 1.18rem;
+      color: #364150;
+      margin-bottom: 32px;
     }
-    nav a {
-      color: var(--primary);
+    .cta-button {
+      background-color: #f9b800;
+      color: #1c1c1c;
+      padding: 14px 44px;
+      border-radius: 999px;
       text-decoration: none;
       font-weight: 700;
-      opacity: 0.85;
-      transition: opacity 0.15s;
+      font-size: 1.15rem;
+      box-shadow: 0 2px 8px rgba(34,80,162,0.06);
+      transition: background-color 0.25s;
     }
-    nav a:hover { opacity: 1; }
+    .cta-button:hover { background-color: #ffd868; }
 
     /* SECTION LAYOUT */
     section {
@@ -334,7 +314,47 @@
       font-size: 0.97rem;
       color: #9aa2b7;
       text-align: center;
-    }
+    }.hero-flexblock {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 64px;
+  min-height: 340px;
+}
+.hero-content-col {
+  flex: 1 1 0;
+  min-width: 330px;
+}
+.hero-img-col {
+  flex: 0 0 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-dashboard-img {
+  width: 700px;
+  max-width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px #dde6f9;
+}
+@media (max-width: 900px) {
+  .hero-flexblock {
+    flex-direction: column;
+    gap: 32px;
+    min-height: unset;
+  }
+  .hero-img-col {
+    margin-top: 28px;
+  }
+}
+@media (max-width: 700px) {
+  .hero-img-col {
+    display: none;
+  }
+}
   </style>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://cloudzeta.solutions/" />
@@ -353,22 +373,35 @@
   </script>
 </head>
 <body>
-  <header class="hero-section">
-    <div class="hero-centerblock">
-      <div class="hero-logo-title">
-        <img src="assets/cloudzeta_l.png" alt="Cloudzeta logo" class="logo">
-        <div class="hero-title">Cloudzeta Solutions</div>
-      </div>
-      <div class="hero-desc">
-        Secure cloud. More value, less cost.
-      </div>
-      <nav>
+  <header class="main-header">
+    <div class="header-inner">
+      <a href="/" class="header-brand">
+        <img src="assets/cloudzeta_l.png" alt="Cloudzeta logo" class="header-logo">
+        <span class="header-name">Cloudzeta Solutions</span>
+      </a>
+      <nav class="main-nav">
         <a href="#services">Services</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </nav>
     </div>
   </header>
+
+  <section class="hero-section">
+    <div class="hero-flexblock">
+      <div class="hero-content-col">
+        <h1 class="hero-title">Secure Cloud. More Value, Less Cost.</h1>
+        <p class="hero-subtitle">
+          Cloud solutions and licensing for financial services, with a relentless focus on security and cost-efficiency.
+        </p>
+        <a href="#services" class="cta-button">Explore Services</a>
+      </div>
+      <div class="hero-img-col">
+        <img src="assets/dashboard.png" alt="Cloud dashboard illustration" class="hero-dashboard-img" />
+      </div>
+    </div>
+  </section>
+
 
   <section id="services">
     <div class="section-inner">
@@ -468,9 +501,10 @@
       <div class="about">
         <h2>About Cloudzeta</h2>
         <p>
-          Cloudzeta Solutions specializes in helping financial services organizations maximize cloud value with a strong focus on security and cost efficiency.
-          We deliver independent advice and hands-on support across AWS, Microsoft, Azure, and Cloudflare—ensuring your cloud environment meets the highest standards for data protection and compliance, while controlling costs and streamlining operations.
-          Our transparent, client-first approach gives you confidence in your technology decisions and peace of mind in a regulated industry.
+Cloudzeta Solutions helps financial services organizations unlock the full value of cloud. Our approach is defined by an unwavering focus on security and cost-efficiency.<br><br>
+Our certified experts provide hands-on support with AWS, Microsoft, Azure, and Cloudflare. We deliver practical advice and implementation to ensure your cloud environment meets the highest standards for data protection, performance, and compliance.<br><br>
+With a transparent, client-first approach and deep experience in financial services, we give you confidence in every technology decision.<br><br>
+<em>Cloudzeta is your trusted partner for secure, scalable, and cost-effective cloud transformation.</em>
         </p>
       </div>
     </div>
