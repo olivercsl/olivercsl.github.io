@@ -22,7 +22,7 @@ export const TrustSection = () => {
               Engineering Heritage
             </div>
             <p className="text-sm text-tx-secondary leading-relaxed">
-              Established 2023. Backed by two decades of delivering critical financial infrastructure.
+              Established 2023. Backed by two decades of experience in delivering critical financial infrastructure.
             </p>
           </motion.div>
 
