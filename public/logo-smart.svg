@@ -1,0 +1,31 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="smart-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b82f6" /> {/* Blue - Cloud */}
+      <stop offset="1" stop-color="#8b5cf6" /> {/* Violet - AI/Smart */}
+    </linearGradient>
+  </defs>
+  
+  {/* The "Neural" Connections */}
+  <g stroke="url(#smart-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    {/* Left Bottom Node to Center */}
+    <path d="M10 28 L 20 20" />
+    {/* Right Bottom Node to Center */}
+    <path d="M30 28 L 20 20" />
+    {/* Top Node to Center */}
+    <path d="M20 10 L 20 20" />
+  </g>
+
+  {/* The Nodes (Cloud Shape arrangement) */}
+  <g fill="white" stroke="url(#smart-grad)" stroke-width="2">
+    {/* Center Brain/Core */}
+    <circle cx="20" cy="20" r="4.5" fill="url(#smart-grad)" stroke="none" />
+    
+    {/* Top Cloud Puff */}
+    <circle cx="20" cy="10" r="3.5" />
+    {/* Left Cloud Puff */}
+    <circle cx="10" cy="28" r="3.5" />
+    {/* Right Cloud Puff */}
+    <circle cx="30" cy="28" r="3.5" />
+  </g>
+</svg>

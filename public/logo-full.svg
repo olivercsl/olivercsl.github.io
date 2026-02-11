@@ -1,0 +1,19 @@
+<svg width="180" height="40" viewBox="0 0 180 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b82f6" />
+      <stop offset="1" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  
+  {/* Mark */}
+  <g>
+    <path d="M10 20C10 14.4772 14.4772 10 20 10H30V20C30 25.5228 25.5228 30 20 30H10V20Z" fill="url(#logo-grad)" />
+    <path d="M20 10C20 4.47715 24.4772 0 30 0H40V10C40 15.5228 35.5228 20 30 20H20V10Z" fill="url(#logo-grad)" fill-opacity="0.6" />
+    <circle cx="10" cy="30" r="10" fill="url(#logo-grad)" fill-opacity="0.3" />
+  </g>
+
+  {/* Wordmark - Inter Tight / SF Pro style path data for "Cloudzeta" */}
+  {/* Simulating text with font-family for now to ensure rendering, then outlined if needed. Using SVG text for cleaner implementation here. */}
+  <text x="52" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-weight="700" font-size="22" letter-spacing="-0.5" fill="#1e293b">Cloudzeta</text>
+</svg>

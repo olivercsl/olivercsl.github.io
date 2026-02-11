@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  /* The "Air" Palette */
+  --color-canvas: #ffffff;
+  --color-surface: #f5f5f7; /* Apple's subtle gray background */
+  --color-surface-hover: #e8e8ed;
+  
+  /* Text */
+  --color-tx-primary: #1d1d1f; /* Apple's near-black */
+  --color-tx-secondary: #86868b; /* Apple's muted gray */
+  
+  /* Accents */
+  --color-accent: #0071e3; /* Apple Blue */
+  
+  /* Depth */
+  --glass-border: rgba(0, 0, 0, 0.04);
+  --glass-surface: rgba(255, 255, 255, 0.72);
+}
+
+@theme {
+  --font-sans: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  
+  --color-canvas: var(--color-canvas);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  
+  --color-tx-primary: var(--color-tx-primary);
+  --color-tx-secondary: var(--color-tx-secondary);
+  --color-accent: var(--color-accent);
+  
+  --color-glass-border: var(--glass-border);
+  --color-glass-surface: var(--glass-surface);
+}
+
+html {
+  background-color: var(--color-canvas);
+  color: var(--color-tx-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em; /* Apple-style tight tracking */
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Utilities */
+.nav-glass {
+  background: var(--glass-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #1d1d1f 0%, #4a4a4f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

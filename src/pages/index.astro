@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Navbar } from '../components/Navbar';
+import { Hero } from '../components/Hero';
+import { LogoStrip } from '../components/LogoStrip';
+import { FinanceSecuritySection } from '../components/FinanceSecuritySection';
+import { FeatureSection } from '../components/FeatureSection';
+import { ProcessSection } from '../components/ProcessSection';
+import { BentoGrid } from '../components/BentoGrid';
+import { TrustSection } from '../components/TrustSection';
+import { ContactSection } from '../components/ContactSection';
+---
+
+<Layout 
+    title="Cloudzeta | AWS Partner, China Connectivity & AI Token Cost Optimization"
+    description="Advanced AWS Partner helping enterprises reduce AI token costs and solve China connectivity. Engineered for finance-grade security and low-latency China fibre routing."
+>
+    <Navbar client:load />
+	<main>
+		<Hero client:load />
+        <LogoStrip client:visible />
+        <FinanceSecuritySection client:visible />
+        <FeatureSection client:visible />
+        <ProcessSection client:visible />
+        <TrustSection client:visible />
+        <div id="services">
+            <BentoGrid client:visible />
+        </div>
+        <ContactSection client:visible />
+	</main>
+</Layout>

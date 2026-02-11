@@ -1,0 +1,32 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="circuit-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563eb" /> {/* Blue */}
+      <stop offset="1" stop-color="#7c3aed" /> {/* Violet */}
+    </linearGradient>
+  </defs>
+  
+  {/* The Cloud Outline (Thick, Soft) */}
+  <path 
+    d="M10 28C6.134 28 3 24.866 3 21C3 17.5 5.5 14.5 9 14.1C9.5 9 13.5 5 18.5 5C23 5 27 8 28 12.5C32 12.5 36 15.5 36 20C36 24.5 32.5 28 28 28H10Z" 
+    stroke="url(#circuit-grad)" 
+    stroke-width="2.5" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+    fill="white"
+    fill-opacity="0.5"
+  />
+
+  {/* The "Smart" Circuit / Pulse Inside */}
+  <path 
+    d="M12 21 L16 21 L18 17 L22 25 L24 21 L28 21" 
+    stroke="url(#circuit-grad)" 
+    stroke-width="2" 
+    stroke-linecap="round" 
+    stroke-linejoin="round" 
+  />
+  
+  {/* Connection Dots at ends of circuit */}
+  <circle cx="12" cy="21" r="1.5" fill="#2563eb" />
+  <circle cx="28" cy="21" r="1.5" fill="#7c3aed" />
+</svg>
