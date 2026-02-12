@@ -35,94 +35,47 @@ export const HeroDashboard = () => {
               </div>
            </div>
 
-           {/* Dual Pricing Grid */}
-           <div className="grid grid-cols-2 gap-6">
-             {/* Input Column */}
-             <div>
-               <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 text-center">Input</div>
-               <div className="space-y-3">
-                 <div>
-                   <div className="flex justify-between text-xs font-medium text-gray-500 mb-1">
-                     <span>Claude Sonnet 4.5</span>
-                     <span>$3.00</span>
-                   </div>
-                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                     <motion.div 
-                       initial={{ width: 0 }}
-                       whileInView={{ width: "100%" }}
-                       transition={{ duration: 1, delay: 0.5 }}
-                       className="h-full bg-gray-300"
-                     />
-                   </div>
-                 </div>
-                 <div>
-                   <div className="flex justify-between text-xs font-medium text-gray-900 mb-1">
-                     <span className="text-purple-700 font-bold">Cloudzeta Qwen3 Max</span>
-                     <span className="text-purple-700 font-bold">$1.20</span>
-                   </div>
-                   <div className="h-2 w-full bg-purple-50 rounded-full overflow-hidden">
-                     <motion.div 
-                       initial={{ width: 0 }}
-                       whileInView={{ width: "40%" }}
-                       transition={{ duration: 1, delay: 0.5 }}
-                       className="h-full bg-gradient-to-r from-purple-500 to-indigo-500"
-                     />
-                   </div>
-                 </div>
+           {/* Pricing Table */}
+           <div className="space-y-6">
+             
+             {/* Header Row */}
+             <div className="grid grid-cols-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">
+               <span>Model</span>
+               <span className="text-right">Input</span>
+               <span className="text-right">Output</span>
+             </div>
+
+             {/* Row 1: Claude Sonnet 4.5 */}
+             <div className="grid grid-cols-3 items-center text-sm">
+               <span className="font-medium text-gray-500">Claude Sonnet 4.5</span>
+               <span className="text-right text-gray-500">$3.00</span>
+               <span className="text-right text-gray-500">$15.00</span>
+             </div>
+
+             {/* Row 2: GPT-5 / Gemini 2.5 */}
+             <div className="grid grid-cols-3 items-center text-sm">
+               <span className="font-medium text-gray-500">GPT-5 / Gemini 2.5</span>
+               <span className="text-right text-gray-500">$1.25</span>
+               <span className="text-right text-gray-500">$10.00</span>
+             </div>
+
+             {/* Row 3: Qwen3 Max (Highlighted) */}
+             <div className="relative grid grid-cols-3 items-center text-sm bg-purple-50 p-3 -mx-3 rounded-lg border border-purple-100">
+               <span className="font-bold text-purple-700">Qwen3 Max</span>
+               <span className="text-right font-bold text-purple-700">$1.20</span>
+               <span className="text-right font-bold text-purple-700">$6.00</span>
+               
+               {/* Savings Badge */}
+               <div className="absolute -right-2 -top-3 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                 Best Value
                </div>
              </div>
 
-             {/* Output Column */}
-             <div>
-               <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 text-center">Output</div>
-               <div className="space-y-3">
-                 <div>
-                   <div className="flex justify-between text-xs font-medium text-gray-500 mb-1">
-                     <span>Claude Sonnet 4.5</span>
-                     <span>$15.00</span>
-                   </div>
-                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                     <motion.div 
-                       initial={{ width: 0 }}
-                       whileInView={{ width: "100%" }}
-                       transition={{ duration: 1, delay: 0.5 }}
-                       className="h-full bg-gray-300"
-                     />
-                   </div>
-                 </div>
-                 <div>
-                   <div className="flex justify-between text-xs font-medium text-gray-900 mb-1">
-                     <span className="text-purple-700 font-bold">Cloudzeta Qwen3 Max</span>
-                     <span className="text-purple-700 font-bold">$6.00</span>
-                   </div>
-                   <div className="h-2 w-full bg-purple-50 rounded-full overflow-hidden">
-                     <motion.div 
-                       initial={{ width: 0 }}
-                       whileInView={{ width: "40%" }}
-                       transition={{ duration: 1, delay: 0.5 }}
-                       className="h-full bg-gradient-to-r from-purple-500 to-indigo-500"
-                     />
-                   </div>
-                 </div>
-               </div>
-             </div>
            </div>
 
            <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span className="text-xs text-gray-500">Your Savings</span>
-              <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">60% Lower Cost</span>
-           </div>
-
-           {/* Integrated Info */}
-           <div className="mt-6 pt-4 border-t border-gray-100 space-y-2">
-             <div className="flex items-center gap-2 text-xs">
-               <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-               <span><span className="font-bold">Qwen3 Max:</span> Powerful & Cost-Effective</span>
-             </div>
-             <div className="flex items-center gap-2 text-xs">
-               <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-               <span><span className="font-bold">Sonnet 4.5:</span> Premium Pricing</span>
-             </div>
+              <span className="text-xs text-gray-500">Savings vs GPT-5</span>
+              <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">40% Lower Output Cost</span>
            </div>
         </motion.div>
       </motion.div>
