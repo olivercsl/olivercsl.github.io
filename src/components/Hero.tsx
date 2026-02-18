@@ -8,7 +8,7 @@ export const Hero = () => {
       <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center">
         
         {/* Left Column: Text */}
-        <div className="text-left">
+        <div className="text-left relative z-20 lg:col-span-1">
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -35,10 +35,10 @@ export const Hero = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex flex-col sm:flex-row items-start sm:items-center gap-6 text-lg font-medium"
             >
-              <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl">
+              <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl relative z-30">
                 Start a project
               </a>
-              <a href="#services" className="text-accent hover:underline flex items-center gap-1 px-4">
+              <a href="#services" className="text-accent hover:underline flex items-center gap-1 px-4 relative z-30 pointer-events-auto">
                 View capabilities <span className="text-sm">›</span>
               </a>
             </motion.div>
@@ -49,7 +49,7 @@ export const Hero = () => {
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full"
+          className="relative w-full lg:z-10"
         >
            <HeroDashboard />
            {/* Reflection/Shadow under the floating device */}
