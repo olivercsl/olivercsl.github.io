@@ -67,7 +67,7 @@ export const HeroDashboard = () => {
                
                {/* Savings Badge */}
                <div className="absolute -right-2 -top-3 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                 Best Value
+                 Flagship
                </div>
              </div>
 
