@@ -5,10 +5,10 @@ import { HeroDashboard } from './visuals/HeroDashboard';
 export const Hero = () => {
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         
         {/* Left Column: Text */}
-        <div className="text-left relative z-20 lg:col-span-1">
+        <div className="text-left relative z-20 lg:col-span-1 flex flex-col">
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -25,7 +25,7 @@ export const Hero = () => {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-xl md:text-2xl font-medium text-tx-primary mb-8 text-balance max-w-lg"
             >
-              High-performance Qwen3 tokens at a fraction of the cost. The perfect execution engine for your agentic workflows.
+              High-performance qwen3 tokens at a fraction of the cost. The perfect execution engine for your agentic workflows.
             </motion.p>
             
             {/* Links */}
@@ -33,7 +33,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-6 text-lg font-medium"
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-6 text-lg font-medium mb-8 lg:mb-0"
             >
               <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl relative z-30">
                 Start a project
@@ -49,7 +49,7 @@ export const Hero = () => {
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full lg:z-10"
+          className="relative w-full lg:z-10 mt-8 lg:mt-0"
         >
            <HeroDashboard />
            {/* Reflection/Shadow under the floating device */}
