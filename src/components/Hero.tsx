@@ -25,7 +25,7 @@ export const Hero = () => {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-xl md:text-2xl font-medium text-tx-primary mb-8 text-balance max-w-lg"
             >
-              High-performance qwen3 tokens at a fraction of the cost. The perfect execution engine for your agentic workflows.
+              High-performance Qwen3 tokens at a fraction of the cost. The perfect execution engine for your agentic workflows.
             </motion.p>
             
             {/* Links */}

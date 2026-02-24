@@ -15,14 +15,14 @@ const modelRows = [
     type: 'benchmark' as const,
   },
   {
-    model: 'qwen3-max',
+    model: 'Qwen3-Max',
     input: '$1.20',
     output: '$6.00',
     type: 'primary' as const,
     badge: 'Flagship',
   },
   {
-    model: 'qwen3.5-plus',
+    model: 'Qwen3.5-Plus',
     input: '$0.40',
     output: '$2.40',
     type: 'reference' as const,
@@ -119,11 +119,11 @@ export const HeroDashboard = () => {
 
           <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-xs text-gray-500">qwen3-max vs Gemini 3.1 Pro (output)</span>
+              <span className="text-xs text-gray-500">Qwen3-Max vs Gemini 3.1 Pro (output)</span>
               <span className="text-sm font-bold text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">50% Lower Output Cost</span>
             </div>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-xs text-gray-500">qwen3.5-plus vs Claude Sonnet 4.6</span>
+              <span className="text-xs text-gray-500">Qwen3.5-Plus vs Claude Sonnet 4.6</span>
               <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg w-fit">~84% Lower Cost</span>
             </div>
           </div>
