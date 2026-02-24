@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 
 const modelRows = [
   {
-    model: 'Claude Sonnet 4.5',
+    model: 'Claude Sonnet 4.6',
     input: '$3.00',
     output: '$15.00',
     type: 'benchmark' as const,
   },
   {
-    model: 'GPT-5 / Gemini 2.5',
-    input: '$1.25',
-    output: '$10.00',
+    model: 'Gemini 3.1 Pro',
+    input: '$2.00',
+    output: '$12.00',
     type: 'benchmark' as const,
   },
   {
@@ -32,7 +32,7 @@ const modelRows = [
 
 export const HeroDashboard = () => {
   return (
-    <div className="relative w-full aspect-[4/3] md:aspect-[4/3] flex items-center justify-center">
+    <div className="relative w-full aspect-[4/3] flex items-center justify-center">
       {/* Background Glow */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-[80%] h-[80%] bg-gradient-to-tr from-purple-100/40 to-blue-100/40 rounded-full blur-3xl opacity-50"></div>
@@ -42,28 +42,28 @@ export const HeroDashboard = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative w-full h-full p-3 md:p-8 flex items-center justify-center"
+        className="relative w-full h-full p-4 md:p-8 flex items-center justify-center"
       >
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="relative bg-white/80 backdrop-blur-xl border border-white/60 shadow-2xl rounded-2xl p-4 md:p-6 w-full max-w-xl z-20"
+          className="relative bg-white/80 backdrop-blur-xl border border-white/60 shadow-2xl rounded-2xl p-6 w-full max-w-xl z-20"
         >
-          <div className="flex justify-between items-start mb-3 md:mb-5 gap-2 md:gap-3">
+          <div className="flex justify-between items-start mb-5 gap-3">
             <div>
-              <div className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">AI Model Comparison</div>
-              <div className="text-base md:text-lg font-bold text-gray-900">Powerful AI, Transparent Pricing</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Model Comparison</div>
+              <div className="text-lg font-bold text-gray-900">Powerful AI, Transparent Pricing</div>
             </div>
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 shrink-0">
-              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 shrink-0">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
           </div>
 
-          <div className="rounded-lg md:rounded-xl border border-gray-100 overflow-hidden">
-            <div className="grid grid-cols-[1.8fr_1fr_1fr] bg-gray-50/80 px-2 md:px-3 py-2 text-[10px] md:text-[11px] font-bold tracking-wider uppercase text-gray-500">
+          <div className="rounded-xl border border-gray-100 overflow-hidden">
+            <div className="grid grid-cols-[1.8fr_1fr_1fr] bg-gray-50/80 px-3 py-2 text-[11px] font-bold tracking-wider uppercase text-gray-500">
               <span>Model</span>
               <span className="text-right">Input</span>
               <span className="text-right">Output</span>
@@ -79,7 +79,7 @@ export const HeroDashboard = () => {
                   initial={{ opacity: 0, y: 8 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, delay: 0.2 + index * 0.06 }}
-                  className={`grid grid-cols-[1.8fr_1fr_1fr] px-2 md:px-3 py-2 md:py-3 text-xs md:text-sm border-t border-gray-100 items-center ${
+                  className={`grid grid-cols-[1.8fr_1fr_1fr] px-3 py-3 text-sm border-t border-gray-100 items-center ${
                     isPrimary
                       ? 'bg-gradient-to-r from-purple-50 to-indigo-50'
                       : isReference
@@ -87,9 +87,9 @@ export const HeroDashboard = () => {
                       : 'bg-white/90'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap md:flex-nowrap">
                     <span
-                      className={`truncate ${
+                      className={`text-[13px] leading-tight whitespace-nowrap ${
                         isPrimary ? 'text-purple-700 font-bold' : isReference ? 'text-emerald-700 font-semibold' : 'text-gray-800 font-medium'
                       }`}
                     >
@@ -97,10 +97,8 @@ export const HeroDashboard = () => {
                     </span>
                     {row.badge && (
                       <span
-                        className={`text-[9px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full whitespace-nowrap ${
-                          isPrimary
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-emerald-600 text-white'
+                        className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${
+                          isPrimary ? 'bg-purple-600 text-white' : 'bg-emerald-600 text-white'
                         }`}
                       >
                         {row.badge}
@@ -108,10 +106,10 @@ export const HeroDashboard = () => {
                     )}
                   </div>
 
-                  <span className={`text-right font-semibold text-xs md:text-sm ${isPrimary ? 'text-purple-700' : isReference ? 'text-emerald-700' : 'text-gray-700'}`}>
+                  <span className={`text-right font-semibold ${isPrimary ? 'text-purple-700' : isReference ? 'text-emerald-700' : 'text-gray-700'}`}>
                     {row.input}
                   </span>
-                  <span className={`text-right font-semibold text-xs md:text-sm ${isPrimary ? 'text-purple-700' : isReference ? 'text-emerald-700' : 'text-gray-700'}`}>
+                  <span className={`text-right font-semibold ${isPrimary ? 'text-purple-700' : isReference ? 'text-emerald-700' : 'text-gray-700'}`}>
                     {row.output}
                   </span>
                 </motion.div>
@@ -119,19 +117,21 @@ export const HeroDashboard = () => {
             })}
           </div>
 
-          <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-100 space-y-1.5 md:space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] md:text-xs text-gray-500">qwen3-max vs GPT-5/Gemini</span>
-              <span className="text-xs md:text-sm font-bold text-green-700 bg-green-50 px-1.5 md:px-2 py-1 rounded-lg">40% Lower</span>
+          <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-xs text-gray-500">qwen3-max vs Gemini 3.1 Pro (output)</span>
+              <span className="text-sm font-bold text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">50% Lower Output Cost</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] md:text-xs text-gray-500">qwen3.5-plus vs Claude</span>
-              <span className="text-xs md:text-sm font-bold text-emerald-700 bg-emerald-50 px-1.5 md:px-2 py-1 rounded-lg">~84% Lower</span>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-xs text-gray-500">qwen3.5-plus vs Claude Sonnet 4.6</span>
+              <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg w-fit">~84% Lower Cost</span>
             </div>
           </div>
 
-          <div className="mt-2 md:mt-3 text-[9px] md:text-[11px] text-gray-500 leading-relaxed">
-            Pricing in USD per 1M tokens. Use Claude for architecture, qwen3.5-plus for execution.
+          <div className="mt-3 text-[11px] text-gray-500 leading-relaxed space-y-1">
+            <p>Pricing shown in USD per 1M tokens.</p>
+            <p>Context windows: Claude Sonnet 4.6 (1M), Gemini 3.1 Pro (1.05M).</p>
+            <p>Gemini 3.1 Pro audio pricing: $2.00 per 1M audio tokens.</p>
           </div>
         </motion.div>
       </motion.div>
