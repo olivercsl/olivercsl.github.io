@@ -1,59 +1,61 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { HeroDashboard } from './visuals/HeroDashboard';
 
 export const Hero = () => {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-        
-        {/* Left Column: Text */}
-        <div className="text-left relative z-20 lg:col-span-1 flex flex-col">
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-7xl font-semibold tracking-tight text-tx-primary mb-6 leading-[1.1]"
-            >
-              Scale your AI Agents. <br />
-              <span className="text-purple-600">Not your bill.</span>
-            </motion.h1>
+    <section className="relative pt-36 pb-20 md:pt-44 md:pb-28 px-6 overflow-hidden bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div className="max-w-3xl mx-auto relative z-10 flex flex-col items-center text-center gap-7">
 
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-xl md:text-2xl font-medium text-tx-primary mb-8 text-balance max-w-lg"
-            >
-              High-performance Qwen3 tokens at a fraction of the cost. The perfect execution engine for your agentic workflows.
-            </motion.p>
-            
-            {/* Links */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-6 text-lg font-medium mb-8 lg:mb-0"
-            >
-              <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl relative z-30">
-                Start a project
-              </a>
-              <a href="#services" className="text-accent hover:underline flex items-center gap-1 px-4 relative z-30 pointer-events-auto">
-                View capabilities <span className="text-sm">›</span>
-              </a>
-            </motion.div>
-        </div>
-
-        {/* Right Column: Visual */}
-        <motion.div 
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full lg:z-10 mt-8 lg:mt-0"
+        {/* Verified partner badge */}
+        <motion.a
+          href="https://partners.amazonaws.com/partners/0018W00002IkfioQAB/Cloudzeta%20Solutions%20Limited"
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-100 transition-colors"
         >
-           <HeroDashboard />
-           {/* Reflection/Shadow under the floating device */}
-           <div className="absolute -bottom-10 left-10 right-10 h-12 bg-black/5 blur-3xl rounded-[50%] -z-10"></div>
+          <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          AWS Advanced Partner · Verified
+        </motion.a>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+          className="text-5xl md:text-7xl font-semibold tracking-tight text-tx-primary leading-[1.05] text-balance"
+        >
+          Cloud infrastructure,<br />
+          <span className="text-accent">engineered properly.</span>
+        </motion.h1>
+
+        {/* Subheadline */}
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="text-xl md:text-2xl text-tx-secondary leading-relaxed text-balance max-w-2xl"
+        >
+          An Advanced AWS Partner delivering finance-grade security, smarter cloud spend, and low-latency connectivity into Mainland China.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.25 }}
+          className="flex flex-col sm:flex-row items-center gap-5 text-lg font-medium mt-1"
+        >
+          <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl">
+            Start a project
+          </a>
+          <a href="#services" className="text-accent hover:underline flex items-center gap-1 px-4">
+            View services <span className="text-sm">›</span>
+          </a>
         </motion.div>
 
       </div>

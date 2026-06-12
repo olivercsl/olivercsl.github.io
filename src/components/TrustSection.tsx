@@ -6,7 +6,7 @@ export const TrustSection = () => {
     <section className="py-24 bg-surface-hover border-y border-glass-border">
       <div className="max-w-7xl mx-auto px-6">
         
-        <div className="grid md:grid-cols-3 gap-12 items-start mb-16">
+        <div className="grid md:grid-cols-3 gap-12 items-stretch mb-16">
           
           {/* 1. Experience */}
           <motion.div 
