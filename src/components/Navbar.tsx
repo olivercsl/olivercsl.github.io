@@ -35,7 +35,7 @@ export const Navbar = ({ minimal = false }: NavbarProps) => {
           <span className="text-xl font-bold tracking-tight text-tx-primary">Cloudzeta</span>
         </a>
         
-        {/* Root-relative so these resolve from sub-pages (e.g. /features/*) too. */}
+        {/* Root-relative so these resolve from sub-pages (e.g. /tools/*) too. */}
         {!minimal && (
           <div className="hidden md:flex items-center gap-8 text-xs font-medium text-tx-primary/80">
             <a href="/#services" className="hover:text-accent transition-colors">Services</a>
