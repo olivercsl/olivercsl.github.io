@@ -1,0 +1,143 @@
+---
+/**
+ * Index of free tools. Exists partly for people and partly for crawlers: tools
+ * published without an inbound link from the site are orphans, and orphans get
+ * discovered slowly and rank poorly.
+ *
+ * Same rules as the tools themselves — no ads, no trackers, no call to action.
+ */
+import Layout from '../layouts/Layout.astro';
+import { Navbar } from '../components/Navbar';
+
+const tools = [
+  {
+    href: '/features/password-generator',
+    name: 'Password Generator',
+    desc: 'Strong random passwords and memorable passphrases, with entropy and crack-time shown so you can see exactly how strong the result is.',
+    tags: ['Passwords', 'Passphrases', 'Entropy'],
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${pageUrl}#page`,
+      name: 'Free Security Tools',
+      url: pageUrl,
+      description:
+        'Free browser-based security tools from Cloudzeta Solutions. No ads, no tracking, no account required.',
+    },
+    {
+      '@type': 'ItemList',
+      '@id': `${pageUrl}#list`,
+      itemListElement: tools.map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: t.name,
+        url: `https://cloudzeta.solutions${t.href}`,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Free Security Tools | No Ads, No Tracking | Cloudzeta"
+  description="Free browser-based security tools from Cloudzeta Solutions. Everything runs client-side — no ads, no trackers, no account, nothing sent to a server."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar client:load />
+
+  <main>
+    <section class="pt-24 pb-12 md:pt-28 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08] mb-6">
+          Free Tools
+        </h1>
+        <p class="text-lg md:text-xl text-tx-secondary leading-relaxed text-balance">
+          Small, useful security tools that run entirely in your browser. No ads, no trackers, no
+          account, and nothing to buy.
+        </p>
+      </div>
+    </section>
+
+    <section class="pb-24 px-4 sm:px-6">
+      <div class="max-w-3xl mx-auto">
+        <ul class="grid gap-5">
+          {
+            tools.map((tool) => (
+              <li>
+                <a
+                  href={tool.href}
+                  class="group block bg-white p-7 rounded-2xl border border-glass-border shadow-sm hover:shadow-lg transition-all"
+                >
+                  <div class="flex items-start justify-between gap-4 mb-3">
+                    <h2 class="text-xl font-semibold text-tx-primary group-hover:text-accent transition-colors">
+                      {tool.name}
+                    </h2>
+                    <span class="text-accent shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      &rsaquo;
+                    </span>
+                  </div>
+                  <p class="text-tx-secondary leading-relaxed mb-4">{tool.desc}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {tool.tags.map((tag) => (
+                      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-surface text-tx-secondary border border-glass-border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-10 p-6 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
+          <h2 class="text-base font-semibold text-emerald-900 mb-3">How these tools work</h2>
+          <ul class="space-y-2 text-sm text-emerald-900/90">
+            {
+              [
+                'Everything runs in your browser — no data is sent to a server',
+                'No ads, no trackers, no analytics on the tool pages',
+                'No account, no email, nothing to sign up for',
+                'Static pages, so they keep working offline',
+              ].map((item) => (
+                <li class="flex items-start gap-2.5">
+                  <svg
+                    class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="3"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary">
+        Built by <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta Solutions</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
