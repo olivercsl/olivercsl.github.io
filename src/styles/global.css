@@ -55,6 +55,22 @@ body {
   border-bottom: 1px solid var(--glass-border);
 }
 
+/* Copy-confirmation toast. Centred via translateX, so the keyframes must carry
+   it too — a Tailwind -translate-x-1/2 would be overwritten by the animation. */
+@keyframes toast-pop {
+  from { opacity: 0; transform: translate(-50%, 14px) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.toast-pop {
+  transform: translate(-50%, 0);
+  animation: toast-pop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-pop { animation: none; }
+}
+
 .text-gradient {
   background: linear-gradient(to right, #1d1d1f 0%, #4a4a4f 100%);
   -webkit-background-clip: text;

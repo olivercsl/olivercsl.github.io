@@ -41,6 +41,9 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://cloudzeta.solutions');
 		<meta property="twitter:image" content={new URL(image, canonicalURL)} />
 
 		<title>{title}</title>
+
+		<!-- Per-page head additions (structured data, extra meta) -->
+		<slot name="head" />
 	</head>
 	<body class="selection:bg-blue-100 selection:text-blue-900 bg-white text-gray-900 antialiased">
 		<slot />

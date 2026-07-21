@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-export const Navbar = () => {
+interface NavbarProps {
+  /**
+   * Logo only, no navigation links. Used on the password generator, where any
+   * commercial link would undercut the page's "we ask nothing of you" promise.
+   */
+  minimal?: boolean;
+}
+
+export const Navbar = ({ minimal = false }: NavbarProps) => {
   // Initialize to false for SSR consistency.
   // The transition to 'nav-glass' will happen after mount if scrolled.
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,13 +35,16 @@ export const Navbar = () => {
           <span className="text-xl font-bold tracking-tight text-tx-primary">Cloudzeta</span>
         </a>
         
-        <div className="hidden md:flex items-center gap-8 text-xs font-medium text-tx-primary/80">
-          <a href="#services" className="hover:text-accent transition-colors">Services</a>
-          <a href="#china" className="hover:text-accent transition-colors">China Access</a>
-          <a href="#contact" className="px-3 py-1.5 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-colors">
-            Contact
-          </a>
-        </div>
+        {/* Root-relative so these resolve from sub-pages (e.g. /features/*) too. */}
+        {!minimal && (
+          <div className="hidden md:flex items-center gap-8 text-xs font-medium text-tx-primary/80">
+            <a href="/#services" className="hover:text-accent transition-colors">Services</a>
+            <a href="/#china" className="hover:text-accent transition-colors">China Access</a>
+            <a href="/#contact" className="px-3 py-1.5 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-colors">
+              Contact
+            </a>
+          </div>
+        )}
       </div>
     </nav>
   );
