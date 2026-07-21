@@ -16,6 +16,7 @@ import {
   type Suitability,
   type SearchResult,
 } from '../../lib/timezones';
+import { TimePicker } from './TimePicker';
 
 interface Loc extends SearchResult {
   id: string;
@@ -44,7 +45,8 @@ const makeLoc = (r: SearchResult): Loc => ({ ...r, id: `${r.zone}-${seq++}` });
 const pad = (n: number) => String(n).padStart(2, '0');
 const toDateInput = (w: { year: number; month: number; day: number }) =>
   `${w.year}-${pad(w.month)}-${pad(w.day)}`;
-const toTimeInput = (w: { hour: number; minute: number }) => `${pad(w.hour)}:${pad(w.minute)}`;
+const displayTime = (w: { hour: number; minute: number }) =>
+  `${w.hour % 12 === 0 ? 12 : w.hour % 12}:${pad(w.minute)} ${w.hour < 12 ? 'am' : 'pm'}`;
 
 const round15 = (d: Date) => new Date(Math.round(d.getTime() / 900000) * 900000);
 
@@ -113,6 +115,8 @@ export const TimeZoneConverter = () => {
   const [highlight, setHighlight] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  /** id of the row whose time picker is open, if any */
+  const [picking, setPicking] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Hydrate on the client only: local zone and "now" both differ on the server.
@@ -456,17 +460,32 @@ export const TimeZoneConverter = () => {
                   }}
                   className="px-2.5 py-1.5 rounded-lg border border-glass-border bg-white text-sm text-tx-secondary focus:outline-none focus:ring-2 focus:ring-accent/40"
                 />
-                <input
-                  type="time"
-                  aria-label={`Time in ${loc.city}`}
-                  value={toTimeInput(w)}
-                  onChange={(e) => {
-                    const [h, min] = e.target.value.split(':').map(Number);
-                    if (Number.isNaN(h) || Number.isNaN(min)) return;
-                    applyInstant(wallTimeToInstant({ ...w, hour: h!, minute: min! }, loc.zone));
-                  }}
-                  className="px-2.5 py-1.5 rounded-lg border border-glass-border bg-white text-base font-semibold text-tx-primary tabular-nums focus:outline-none focus:ring-2 focus:ring-accent/40"
-                />
+                {/* A button opening an hour grid, not a native time spinner —
+                    see TimePicker for why. */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label={`Change time in ${loc.city}`}
+                    aria-haspopup="dialog"
+                    aria-expanded={picking === loc.id}
+                    onClick={() => setPicking((p) => (p === loc.id ? null : loc.id))}
+                    className={`px-3 py-1.5 rounded-lg border bg-white text-base font-semibold text-tx-primary tabular-nums transition-all hover:border-accent/50 ${
+                      picking === loc.id ? 'border-accent ring-2 ring-accent/30' : 'border-glass-border'
+                    }`}
+                  >
+                    {displayTime(w)}
+                  </button>
+
+                  {picking === loc.id && (
+                    <TimePicker
+                      zone={loc.zone}
+                      wall={w}
+                      locs={locs}
+                      onPick={applyInstant}
+                      onClose={() => setPicking(null)}
+                    />
+                  )}
+                </div>
                 <span className={`text-lg ${TEXT[rating]}`} title={`Local hour rated ${rating}`}>
                   {SUITABILITY_EMOJI[rating]}
                 </span>
