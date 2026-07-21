@@ -48,13 +48,9 @@ const toTimeInput = (w: { hour: number; minute: number }) => `${pad(w.hour)}:${p
 
 const round15 = (d: Date) => new Date(Math.round(d.getTime() / 900000) * 900000);
 
+/** Just the visitor's own zone. Anything else would be us guessing. */
 function defaultLocations(): Loc[] {
-  const here = cityForZone(localZone());
-  const seed = [here];
-  // A second row makes the tool immediately legible; pick somewhere far away.
-  if (here.zone !== 'America/New_York') seed.push(cityForZone('America/New_York'));
-  else seed.push(cityForZone('Europe/London'));
-  return seed.map(makeLoc);
+  return [makeLoc(cityForZone(localZone()))];
 }
 
 /**
@@ -116,12 +112,14 @@ export const TimeZoneConverter = () => {
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Hydrate on the client only: local zone and "now" both differ on the server.
   useEffect(() => {
     const { locs: l, instant: i } = readInitialState();
     setLocs(l);
+    setReady(true);
     const start = i ?? new Date();
     setInstant(start);
     setWindowStart(new Date(round15(start).getTime() - 12 * 3600000));
@@ -135,14 +133,16 @@ export const TimeZoneConverter = () => {
     return () => clearInterval(id);
   }, [live]);
 
+  // Persist an empty list too, so removing every row actually sticks instead of
+  // the old selection reappearing on reload.
   useEffect(() => {
-    if (!locs.length) return;
+    if (!ready) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(locs.map(encodeLoc)));
     } catch {
       /* storage may be unavailable; not worth surfacing */
     }
-  }, [locs]);
+  }, [locs, ready]);
 
   useEffect(() => {
     if (!toast) return;
@@ -291,8 +291,10 @@ export const TimeZoneConverter = () => {
     void copy(text, html, 'Times copied — paste into an email');
   };
 
-  // Nothing meaningful to render until the client hydrates.
-  if (!instant || !windowStart || !locs.length) {
+  // Wait only for hydration — never for locations. An earlier version also
+  // bailed out when the list was empty, which meant removing every row hid the
+  // search box and left the tool permanently stuck with no way to add one back.
+  if (!instant || !windowStart) {
     return <div className="bg-white rounded-3xl border border-glass-border shadow-xl min-h-[420px]" />;
   }
 
@@ -301,14 +303,15 @@ export const TimeZoneConverter = () => {
     Math.max(0, Math.round((instant.getTime() - windowStart.getTime()) / 60000)),
   );
 
+  const labelZone = reference?.zone ?? localZone();
   const edgeLabel = (d: Date) =>
-    `${wallTimeIn(d, reference!.zone).day} ${new Date(d).toLocaleDateString('en-GB', {
+    `${wallTimeIn(d, labelZone).day} ${new Date(d).toLocaleDateString('en-GB', {
       month: 'short',
-      timeZone: reference!.zone,
+      timeZone: labelZone,
     })}, ${new Date(d).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      timeZone: reference!.zone,
+      timeZone: labelZone,
     })}`;
 
   return (
@@ -392,6 +395,22 @@ export const TimeZoneConverter = () => {
       </div>
 
       {/* Locations */}
+      {locs.length === 0 && (
+        <div className="px-6 py-14 text-center">
+          <p className="text-tx-primary font-medium mb-1">No locations yet</p>
+          <p className="text-sm text-tx-secondary mb-5">
+            Search above to add a city, or start from where you are.
+          </p>
+          <button
+            type="button"
+            onClick={() => setLocs(defaultLocations())}
+            className="px-4 py-2 rounded-lg border border-glass-border text-sm font-medium text-tx-secondary hover:text-tx-primary hover:border-accent/40"
+          >
+            Add my time zone
+          </button>
+        </div>
+      )}
+
       <ul className="divide-y divide-gray-100">
         {locs.map((loc, i) => {
           const w = wallTimeIn(instant, loc.zone);
@@ -492,8 +511,8 @@ export const TimeZoneConverter = () => {
         })}
       </ul>
 
-      {/* Timeline */}
-      <div className="px-5 md:px-6 pt-5 pb-4 border-t border-glass-border bg-surface/40">
+      {/* Timeline — nothing to rate until at least one location exists. */}
+      <div className={`px-5 md:px-6 pt-5 pb-4 border-t border-glass-border bg-surface/40 ${locs.length ? '' : 'hidden'}`}>
         <div className="flex items-center justify-between text-xs text-tx-secondary mb-2">
           <span>{edgeLabel(windowStart)}</span>
           <span className="font-medium text-tx-primary">
