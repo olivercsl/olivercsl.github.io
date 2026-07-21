@@ -1,0 +1,180 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  The QR is generated in the browser and points straight at the user's link —
+ *  no tracking redirect. Any external script would break that promise.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { QrGenerator } from '../../components/tools/QrGenerator';
+
+const faqs = [
+  {
+    q: 'Is this QR code generator free?',
+    a: 'Yes, completely free with no account, no watermark and no limits. Generate as many codes as you like and download them as PNG or SVG.',
+  },
+  {
+    q: 'Do the QR codes expire or get tracked?',
+    a: 'No. Many free QR generators route the code through their own domain as a redirect, which lets them count scans and, in some cases, change or disable the link later. This one encodes your link directly into the code, in your browser. There is no redirect, no expiry and no tracking — the code works forever and points only where you told it to.',
+  },
+  {
+    q: 'PNG or SVG — which should I download?',
+    a: 'Use SVG for print, signage or anything that needs to scale, since it stays sharp at any size. Use PNG for slides, documents and the web. The PNG is rendered at 1024 pixels, which is large enough for most uses.',
+  },
+  {
+    q: 'What does the error-correction level do?',
+    a: 'QR codes carry redundant data so they still scan when part of the code is dirty, creased or covered. Higher levels recover from more damage — roughly 7% at Low up to 30% at High — but leave less room for data, so the code becomes denser. Medium is a good default; raise it if the code will be printed small or placed somewhere it may get scuffed.',
+  },
+  {
+    q: 'Can I change the colours?',
+    a: 'Yes. Pick any foreground and background colour, or start from a preset. Keep the code noticeably darker than its background — scanners rely on that contrast, and the tool warns you if the two colours are too close.',
+  },
+  {
+    q: 'Does it work offline?',
+    a: 'Yes. The page is static and the codes are generated entirely in your browser, so once the page has loaded it keeps working with no connection. Nothing about your link is ever sent to a server.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/qr-code-generator';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta QR Code Generator',
+      url: pageUrl,
+      applicationCategory: 'DesignApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free QR code generator. Turn any link or text into a QR code, customise the colours, and download as PNG or SVG. Client-side, no ads, no tracking redirect.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Encode any link or text',
+        'Custom foreground and background colours',
+        'Adjustable error-correction level',
+        'Download as PNG or scalable SVG',
+        'No tracking redirect — the code points straight at your link',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'QR Code Generator', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="QR Code Generator | Custom Colours, No Tracking | Cloudzeta"
+  description="Free QR code generator. Turn any link or text into a QR code, customise the colours and download as PNG or SVG. Made in your browser — no ads, no tracking redirect, works offline."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          QR Code Generator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl lg:max-w-4xl mx-auto">
+        <QrGenerator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Turn a link into a QR code, pick your colours, download. No ads, no tracking redirect.
+        </p>
+      </div>
+    </section>
+
+    <!-- Why -->
+    <section class="py-24 px-6 bg-surface border-y border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <div class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-6">
+          Why this one
+        </div>
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-6">
+          Your link, encoded directly — not routed through us.
+        </h2>
+        <p class="text-lg text-tx-secondary leading-relaxed mb-6">
+          A lot of free QR generators quietly wrap your link in a redirect through their own domain.
+          That lets them count scans, show you an upsell, and sometimes change or switch off the link
+          later. Your customers scan <em>their</em> URL, not yours. This tool encodes your link straight
+          into the code, in your browser, so the QR points only where you told it to — and keeps working
+          long after any service would have expired it.
+        </p>
+        <ul class="space-y-3">
+          {
+            [
+              'The link is encoded directly — no redirect, no expiry, no scan tracking',
+              'Generated in your browser; nothing about your link is sent anywhere',
+              'Download as PNG for screens or SVG for print',
+              'No ads, no watermark, no account',
+            ].map((item) => (
+              <li class="flex items-start gap-3 text-tx-primary">
+                <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          QR code generator FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account — and it stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
