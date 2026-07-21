@@ -1,0 +1,228 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: the page states it carries no ads and
+ *  no trackers, and that it works offline. Any external script — including a
+ *  site-wide analytics snippet — makes those claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { TimeZoneConverter } from '../../components/tools/TimeZoneConverter';
+
+const faqs = [
+  {
+    q: 'How do I convert a time between two time zones?',
+    a: 'Add both locations, then set the date and time on either row. Every other row updates instantly to show the same moment in its own zone, including the correct day, which is easy to get wrong across the international date line.',
+  },
+  {
+    q: 'Does this handle daylight saving time?',
+    a: 'Yes. Conversions use your browser\'s built-in IANA time zone database, so daylight saving transitions are applied automatically for the exact date you choose — not just for today. Pick a date on the other side of a DST change and the offset adjusts.',
+  },
+  {
+    q: 'How do I find a meeting time that works for everyone?',
+    a: 'The coloured bar under the locations shows the whole 48-hour window rated across every location you have added. Green means the hour falls inside working hours everywhere, amber means it is early or late for someone, and red means somebody would be asleep. Drag the handle to a green stretch.',
+  },
+  {
+    q: 'Can I share a converted time with someone else?',
+    a: 'Two ways. "Copy times" puts a formatted list on your clipboard that you can paste straight into an email — it pastes as a neat table in most mail clients, and unlike a screenshot it stays readable and searchable. "Copy link" copies a URL containing your locations and the chosen moment, so whoever opens it sees exactly the same view.',
+  },
+  {
+    q: 'Are there ads or tracking on this page?',
+    a: 'No. There are no ads, no trackers and no analytics. The tool runs entirely in your browser, so nothing about your locations or chosen times is sent anywhere. Your chosen cities are remembered locally in your own browser so they are there next time.',
+  },
+  {
+    q: 'Which cities can I search for?',
+    a: 'Several hundred major cities are matched by name, including ones that are not their own time zone — searching "Boston" correctly resolves to America/New_York. If a place is not in the list, you can search for any IANA time zone identifier directly, such as "Pacific/Chatham".',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/features/time-zone-converter';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Time Zone Converter',
+      url: pageUrl,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free time zone converter and meeting time finder. Compare any number of cities at once, see which hours work for everyone, and share the result. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Compare unlimited cities side by side',
+        'Automatic daylight saving handling for any date',
+        'Colour-coded 48-hour window showing when everyone is awake',
+        'Copy times as a table, or share a link',
+        'Runs offline — nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'Time Zone Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Time Zone Converter | Find a Meeting Time Across Cities | Cloudzeta"
+  description="Free time zone converter. Compare cities side by side, see which hours suit everyone, and share the result by link or as a pasteable table. No ads, no tracking, works offline."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Time Zone Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl lg:max-w-4xl mx-auto">
+        <TimeZoneConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Compare cities side by side and find an hour that works for everyone.
+        </p>
+      </div>
+    </section>
+
+    <!-- How to use -->
+    <section class="py-24 px-6 border-t border-glass-border">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-4 text-center">
+          How to schedule across time zones
+        </h2>
+        <p class="text-xl text-tx-secondary text-center mb-14 max-w-2xl mx-auto">
+          The hard part isn't the arithmetic — it's finding an hour nobody resents.
+        </p>
+
+        <ol class="grid sm:grid-cols-2 gap-6">
+          {
+            [
+              {
+                n: '1',
+                t: 'Add everyone’s city',
+                d: 'Search by city name. Boston, Munich and Bangalore all resolve to the right zone even though none of them is a time zone name.',
+              },
+              {
+                n: '2',
+                t: 'Read the coloured bar',
+                d: 'It rates the next 48 hours across every city at once. Green means the hour is inside working hours for all of them — no mental arithmetic required.',
+              },
+              {
+                n: '3',
+                t: 'Drag to a green stretch',
+                d: 'Every row updates as you drag, including the date, so you can see when a meeting lands on tomorrow for one side of the call.',
+              },
+              {
+                n: '4',
+                t: 'Send it',
+                d: 'Copy times pastes a clean table into an email. Copy link sends the exact view. Both beat a screenshot — they stay readable, and they are searchable later.',
+              },
+            ].map((step) => (
+              <li class="bg-white p-7 rounded-2xl border border-glass-border shadow-sm flex gap-5">
+                <span class="w-10 h-10 shrink-0 rounded-xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center">
+                  {step.n}
+                </span>
+                <div>
+                  <h3 class="text-lg font-semibold text-tx-primary mb-2">{step.t}</h3>
+                  <p class="text-tx-secondary leading-relaxed">{step.d}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- Accuracy / privacy -->
+    <section class="py-24 px-6 bg-surface border-y border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <div class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-6">
+          How it works
+        </div>
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-6">
+          Accurate dates, no ads, nothing sent anywhere.
+        </h2>
+        <p class="text-lg text-tx-secondary leading-relaxed mb-6">
+          Conversions come from the IANA time zone database that ships inside your browser, so daylight
+          saving is applied for the specific date you pick rather than today's rules — including the
+          awkward zones on 30 and 45 minute offsets. Nothing is calculated on a server, which is why the
+          page keeps working with your connection turned off.
+        </p>
+        <ul class="space-y-3">
+          {
+            [
+              'Correct daylight saving handling for past and future dates',
+              'Half-hour and quarter-hour zones such as India and Nepal',
+              'No ads, no trackers, no analytics, no account',
+              'Your city list is stored in your own browser, never on a server',
+            ].map((item) => (
+              <li class="flex items-start gap-3 text-tx-primary">
+                <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Time zone converter FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account — and it stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
