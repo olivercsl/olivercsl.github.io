@@ -40,8 +40,8 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="text-xl md:text-2xl text-tx-secondary leading-relaxed text-balance max-w-2xl"
         >
-          We build and run AWS infrastructure for companies in Sydney and Hong Kong, and make
-          global platforms fast and reliable for users in mainland China.
+          We build and run AWS infrastructure for companies worldwide, and make global platforms
+          fast and reliable for users in mainland China.
         </motion.p>
 
         {/* CTAs */}

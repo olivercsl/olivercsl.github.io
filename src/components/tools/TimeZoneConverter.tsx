@@ -103,7 +103,9 @@ function readInitialState(): { locs: Loc[]; instant: Date | null } {
   const parsed = tParam ? new Date(tParam) : null;
   const instant = parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
 
-  return { locs: locs ?? defaultLocations(), instant };
+  // First visit starts empty on purpose. Preselecting a city means guessing,
+  // and the empty state doubles as the "add your cities" prompt.
+  return { locs: locs ?? [], instant };
 }
 
 export const TimeZoneConverter = () => {
@@ -401,9 +403,19 @@ export const TimeZoneConverter = () => {
       {/* Locations */}
       {locs.length === 0 && (
         <div className="px-6 py-14 text-center">
-          <p className="text-tx-primary font-medium mb-1">No locations yet</p>
-          <p className="text-sm text-tx-secondary mb-5">
-            Search above to add a city, or start from where you are.
+          <svg
+            className="w-10 h-10 mx-auto mb-4 text-tx-secondary/50"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18M3 12a9 9 0 1018 0 9 9 0 00-18 0" />
+          </svg>
+          <p className="text-tx-primary font-medium mb-1">Start by adding cities</p>
+          <p className="text-sm text-tx-secondary mb-5 max-w-sm mx-auto">
+            Search above for each city you want to compare. Add two or more and the timeline will
+            show the hours that work for everyone.
           </p>
           <button
             type="button"
@@ -571,8 +583,8 @@ export const TimeZoneConverter = () => {
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="px-5 md:px-6 py-4 border-t border-glass-border flex flex-wrap items-center gap-2">
+      {/* Controls. Hidden while empty; every button here needs a location. */}
+      <div className={`px-5 md:px-6 py-4 border-t border-glass-border flex flex-wrap items-center gap-2 ${locs.length ? '' : 'hidden'}`}>
         <button type="button" onClick={() => shiftDays(-1)} aria-label="Previous day"
           className="px-3 py-2 rounded-lg border border-glass-border text-sm font-medium text-tx-secondary hover:text-tx-primary hover:border-accent/40">
           ‹ Day
@@ -598,7 +610,7 @@ export const TimeZoneConverter = () => {
           className="px-4 py-2 rounded-lg border border-glass-border text-sm font-medium text-tx-secondary hover:text-tx-primary hover:border-accent/40">
           Copy link
         </button>
-        <button type="button" onClick={() => setLocs(defaultLocations())}
+        <button type="button" onClick={() => setLocs([])}
           className="px-3 py-2 rounded-lg text-sm font-medium text-tx-secondary hover:text-red-600">
           Reset
         </button>

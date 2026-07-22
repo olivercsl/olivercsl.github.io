@@ -27,9 +27,9 @@ export const AudienceDoors = () => {
             </div>
             <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Run on AWS</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
-              Buy AWS through an Advanced Partner and get competitive rates, local engineers in Sydney
-              and Hong Kong who answer, and the hard parts done properly: migration, cost
-              optimization, security hardening.
+              Buy AWS through an Advanced Partner and get competitive rates, engineers in Sydney and
+              Hong Kong who answer across time zones, and the hard parts done properly: migration,
+              cost optimization, security hardening.
             </p>
             <ul className="space-y-3 mb-8">
               {[
