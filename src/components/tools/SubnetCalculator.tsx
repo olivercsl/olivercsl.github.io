@@ -9,6 +9,17 @@ import {
 
 const fmtCount = (n: number) => n.toLocaleString('en-US');
 
+/**
+ * The classic Class A / B / C quick start. Each presets the canonical private
+ * network and default mask for that class; the active one tracks whichever
+ * address is currently entered.
+ */
+const CLASS_PRESETS = [
+  { letter: 'A', ip: '10.0.0.0', prefix: 8, hint: '10.0.0.0/8' },
+  { letter: 'B', ip: '172.16.0.0', prefix: 16, hint: '172.16.0.0/16' },
+  { letter: 'C', ip: '192.168.1.0', prefix: 24, hint: '192.168.1.0/24' },
+] as const;
+
 export const SubnetCalculator = () => {
   const [ipInput, setIpInput] = useState('192.168.1.0');
   const [prefix, setPrefix] = useState(24);
@@ -61,6 +72,36 @@ export const SubnetCalculator = () => {
 
   return (
     <div className="bg-white rounded-3xl border border-glass-border shadow-xl overflow-hidden">
+      {/* Class quick start */}
+      <div className="px-5 md:px-6 pt-5 md:pt-6">
+        <span className="block text-sm font-semibold text-tx-primary mb-2">Network class</span>
+        <div className="grid grid-cols-3 gap-2 max-w-md">
+          {CLASS_PRESETS.map((c) => {
+            const active = info?.ipClass === c.letter;
+            return (
+              <button
+                key={c.letter}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setIpInput(c.ip);
+                  setPrefix(c.prefix);
+                  setSplitPrefix(null);
+                }}
+                className={`px-3 py-2 rounded-xl border text-center transition-all ${
+                  active
+                    ? 'bg-blue-50 border-accent ring-1 ring-accent/30'
+                    : 'bg-white border-glass-border hover:border-accent/40'
+                }`}
+              >
+                <span className="block text-sm font-semibold text-tx-primary">Class {c.letter}</span>
+                <span className="block text-[11px] text-tx-secondary font-mono">{c.hint}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Inputs */}
       <div className="p-5 md:p-6 border-b border-glass-border flex flex-wrap items-end gap-4">
         <label className="text-sm font-semibold text-tx-primary">
