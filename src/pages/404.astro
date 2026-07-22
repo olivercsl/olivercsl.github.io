@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Navbar } from '../components/Navbar';
+---
+
+<Layout title="Page not found | Cloudzeta" description="This page does not exist.">
+  <meta name="robots" content="noindex" slot="head" />
+
+  <Navbar client:load />
+
+  <main class="min-h-[70vh] flex items-center justify-center px-6 pt-16">
+    <div class="text-center max-w-md">
+      <p class="text-7xl font-bold text-tx-primary mb-4 tabular-nums">404</p>
+      <h1 class="text-2xl font-semibold text-tx-primary mb-3">Page not found</h1>
+      <p class="text-tx-secondary mb-8">
+        This page does not exist, or it moved. The tools all live under one roof.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/" class="px-6 py-3 bg-tx-primary text-white rounded-full font-medium hover:bg-tx-primary/90 transition-colors">
+          Go home
+        </a>
+        <a href="/tools" class="px-6 py-3 border border-glass-border rounded-full font-medium text-tx-primary hover:border-accent/40 transition-colors">
+          Free tools
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>

@@ -35,9 +35,27 @@ export const ContactSection = () => {
         </div>
 
         {/* Simple Footer Links */}
-        <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-tx-secondary">
-           <p>© {new Date().getFullYear()} Cloudzeta Solutions. All rights reserved.</p>
-           <p className="mt-4 md:mt-0">Sydney &middot; Hong Kong</p>
+        <div className="border-t border-gray-200 pt-8 text-sm text-tx-secondary">
+           <p className="mb-4">
+              Free tools:{' '}
+              {[
+                ['/tools/sla-calculator', 'SLA calculator'],
+                ['/tools/subnet-calculator', 'Subnet calculator'],
+                ['/tools/time-zone-converter', 'Time zone converter'],
+                ['/tools/password-generator', 'Password generator'],
+                ['/tools/uuid-generator', 'UUID generator'],
+                ['/tools/qr-code-generator', 'QR code generator'],
+              ].map(([href, label], i) => (
+                <React.Fragment key={href}>
+                  {i > 0 && ' · '}
+                  <a href={href} className="hover:text-tx-primary underline-offset-2 hover:underline">{label}</a>
+                </React.Fragment>
+              ))}
+           </p>
+           <div className="flex flex-col md:flex-row justify-between items-center">
+              <p>© {new Date().getFullYear()} Cloudzeta Solutions. All rights reserved.</p>
+              <p className="mt-4 md:mt-0">Sydney &middot; Hong Kong</p>
+           </div>
         </div>
 
       </div>

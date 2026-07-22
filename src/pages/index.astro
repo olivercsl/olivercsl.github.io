@@ -10,12 +10,34 @@ import { ProcessSection } from '../components/ProcessSection';
 import { TrustSection } from '../components/TrustSection';
 import { AlsoAvailable } from '../components/AlsoAvailable';
 import { ContactSection } from '../components/ContactSection';
+
+// Organization identity for search engines: name, logo, offices, and the
+// verifiable AWS partner listing as sameAs. Facts only.
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://cloudzeta.solutions/#org',
+  name: 'Cloudzeta Solutions',
+  url: 'https://cloudzeta.solutions',
+  logo: 'https://cloudzeta.solutions/logo-circuit.svg',
+  description:
+    'AWS Advanced Partner building and running cloud infrastructure, with accelerated network routes into mainland China for fintech and finance platforms.',
+  email: 'info@cloudzeta.solutions',
+  sameAs: [
+    'https://partners.amazonaws.com/partners/0018W00002IkfioQAB/Cloudzeta%20Solutions%20Limited',
+  ],
+  location: [
+    { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: 'Sydney', addressCountry: 'AU' } },
+    { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: 'Hong Kong', addressCountry: 'HK' } },
+  ],
+};
 ---
 
 <Layout
-    title="Cloudzeta | AWS Advanced Partner & China Connectivity for Fintech and Finance"
-    description="AWS built and run properly by an Advanced Partner in Sydney & Hong Kong, plus website and MetaTrader 4/5 acceleration into mainland China via premium fibre routes. Trusted by global fintech and finance brands."
+    title="AWS Advanced Partner & China Connectivity | Cloudzeta"
+    description="AWS built and run by an Advanced Partner, with website and MetaTrader 4/5 acceleration into mainland China. Trusted by global fintech and finance brands."
 >
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
     <Navbar client:load />
 	<main>
 		<Hero client:load />
