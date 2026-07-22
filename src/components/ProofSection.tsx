@@ -61,7 +61,7 @@ export const ProofSection = () => {
             Real engagements · anonymized
           </div>
           <h2 className="text-3xl md:text-4xl font-semibold text-tx-primary mb-4">
-            Trading platforms trust us.
+            Fintech and finance platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
             Eight global brands, from enterprise brokerages to a major American medical society,
