@@ -26,17 +26,22 @@ const cases = [
     body: 'Price streaming and order execution over MT4/5 suffered behind the Great Firewall. We built acceleration for the trading protocol itself — not just the website — keeping sessions stable for users in mainland China.',
   },
   {
+    tag: 'US medical society',
+    tagColor: 'bg-purple-50 text-purple-700',
+    title: 'A flagship annual congress, reachable from mainland China',
+    body: 'A major American medical society with a large audience in mainland China. We accelerated their annual event platform behind the Great Firewall and supported it through the event itself — not just trading platforms; any global event or platform that needs to work in China.',
+  },
+  {
+    tag: 'Risk & dealing systems provider',
+    tagColor: 'bg-cyan-50 text-cyan-700',
+    title: 'The same problem, in the other direction',
+    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We accelerated their team’s access out through the Great Firewall, alongside ongoing AWS support and cost optimization.',
+  },
+  {
     tag: 'Crypto exchange',
     tagColor: 'bg-amber-50 text-amber-700',
     title: 'AWS architecture support, lower monthly bill',
     body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
-  },
-  {
-    tag: 'US medical society',
-    tagColor: 'bg-purple-50 text-purple-700',
-    span: true,
-    title: 'A flagship annual congress, reachable from mainland China',
-    body: 'A major American medical society with a large audience in mainland China. We accelerated their annual event platform behind the Great Firewall and supported it through the event itself — not just trading platforms; any global event or platform that needs to work in China.',
   },
 ];
 
@@ -52,8 +57,8 @@ export const ProofSection = () => {
             Trading platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
-            Five global trading brands — and a major American medical society — run on
-            infrastructure we built, from mainland-China acceleration to AWS architecture.
+            Seven global brands — from FX brokers to a major American medical society — run on
+            infrastructure we built: China acceleration in both directions, and AWS done properly.
             Named references available on request.
           </p>
         </div>
