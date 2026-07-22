@@ -11,7 +11,7 @@ const steps = [
   {
     number: "02",
     title: "Solution Design",
-    desc: "We architect a compliant, low-latency topology optimized for finance workflows.",
+    desc: "We architect a low-latency, resilient topology optimized for finance workloads.",
     color: "bg-indigo-50 text-indigo-600"
   },
   {
