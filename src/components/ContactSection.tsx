@@ -37,10 +37,7 @@ export const ContactSection = () => {
         {/* Simple Footer Links */}
         <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-tx-secondary">
            <p>© {new Date().getFullYear()} Cloudzeta Solutions. All rights reserved.</p>
-           <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-tx-primary">Privacy Policy</a>
-              <a href="#" className="hover:text-tx-primary">Terms of Service</a>
-           </div>
+           <p className="mt-4 md:mt-0">Sydney &middot; Hong Kong</p>
         </div>
 
       </div>

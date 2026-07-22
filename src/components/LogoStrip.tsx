@@ -13,7 +13,7 @@ export const LogoStrip = () => {
   return (
     <section className="py-12 border-b border-glass-border">
       <div className="max-w-7xl mx-auto px-6">
-        <p className="text-center text-sm font-medium text-tx-secondary mb-8">Trusted by global enterprises and built on top-tier infrastructure</p>
+        <p className="text-center text-sm font-medium text-tx-secondary mb-8">Built on top-tier cloud and network infrastructure</p>
         <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
           {logos.map((logo, i) => (
             <img 

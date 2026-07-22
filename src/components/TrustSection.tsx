@@ -69,7 +69,7 @@ export const TrustSection = () => {
               Strategic Selection
             </div>
             <p className="text-sm text-tx-secondary leading-relaxed">
-              We cut through the noise to identify the single solution most suitable for your business.
+              We recommend the option that fits your workload and budget, not a preferred vendor.
             </p>
           </motion.div>
 

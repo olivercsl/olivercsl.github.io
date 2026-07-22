@@ -24,7 +24,7 @@ export const FeatureSection = () => {
               China Connectivity, <br/>Solved.
             </h2>
             <p className="text-xl text-tx-secondary leading-relaxed mb-8">
-              Ensure your global platforms, such as trading apps, exam portals, and SaaS tools, perform flawlessly via our premium China fibre backbone. Low latency China connectivity, solved. 
+              Ensure your global platforms, such as trading apps, exam portals, and SaaS tools, perform flawlessly via our premium China fibre backbone.
             </p>
             <ul className="space-y-4 mb-8">
               {['Very low packet loss', 'Low latency routing', 'Self-service domain management'].map((item, i) => (
@@ -73,12 +73,12 @@ export const FeatureSection = () => {
             <h2 className="text-4xl md:text-5xl font-semibold text-tx-primary mb-6">
               Unified Cloud Procurement.
             </h2>
-            <p class="text-xl text-tx-secondary leading-relaxed mb-8">
+            <p className="text-xl text-tx-secondary leading-relaxed mb-8">
               Consolidate your AWS, Azure, and other cloud spend. We simplify multi-vendor billing while actively optimizing your architecture to drive down costs.
             </p>
-            <ul class="space-y-4 mb-8">
+            <ul className="space-y-4 mb-8">
               {['Smart cost savings', 'Single currency invoice', 'Better cost visibility'].map((item, i) => (
-                <li key={i} class="flex items-center gap-3 text-tx-primary font-medium">
+                <li key={i} className="flex items-center gap-3 text-tx-primary font-medium">
                   <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
                   {item}
                 </li>

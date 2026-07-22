@@ -18,7 +18,7 @@ const cases = [
     tag: 'Crypto exchange',
     tagColor: 'bg-amber-50 text-amber-700',
     title: 'AWS architecture support, lower monthly bill',
-    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup. The AWS side of the house earns its keep too.',
+    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup.',
   },
   {
     tag: 'Risk & dealing systems provider',
@@ -48,7 +48,7 @@ const cases = [
     tag: 'US medical society',
     tagColor: 'bg-purple-50 text-purple-700',
     title: 'A flagship annual congress, reachable from mainland China',
-    body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself. Not just trading platforms: any global event or platform that needs to work well in China.',
+    body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself. The same routes serve any global event or platform that needs to work well in China.',
   },
 ];
 
