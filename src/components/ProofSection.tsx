@@ -11,7 +11,7 @@ const cases = [
     tag: 'Global FX & CFD broker',
     tagColor: 'bg-blue-50 text-blue-700',
     title: 'Website & client portal, accelerated into mainland China',
-    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. We put them on premium CEN routes — and gave the team a self-service portal, so they add and manage accelerated domains themselves without learning any new tech.',
+    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. On premium CEN routes their accelerated domains show measurably lower packet loss than non-accelerated ones — and the team adds and manages domains through a self-service portal, no new tech to learn.',
   },
   {
     tag: 'International trading platform',
@@ -25,6 +25,12 @@ const cases = [
     title: 'MetaTrader 4/5 stable for mainland traders',
     body: 'Price streaming and order execution over MT4/5 suffered behind the Great Firewall. We built acceleration for the trading protocol itself — not just the website — keeping sessions stable for users in mainland China.',
   },
+  {
+    tag: 'Crypto exchange',
+    tagColor: 'bg-amber-50 text-amber-700',
+    title: 'AWS architecture support, lower monthly bill',
+    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
+  },
 ];
 
 export const ProofSection = () => {
@@ -33,18 +39,18 @@ export const ProofSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
           <div className="inline-block px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold mb-5">
-            Proven behind the Great Firewall
+            Real engagements · anonymized
           </div>
           <h2 className="text-3xl md:text-4xl font-semibold text-tx-primary mb-4">
-            Trading platforms trust us with China.
+            Trading platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
-            Four global trading brands run their mainland-China access on infrastructure we built.
-            Named references available on request.
+            Five global trading brands run on infrastructure we built — from mainland-China
+            acceleration to AWS architecture. Named references available on request.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 gap-6">
           {cases.map((c, i) => (
             <motion.div
               key={c.title}
