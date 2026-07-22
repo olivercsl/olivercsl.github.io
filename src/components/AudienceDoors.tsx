@@ -66,13 +66,13 @@ export const AudienceDoors = () => {
             </div>
             <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Reach China</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
-              Your platform works everywhere — except mainland China, where it's slow, flaky, or
-              blocked. We fix that with premium CEN fibre routes and Alibaba Cloud, with ICP
-              compliance handled for you.
+              Your platform works everywhere — except mainland China, where congested international
+              routes make it slow and unreliable. We fix that with premium CEN fibre routes and
+              Alibaba Cloud, with ICP compliance handled for you.
             </p>
             <ul className="space-y-3 mb-8">
               {[
-                'Website and client-portal acceleration behind the Great Firewall',
+                'Website and client-portal acceleration on premium routes into the mainland',
                 'MetaTrader 4/5 and trading-platform acceleration',
                 'Self-service portal — your team manages domains, no new tech to learn',
                 'Both directions: China-based teams reach your overseas AWS fast',

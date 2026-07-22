@@ -41,7 +41,7 @@ export const Hero = () => {
           className="text-xl md:text-2xl text-tx-secondary leading-relaxed text-balance max-w-2xl"
         >
           We build and run AWS infrastructure for companies in Sydney and Hong Kong — and make
-          global platforms fast and reliable behind the Great Firewall.
+          global platforms fast and reliable for users in mainland China.
         </motion.p>
 
         {/* CTAs */}

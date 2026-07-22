@@ -23,19 +23,19 @@ const cases = [
     tag: 'Trading technology provider',
     tagColor: 'bg-emerald-50 text-emerald-700',
     title: 'MetaTrader 4/5 stable for mainland traders',
-    body: 'Price streaming and order execution over MT4/5 suffered behind the Great Firewall. We built acceleration for the trading protocol itself — not just the website — keeping sessions stable for users in mainland China.',
+    body: 'Price streaming and order execution over MT4/5 suffered on congested international routes. We built acceleration for the trading protocol itself — not just the website — keeping sessions stable for users in mainland China.',
   },
   {
     tag: 'US medical society',
     tagColor: 'bg-purple-50 text-purple-700',
     title: 'A flagship annual congress, reachable from mainland China',
-    body: 'A major American medical society with a large audience in mainland China. We accelerated their annual event platform behind the Great Firewall and supported it through the event itself — not just trading platforms; any global event or platform that needs to work in China.',
+    body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself — not just trading platforms; any global event or platform that needs to work well in China.',
   },
   {
     tag: 'Risk & dealing systems provider',
     tagColor: 'bg-cyan-50 text-cyan-700',
     title: 'The same problem, in the other direction',
-    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We accelerated their team’s access out through the Great Firewall, alongside ongoing AWS support and cost optimization.',
+    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We put their team’s access to those environments on accelerated routes, alongside ongoing AWS support and cost optimization.',
   },
   {
     tag: 'Crypto exchange',
