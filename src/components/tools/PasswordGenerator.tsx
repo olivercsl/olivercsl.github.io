@@ -158,7 +158,7 @@ export const PasswordGenerator = () => {
     } catch {
       // Blocked by an insecure context or a denied permission. Say so rather
       // than failing silently and leaving the user unsure whether it worked.
-      setToast({ msg: 'Copy failed — select the text and copy manually.', ok: false });
+      setToast({ msg: 'Copy failed. Select the text and copy manually.', ok: false });
       return;
     }
     setCopied(true);

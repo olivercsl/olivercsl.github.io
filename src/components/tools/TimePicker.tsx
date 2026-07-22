@@ -126,7 +126,7 @@ export const TimePicker = ({ zone, wall, locs, onPick, onClose }: Props) => {
                 onPick(instantFor(h));
                 onClose();
               }}
-              aria-label={`${hourLabel(h)} — ${rateAcrossGroup(h)} for everyone`}
+              aria-label={`${hourLabel(h)}: ${rateAcrossGroup(h)} for everyone`}
               className={`py-2 rounded-lg border text-xs font-semibold tabular-nums transition-colors ${
                 selected ? 'ring-2 ring-accent ring-offset-1 ' : ''
               }${CELL[rateAcrossGroup(h)]}`}

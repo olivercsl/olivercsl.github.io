@@ -23,7 +23,7 @@ const steps = [
   {
     number: "04",
     title: "Handover or Manage",
-    desc: "Take the keys, docs, and full ownership in-house — or have us run it under SLA. Same team, your choice.",
+    desc: "Take the keys, docs, and full ownership in-house, or have us run it under SLA. Same team, your choice.",
     color: "bg-emerald-50 text-emerald-600"
   }
 ];

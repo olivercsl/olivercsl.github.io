@@ -97,7 +97,7 @@ export const QrGenerator = () => {
         flash('PNG downloaded');
       }
     } catch {
-      flash('Could not render PNG — try SVG instead.');
+      flash('Could not render PNG. Try SVG instead.');
     } finally {
       URL.revokeObjectURL(svgUrl);
     }
@@ -158,7 +158,7 @@ export const QrGenerator = () => {
           </div>
           {lowContrast && (
             <p className="mt-3 text-sm text-amber-600">
-              Low contrast between colours — some scanners may struggle. Keep the code darker than its background.
+              Low contrast between colours. Some scanners may struggle. Keep the code darker than its background.
             </p>
           )}
         </div>
@@ -200,7 +200,7 @@ export const QrGenerator = () => {
             <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: svg }} />
           ) : (
             <p className="text-sm text-tx-secondary text-center px-4">
-              {tooLong ? 'Too much data — shorten it.' : 'Enter a link or text to see your QR code.'}
+              {tooLong ? 'Too much data. Shorten it.' : 'Enter a link or text to see your QR code.'}
             </p>
           )}
         </div>
@@ -224,7 +224,7 @@ export const QrGenerator = () => {
           </button>
         </div>
         <p className="text-xs text-tx-secondary mt-3 text-center">
-          Points straight at your link — no tracking redirect.
+          Points straight at your link. No tracking redirect.
         </p>
       </div>
 

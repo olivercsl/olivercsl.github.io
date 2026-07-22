@@ -28,14 +28,14 @@ export const AudienceDoors = () => {
             <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Run on AWS</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
               Buy AWS through an Advanced Partner and get competitive rates, local engineers in Sydney
-              and Hong Kong who answer, and the hard parts done properly — migration, cost
+              and Hong Kong who answer, and the hard parts done properly: migration, cost
               optimization, security hardening.
             </p>
             <ul className="space-y-3 mb-8">
               {[
                 'Procurement and account setup at competitive rates',
                 'Cost optimization with a free initial review',
-                'Build & handover, or fully managed under SLA — your choice',
+                'Build & handover, or fully managed under SLA. Your choice',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3 text-tx-primary font-medium">
                   <svg className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -66,7 +66,7 @@ export const AudienceDoors = () => {
             </div>
             <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Reach China</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
-              Your platform works everywhere — except mainland China, where congested international
+              Your platform works everywhere except mainland China, where congested international
               routes make it slow and unreliable. We fix that with premium CEN fibre routes and
               Alibaba Cloud, with ICP compliance handled for you.
             </p>
@@ -74,7 +74,7 @@ export const AudienceDoors = () => {
               {[
                 'Website and client-portal acceleration on premium routes into the mainland',
                 'MetaTrader 4/5 and trading-platform acceleration',
-                'Self-service portal — your team manages domains, no new tech to learn',
+                'Self-service portal: your team manages domains, no new tech to learn',
                 'Both directions: China-based teams reach your overseas AWS fast',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3 text-tx-primary font-medium">

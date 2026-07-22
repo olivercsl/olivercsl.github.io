@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: 'Does this handle daylight saving time?',
-    a: 'Yes. Conversions use your browser\'s built-in IANA time zone database, so daylight saving transitions are applied automatically for the exact date you choose — not just for today. Pick a date on the other side of a DST change and the offset adjusts.',
+    a: 'Yes. Conversions use your browser\'s built-in IANA time zone database, so daylight saving transitions are applied automatically for the exact date you choose, not just for today. Pick a date on the other side of a DST change and the offset adjusts.',
   },
   {
     q: 'How do I find a meeting time that works for everyone?',
@@ -27,7 +27,7 @@ const faqs = [
   },
   {
     q: 'Can I share a converted time with someone else?',
-    a: 'Two ways. "Copy times" puts a formatted list on your clipboard that you can paste straight into an email — it pastes as a neat table in most mail clients, and unlike a screenshot it stays readable and searchable. "Copy link" copies a URL containing your locations and the chosen moment, so whoever opens it sees exactly the same view.',
+    a: 'Two ways. "Copy times" puts a formatted list on your clipboard that you can paste straight into an email. It pastes as a neat table in most mail clients, and unlike a screenshot it stays readable and searchable. "Copy link" copies a URL containing your locations and the chosen moment, so whoever opens it sees exactly the same view.',
   },
   {
     q: 'Are there ads or tracking on this page?',
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: 'Which cities can I search for?',
-    a: 'Several hundred major cities are matched by name, including ones that are not their own time zone — searching "Boston" correctly resolves to America/New_York. If a place is not in the list, you can search for any IANA time zone identifier directly, such as "Pacific/Chatham".',
+    a: 'Several hundred major cities are matched by name, including ones that are not their own time zone. Searching "Boston" correctly resolves to America/New_York. If a place is not in the list, you can search for any IANA time zone identifier directly, such as "Pacific/Chatham".',
   },
 ];
 
@@ -68,7 +68,7 @@ const schema = {
         'Automatic daylight saving handling for any date',
         'Colour-coded 48-hour window showing when everyone is awake',
         'Copy times as a table, or share a link',
-        'Runs offline — nothing is sent to a server',
+        'Runs offline. Nothing is sent to a server',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
     },
@@ -115,7 +115,7 @@ const schema = {
           How to schedule across time zones
         </h2>
         <p class="text-xl text-tx-secondary text-center mb-14 max-w-2xl mx-auto">
-          The hard part isn't the arithmetic — it's finding an hour nobody resents.
+          The hard part isn't the arithmetic. It's finding an hour nobody resents.
         </p>
 
         <ol class="grid sm:grid-cols-2 gap-6">
@@ -129,7 +129,7 @@ const schema = {
               {
                 n: '2',
                 t: 'Read the coloured bar',
-                d: 'It rates the next 48 hours across every city at once. Green means the hour is inside working hours for all of them — no mental arithmetic required.',
+                d: 'It rates the next 48 hours across every city at once. Green means the hour is inside working hours for all of them. No mental arithmetic required.',
               },
               {
                 n: '3',
@@ -139,7 +139,7 @@ const schema = {
               {
                 n: '4',
                 t: 'Send it',
-                d: 'Copy times pastes a clean table into an email. Copy link sends the exact view. Both beat a screenshot — they stay readable, and they are searchable later.',
+                d: 'Copy times pastes a clean table into an email. Copy link sends the exact view. Both beat a screenshot: they stay readable, and they are searchable later.',
               },
             ].map((step) => (
               <li class="bg-white p-7 rounded-2xl border border-glass-border shadow-sm flex gap-5">
@@ -168,7 +168,7 @@ const schema = {
         </h2>
         <p class="text-lg text-tx-secondary leading-relaxed mb-6">
           Conversions come from the IANA time zone database that ships inside your browser, so daylight
-          saving is applied for the specific date you pick rather than today's rules — including the
+          saving is applied for the specific date you pick rather than today's rules, including the
           awkward zones on 30 and 45 minute offsets. Nothing is calculated on a server, which is why the
           page keeps working with your connection turned off.
         </p>
@@ -219,7 +219,7 @@ const schema = {
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
         A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
-        Solutions</a>. No ads, no tracking, no account — and it stays that way.
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
         <br class="hidden sm:block" />
         See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
       </p>

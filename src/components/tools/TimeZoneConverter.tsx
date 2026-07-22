@@ -257,7 +257,7 @@ export const TimeZoneConverter = () => {
       }
       setToast(message);
     } catch {
-      setToast('Copy failed — select the text and copy manually.');
+      setToast('Copy failed. Select the text and copy manually.');
     }
   };
 
@@ -292,7 +292,7 @@ export const TimeZoneConverter = () => {
         .join('') +
       `</table>`;
 
-    void copy(text, html, 'Times copied — paste into an email');
+    void copy(text, html, 'Times copied. Paste into an email');
   };
 
   // Wait only for hydration — never for locations. An earlier version also

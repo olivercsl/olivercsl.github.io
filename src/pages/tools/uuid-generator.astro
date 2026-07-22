@@ -18,11 +18,11 @@ const faqs = [
   },
   {
     q: 'Which version should I use?',
-    a: 'Use v4 unless you have a reason not to — it is random and has no structure to leak. Use v7 when you want identifiers that sort in creation order, which keeps database indexes efficient; it embeds a millisecond timestamp at the front. v1 is a legacy timestamp format kept for compatibility. The nil UUID is all zeros, used as a placeholder or "none" value.',
+    a: 'Use v4 unless you have a reason not to: it is random and has no structure to leak. Use v7 when you want identifiers that sort in creation order, which keeps database indexes efficient; it embeds a millisecond timestamp at the front. v1 is a legacy timestamp format kept for compatibility. The nil UUID is all zeros, used as a placeholder or "none" value.',
   },
   {
     q: 'Are these UUIDs safe to use?',
-    a: 'Yes. They are generated in your browser with crypto.getRandomValues, the same cryptographically secure source used for TLS keys, and nothing is sent to a server. You can confirm this in your browser network tab, or by disconnecting from the internet — the tool keeps working.',
+    a: 'Yes. They are generated in your browser with crypto.getRandomValues, the same cryptographically secure source used for TLS keys, and nothing is sent to a server. You can confirm this in your browser network tab, or by disconnecting from the internet: the tool keeps working.',
   },
   {
     q: 'Can I generate many at once?',
@@ -67,7 +67,7 @@ const schema = {
         'Generate up to 100 at once',
         'Uppercase, no-hyphen and brace formatting',
         'Cryptographically secure randomness',
-        'Runs offline — nothing is sent to a server',
+        'Runs offline. Nothing is sent to a server',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
     },
@@ -85,7 +85,7 @@ const schema = {
 
 <Layout
   title="UUID Generator | v4, v7, v1 & Nil GUIDs, No Ads | Cloudzeta"
-  description="Free UUID / GUID generator. Create v4, v7, v1 and nil UUIDs in bulk with formatting options. Runs entirely in your browser — no ads, no tracking, works offline."
+  description="Free UUID / GUID generator. Create v4, v7, v1 and nil UUIDs in bulk with formatting options. Runs entirely in your browser. No ads, no tracking, works offline."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -102,7 +102,7 @@ const schema = {
       <div class="max-w-2xl mx-auto">
         <UuidGenerator client:load />
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
-          v4, v7, v1 and nil UUIDs — generated in your browser, no ads, no tracking.
+          v4, v7, v1 and nil UUIDs, generated in your browser. No ads, no tracking.
         </p>
       </div>
     </section>
@@ -120,10 +120,10 @@ const schema = {
         <div class="grid sm:grid-cols-2 gap-6">
           {
             [
-              { t: 'v4 — Random', d: 'The everyday default. 122 random bits, no embedded structure, nothing to leak. Use it for keys, request IDs and file names unless you specifically need ordering.' },
-              { t: 'v7 — Time-ordered', d: 'A millisecond timestamp at the front means these sort in creation order, which keeps database indexes tight instead of fragmenting. The modern choice for primary keys.' },
-              { t: 'v1 — Timestamp based', d: 'A legacy format combining a timestamp and a node id. We use a random node rather than your hardware address. Generate it for compatibility with older systems.' },
-              { t: 'Nil — All zeros', d: 'The special 00000000-0000-0000-0000-000000000000 value, used as a placeholder or an explicit "no identifier yet".' },
+              { t: 'v4 · Random', d: 'The everyday default. 122 random bits, no embedded structure, nothing to leak. Use it for keys, request IDs and file names unless you specifically need ordering.' },
+              { t: 'v7 · Time-ordered', d: 'A millisecond timestamp at the front means these sort in creation order, which keeps database indexes tight instead of fragmenting. The modern choice for primary keys.' },
+              { t: 'v1 · Timestamp based', d: 'A legacy format combining a timestamp and a node id. We use a random node rather than your hardware address. Generate it for compatibility with older systems.' },
+              { t: 'Nil · All zeros', d: 'The special 00000000-0000-0000-0000-000000000000 value, used as a placeholder or an explicit "no identifier yet".' },
             ].map((v) => (
               <div class="bg-white p-7 rounded-2xl border border-glass-border shadow-sm">
                 <h3 class="text-lg font-semibold text-tx-primary mb-2">{v.t}</h3>
@@ -162,7 +162,7 @@ const schema = {
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
         A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
-        Solutions</a>. No ads, no tracking, no account — and it stays that way.
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
         <br class="hidden sm:block" />
         See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
       </p>

@@ -19,19 +19,19 @@ const faqs = [
   },
   {
     q: 'Do the QR codes expire or get tracked?',
-    a: 'No. Many free QR generators route the code through their own domain as a redirect, which lets them count scans and, in some cases, change or disable the link later. This one encodes your link directly into the code, in your browser. There is no redirect, no expiry and no tracking — the code works forever and points only where you told it to.',
+    a: 'No. Many free QR generators route the code through their own domain as a redirect, which lets them count scans and, in some cases, change or disable the link later. This one encodes your link directly into the code, in your browser. There is no redirect, no expiry and no tracking. The code works forever and points only where you told it to.',
   },
   {
-    q: 'PNG or SVG — which should I download?',
+    q: 'PNG or SVG: which should I download?',
     a: 'Use SVG for print, signage or anything that needs to scale, since it stays sharp at any size. Use PNG for slides, documents and the web. The PNG is rendered at 1024 pixels, which is large enough for most uses.',
   },
   {
     q: 'What does the error-correction level do?',
-    a: 'QR codes carry redundant data so they still scan when part of the code is dirty, creased or covered. Higher levels recover from more damage — roughly 7% at Low up to 30% at High — but leave less room for data, so the code becomes denser. Medium is a good default; raise it if the code will be printed small or placed somewhere it may get scuffed.',
+    a: 'QR codes carry redundant data so they still scan when part of the code is dirty, creased or covered. Higher levels recover from more damage (roughly 7% at Low up to 30% at High) but leave less room for data, so the code becomes denser. Medium is a good default; raise it if the code will be printed small or placed somewhere it may get scuffed.',
   },
   {
     q: 'Can I change the colours?',
-    a: 'Yes. Pick any foreground and background colour, or start from a preset. Keep the code noticeably darker than its background — scanners rely on that contrast, and the tool warns you if the two colours are too close.',
+    a: 'Yes. Pick any foreground and background colour, or start from a preset. Keep the code noticeably darker than its background: scanners rely on that contrast, and the tool warns you if the two colours are too close.',
   },
   {
     q: 'Does it work offline?',
@@ -68,7 +68,7 @@ const schema = {
         'Custom foreground and background colours',
         'Adjustable error-correction level',
         'Download as PNG or scalable SVG',
-        'No tracking redirect — the code points straight at your link',
+        'No tracking redirect. The code points straight at your link',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
     },
@@ -86,7 +86,7 @@ const schema = {
 
 <Layout
   title="QR Code Generator | Custom Colours, No Tracking | Cloudzeta"
-  description="Free QR code generator. Turn any link or text into a QR code, customise the colours and download as PNG or SVG. Made in your browser — no ads, no tracking redirect, works offline."
+  description="Free QR code generator. Turn any link or text into a QR code, customise the colours and download as PNG or SVG. Made in your browser. No ads, no tracking redirect, works offline."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -115,19 +115,19 @@ const schema = {
           Why this one
         </div>
         <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-6">
-          Your link, encoded directly — not routed through us.
+          Your link, encoded directly, not routed through us.
         </h2>
         <p class="text-lg text-tx-secondary leading-relaxed mb-6">
           A lot of free QR generators quietly wrap your link in a redirect through their own domain.
           That lets them count scans, show you an upsell, and sometimes change or switch off the link
           later. Your customers scan <em>their</em> URL, not yours. This tool encodes your link straight
-          into the code, in your browser, so the QR points only where you told it to — and keeps working
+          into the code, in your browser, so the QR points only where you told it to, and keeps working
           long after any service would have expired it.
         </p>
         <ul class="space-y-3">
           {
             [
-              'The link is encoded directly — no redirect, no expiry, no scan tracking',
+              'The link is encoded directly: no redirect, no expiry, no scan tracking',
               'Generated in your browser; nothing about your link is sent anywhere',
               'Download as PNG for screens or SVG for print',
               'No ads, no watermark, no account',
@@ -171,7 +171,7 @@ const schema = {
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
         A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
-        Solutions</a>. No ads, no tracking, no account — and it stays that way.
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
         <br class="hidden sm:block" />
         See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
       </p>

@@ -73,7 +73,7 @@ export const UuidGenerator = () => {
       await navigator.clipboard.writeText(text);
       setToast(message);
     } catch {
-      setToast('Copy failed — select the text and copy manually.');
+      setToast('Copy failed. Select the text and copy manually.');
     }
   };
 

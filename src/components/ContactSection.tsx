@@ -9,7 +9,7 @@ export const ContactSection = () => {
           Ready when you are.
         </h2>
         <p className="text-xl text-tx-secondary mb-10 max-w-2xl mx-auto">
-          Email Oliver directly — you'll get a reply from an engineer who can actually help, not a
+          Email Oliver directly. You'll get a reply from an engineer who can actually help, not a
           ticket queue, within 24 hours.
         </p>
 

@@ -18,19 +18,19 @@ const cases = [
     tag: 'Crypto exchange',
     tagColor: 'bg-amber-50 text-amber-700',
     title: 'AWS architecture support, lower monthly bill',
-    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
+    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup. The AWS side of the house earns its keep too.',
   },
   {
     tag: 'Risk & dealing systems provider',
     tagColor: 'bg-cyan-50 text-cyan-700',
     title: 'The same problem, in the other direction',
-    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We put their team’s access to those environments on accelerated routes, alongside ongoing AWS support and cost optimization.',
+    body: 'A financial risk and dealing solutions provider whose engineers sit in China, while their AWS dev and prod environments sit outside it. We put their team’s access to those environments on accelerated routes, alongside ongoing AWS support and cost optimization.',
   },
   {
     tag: 'Global FX & CFD broker',
     tagColor: 'bg-blue-50 text-blue-700',
     title: 'Website & client portal, accelerated into mainland China',
-    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. On premium CEN routes their accelerated domains show measurably lower packet loss than non-accelerated ones — and the team adds and manages domains through a self-service portal, no new tech to learn.',
+    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. On premium CEN routes their accelerated domains show measurably lower packet loss than non-accelerated ones, and the team adds and manages domains through a self-service portal, no new tech to learn.',
   },
   {
     tag: 'International trading platform',
@@ -42,13 +42,13 @@ const cases = [
     tag: 'Trading technology provider',
     tagColor: 'bg-emerald-50 text-emerald-700',
     title: 'MetaTrader 4/5 stable for mainland traders',
-    body: 'Price streaming and order execution over MT4/5 suffered on congested international routes. We built acceleration for the trading protocol itself — not just the website — keeping sessions stable for users in mainland China.',
+    body: 'Price streaming and order execution over MT4/5 suffered on congested international routes. We built acceleration for the trading protocol itself, not just the website, keeping sessions stable for users in mainland China.',
   },
   {
     tag: 'US medical society',
     tagColor: 'bg-purple-50 text-purple-700',
     title: 'A flagship annual congress, reachable from mainland China',
-    body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself — not just trading platforms; any global event or platform that needs to work well in China.',
+    body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself. Not just trading platforms: any global event or platform that needs to work well in China.',
   },
 ];
 
@@ -64,7 +64,7 @@ export const ProofSection = () => {
             Trading platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
-            Eight global brands — from enterprise brokerages to a major American medical society —
+            Eight global brands, from enterprise brokerages to a major American medical society,
             run on infrastructure we built: AWS secured and scaled to enterprise volume, and China
             acceleration in both directions. Named references available on request.
           </p>
