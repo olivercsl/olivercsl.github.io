@@ -6,20 +6,22 @@ export const ContactSection = () => {
       <div className="max-w-4xl mx-auto px-6 text-center">
         
         <h2 className="text-3xl md:text-4xl font-semibold text-tx-primary mb-6">
-          Secure. Intelligent. Optimized.
+          Ready when you are.
         </h2>
         <p className="text-xl text-tx-secondary mb-10 max-w-2xl mx-auto">
-          Whether you need to drive down cloud costs or deploy finance-grade infrastructure, our team is ready to engineer the right solution.
+          Email Oliver directly — you'll get a reply from an engineer who can actually help, not a
+          ticket queue, within 24 hours.
         </p>
 
         <div className="flex flex-col md:flex-row justify-center gap-6 mb-16">
            {/* Email Card */}
-           <a href="mailto:info@cloudzeta.solutions" className="group bg-white p-8 rounded-2xl border border-glass-border shadow-sm hover:shadow-md transition-all flex flex-col items-center w-full md:w-80">
+           <a href="mailto:oliver.z@cloudzeta.solutions" className="group bg-white p-8 rounded-2xl border border-glass-border shadow-sm hover:shadow-md transition-all flex flex-col items-center w-full md:w-80">
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               </div>
-              <h3 className="text-lg font-semibold text-tx-primary mb-1">Email Us</h3>
-              <p className="text-tx-secondary text-sm">info@cloudzeta.solutions</p>
+              <h3 className="text-lg font-semibold text-tx-primary mb-1">Email Oliver</h3>
+              <p className="text-tx-secondary text-sm">oliver.z@cloudzeta.solutions</p>
+              <p className="text-tx-secondary text-xs mt-1">General: info@cloudzeta.solutions</p>
            </a>
 
            {/* Office Card */}

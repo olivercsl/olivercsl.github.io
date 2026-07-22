@@ -29,8 +29,8 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl md:text-7xl font-semibold tracking-tight text-tx-primary leading-[1.05] text-balance"
         >
-          Cloud infrastructure,<br />
-          <span className="text-accent">engineered properly.</span>
+          AWS done properly.<br />
+          <span className="text-accent">Reachable from mainland China.</span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -40,7 +40,8 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="text-xl md:text-2xl text-tx-secondary leading-relaxed text-balance max-w-2xl"
         >
-          An Advanced AWS Partner delivering finance-grade security, smarter cloud spend, and low-latency connectivity into Mainland China.
+          We build and run AWS infrastructure for companies in Sydney and Hong Kong — and make
+          global platforms fast and reliable behind the Great Firewall.
         </motion.p>
 
         {/* CTAs */}
@@ -51,10 +52,10 @@ export const Hero = () => {
           className="flex flex-col sm:flex-row items-center gap-5 text-lg font-medium mt-1"
         >
           <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-all shadow-lg hover:shadow-xl">
-            Start a project
+            Talk to Oliver
           </a>
           <a href="#services" className="text-accent hover:underline flex items-center gap-1 px-4">
-            View services <span className="text-sm">›</span>
+            See how we can help <span className="text-sm">›</span>
           </a>
         </motion.div>
 
