@@ -24,7 +24,7 @@ export const FeatureSection = () => {
               China Connectivity, <br/>Solved.
             </h2>
             <p className="text-xl text-tx-secondary leading-relaxed mb-8">
-              Ensure your global platforms, such as trading apps, exam portals, and SaaS tools, perform flawlessly via our premium China fibre (CEN) backbone. Low latency China connectivity, solved. 
+              Ensure your global platforms, such as trading apps, exam portals, and SaaS tools, perform flawlessly via our premium China fibre backbone. Low latency China connectivity, solved. 
             </p>
             <ul className="space-y-4 mb-8">
               {['Very low packet loss', 'Low latency routing', 'Self-service domain management'].map((item, i) => (
@@ -74,7 +74,7 @@ export const FeatureSection = () => {
               Unified Cloud Procurement.
             </h2>
             <p class="text-xl text-tx-secondary leading-relaxed mb-8">
-              Consolidate your AWS, Azure, and Alibaba Cloud spend. We simplify multi-vendor billing while actively optimizing your architecture to drive down costs.
+              Consolidate your AWS, Azure, and other cloud spend. We simplify multi-vendor billing while actively optimizing your architecture to drive down costs.
             </p>
             <ul class="space-y-4 mb-8">
               {['Smart cost savings', 'Single currency invoice', 'Better cost visibility'].map((item, i) => (

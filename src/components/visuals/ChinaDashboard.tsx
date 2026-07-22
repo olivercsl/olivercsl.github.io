@@ -25,7 +25,7 @@ export const ChinaDashboard = () => {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
               </div>
               <div>
-                <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider leading-none mb-0.5">CEN Status</div>
+                <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider leading-none mb-0.5">Route Status</div>
                 <div className="text-sm font-bold text-gray-900 leading-none">Global Acceleration</div>
               </div>
            </div>

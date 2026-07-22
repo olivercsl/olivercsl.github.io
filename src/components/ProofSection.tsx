@@ -30,7 +30,7 @@ const cases = [
     tag: 'Global FX & CFD broker',
     tagColor: 'bg-blue-50 text-blue-700',
     title: 'Website & client portal, accelerated into mainland China',
-    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. On premium CEN routes their accelerated domains show measurably lower packet loss than non-accelerated ones, and the team adds and manages domains through a self-service portal, no new tech to learn.',
+    body: 'Marketing sites and the client portal were slow and unreliable for mainland users. On premium routes their accelerated domains show measurably lower packet loss than non-accelerated ones, and the team adds and manages domains through a self-service portal, no new tech to learn.',
   },
   {
     tag: 'International trading platform',
