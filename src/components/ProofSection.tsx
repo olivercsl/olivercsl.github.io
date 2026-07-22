@@ -31,6 +31,13 @@ const cases = [
     title: 'AWS architecture support, lower monthly bill',
     body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
   },
+  {
+    tag: 'US medical society',
+    tagColor: 'bg-purple-50 text-purple-700',
+    span: true,
+    title: 'A flagship annual congress, reachable from mainland China',
+    body: 'A major American medical society with a large audience in mainland China. We accelerated their annual event platform behind the Great Firewall and supported it through the event itself — not just trading platforms; any global event or platform that needs to work in China.',
+  },
 ];
 
 export const ProofSection = () => {
@@ -45,8 +52,9 @@ export const ProofSection = () => {
             Trading platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
-            Five global trading brands run on infrastructure we built — from mainland-China
-            acceleration to AWS architecture. Named references available on request.
+            Five global trading brands — and a major American medical society — run on
+            infrastructure we built, from mainland-China acceleration to AWS architecture.
+            Named references available on request.
           </p>
         </div>
 
@@ -58,7 +66,9 @@ export const ProofSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-white rounded-2xl border border-glass-border shadow-sm p-7 flex flex-col"
+              className={`bg-white rounded-2xl border border-glass-border shadow-sm p-7 flex flex-col ${
+                'span' in c && c.span ? 'sm:col-span-2' : ''
+              }`}
             >
               <span className={`self-start px-2.5 py-1 rounded-full text-xs font-semibold mb-4 ${c.tagColor}`}>
                 {c.tag}
