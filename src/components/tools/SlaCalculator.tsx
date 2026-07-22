@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PERIODS,
   COMMON_TARGETS,
@@ -32,10 +32,11 @@ export const SlaCalculator = () => {
   const [targetInput, setTargetInput] = useState('99.9');
 
   // Section 2: composite chain
-  const [chain, setChain] = useState<{ id: number; value: string }[]>([
-    { id: rowSeq++, value: '99.99' },
-    { id: rowSeq++, value: '99.9' },
+  const [chain, setChain] = useState<{ id: number; name: string; value: string }[]>([
+    { id: rowSeq++, name: '', value: '99.99' },
+    { id: rowSeq++, name: '', value: '99.9' },
   ]);
+  const [toast, setToast] = useState<string | null>(null);
 
   // Section 3: error budget
   const [budgetTarget, setBudgetTarget] = useState('99.9');
@@ -46,6 +47,57 @@ export const SlaCalculator = () => {
     setTargetInput(raw);
     const n = Number(raw);
     if (Number.isFinite(n) && n > 0 && n <= 100) setTarget(n);
+  };
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const serviceName = (row: { name: string }, i: number) => row.name.trim() || `Service ${i + 1}`;
+
+  /** Everything on screen, as a spreadsheet the user can keep. */
+  const downloadCsv = () => {
+    const esc = (v: string | number) => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const line = (...cells: (string | number)[]) => cells.map(esc).join(',');
+
+    const rows: string[] = [];
+    rows.push(line('SLA target', `${fmtPercent(target)}%`));
+    rows.push(line('Period', 'Allowed downtime', 'Seconds'));
+    for (const p of DISPLAY_PERIODS) {
+      const s = downtimeSeconds(target, PERIODS[p.key]);
+      rows.push(line(p.label, formatDuration(s), Math.round(s)));
+    }
+    rows.push('');
+    rows.push(line('Dependency chain'));
+    rows.push(line('Service', 'Availability %'));
+    chain.forEach((r, i) => {
+      const n = Number(r.value);
+      if (Number.isFinite(n) && n > 0 && n <= 100) rows.push(line(serviceName(r, i), r.value));
+    });
+    rows.push(line('Effective availability', `${fmtPercent(chainResult)}%`));
+    rows.push(line('Downtime per year', formatDuration(downtimeSeconds(chainResult, PERIODS.year))));
+    rows.push('');
+    rows.push(line('Error budget'));
+    rows.push(line('Target', `${budgetTarget}%`));
+    rows.push(line('Period', budgetPeriod));
+    rows.push(line('Budget', formatDuration(budget.allowedSeconds), Math.round(budget.allowedSeconds)));
+    rows.push(line('Used', formatDuration(budget.usedSeconds), Math.round(budget.usedSeconds)));
+    rows.push(line('Remaining', formatDuration(budget.remainingSeconds), Math.round(budget.remainingSeconds)));
+    rows.push(line('Burned', `${Math.round(budget.burnedPercent)}%`));
+
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sla-calculation.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    setToast('CSV downloaded');
   };
 
   const chainValues = chain
@@ -133,7 +185,16 @@ export const SlaCalculator = () => {
         <div className="space-y-2 mb-3">
           {chain.map((row, i) => (
             <div key={row.id} className="flex items-center gap-2">
-              <span className="w-20 text-xs text-tx-secondary shrink-0">Service {i + 1}</span>
+              <input
+                type="text"
+                value={row.name}
+                placeholder={`Service ${i + 1}`}
+                onChange={(e) =>
+                  setChain((prev) => prev.map((r) => (r.id === row.id ? { ...r, name: e.target.value } : r)))
+                }
+                aria-label={`Name of service ${i + 1}`}
+                className="w-36 px-3 py-1.5 rounded-lg border border-glass-border bg-white text-sm text-tx-primary focus:outline-none focus:ring-2 focus:ring-accent/40"
+              />
               <input
                 type="number"
                 inputMode="decimal"
@@ -257,6 +318,30 @@ export const SlaCalculator = () => {
           />
         </div>
       </div>
+
+      {/* Takeaway */}
+      <div className="px-5 md:px-6 py-4 border-t border-glass-border flex items-center justify-between gap-3 flex-wrap">
+        <span className="text-xs text-tx-secondary">
+          Takes everything above with it: the downtime table, the named chain, and the budget.
+        </span>
+        <button
+          type="button"
+          onClick={downloadCsv}
+          className="px-4 py-2 rounded-lg bg-tx-primary text-white text-sm font-semibold hover:bg-tx-primary/90"
+        >
+          Download CSV
+        </button>
+      </div>
+
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="toast-pop fixed bottom-6 left-1/2 z-50 px-5 py-3 rounded-full shadow-xl text-sm font-medium text-white bg-emerald-600"
+        >
+          {toast}
+        </div>
+      )}
     </div>
   );
 };
