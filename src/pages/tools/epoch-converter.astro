@@ -1,0 +1,143 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { EpochConverter } from '../../components/tools/EpochConverter';
+
+const faqs = [
+  {
+    q: 'What is Unix epoch time?',
+    a: 'The number of seconds elapsed since 00:00:00 UTC on 1 January 1970, not counting leap seconds. It is the standard machine representation of time: compact, timezone-free, and trivial to compare and sort, which is why logs, databases and APIs use it everywhere.',
+  },
+  {
+    q: 'Is my timestamp in seconds or milliseconds?',
+    a: 'You can tell by length: current dates are 10 digits in seconds and 13 in milliseconds. Microseconds are 16 digits and nanoseconds 19. This converter detects the unit automatically from the magnitude, so pasting any of them just works, and you can override the detection if you need to.',
+  },
+  {
+    q: 'What is the year 2038 problem?',
+    a: 'Systems that store epoch seconds in a signed 32-bit integer overflow on 19 January 2038 at 03:14:07 UTC. Modern platforms use 64-bit time values, which postpone the problem by roughly 292 billion years, but old embedded systems and legacy file formats can still be affected.',
+  },
+  {
+    q: 'Does epoch time depend on my timezone?',
+    a: 'No. An epoch value names one instant, identical everywhere on Earth. Timezones only change how that instant is displayed as a wall-clock date. That is why this page shows the same timestamp as both UTC and your local time: same moment, two renderings.',
+  },
+  {
+    q: 'How do leap seconds affect Unix time?',
+    a: 'Unix time pretends leap seconds do not exist: every day is exactly 86,400 seconds. When a leap second is inserted, Unix clocks typically repeat or smear a second. For everyday conversion this is irrelevant, but it matters in timekeeping systems that need sub-second accuracy across decades.',
+  },
+  {
+    q: 'Is anything I enter sent to a server?',
+    a: 'No. Conversion happens entirely in your browser and the page keeps working offline. Timestamps from logs and incident timelines can be sensitive, and they stay on your machine.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/epoch-converter';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Epoch Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free Unix epoch and timestamp converter. Auto-detects seconds, milliseconds, microseconds and nanoseconds, converts dates both ways, and shows a live epoch clock. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Live epoch clock in seconds and milliseconds',
+        'Unit auto-detection for s, ms, us and ns timestamps',
+        'Timestamp to UTC, local time and relative time',
+        'Date to epoch, interpreted in local time or UTC',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'Epoch Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Epoch & Unix Timestamp Converter | Cloudzeta"
+  description="Convert Unix timestamps to dates and back. Auto-detects seconds, milliseconds, microseconds and nanoseconds. Free, in your browser, no ads, works offline."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Epoch Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <EpochConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Unix timestamps to dates and back, with the unit detected for you.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Epoch time FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

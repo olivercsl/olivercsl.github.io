@@ -42,6 +42,7 @@ export const ContactSection = () => {
                 ['/tools/sla-calculator', 'SLA calculator'],
                 ['/tools/subnet-calculator', 'Subnet calculator'],
                 ['/tools/time-zone-converter', 'Time zone converter'],
+                ['/tools/epoch-converter', 'Epoch converter'],
                 ['/tools/password-generator', 'Password generator'],
                 ['/tools/uuid-generator', 'UUID generator'],
                 ['/tools/qr-code-generator', 'QR code generator'],
