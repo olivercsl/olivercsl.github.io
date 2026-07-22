@@ -12,7 +12,7 @@ const cases = [
     tagColor: 'bg-rose-50 text-rose-700',
     span: true,
     title: 'Securing and scaling AWS for billions of trades a month',
-    body: 'Our largest engagement: a global brokerage with 300 staff and a full enterprise IT organisation, processing billions of trades every month on AWS. We work alongside their internal teams to secure and scale the environment as volumes grow.',
+    body: 'A global brokerage processing billions of trades a month on AWS, with its own enterprise IT organisation. We work alongside their teams to keep the environment secure and to scale it as trading volumes grow.',
   },
   {
     tag: 'Crypto exchange',
