@@ -1,0 +1,132 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { DnsTtlPlanner } from '../../components/tools/DnsTtlPlanner';
+
+const faqs = [
+  {
+    "q": "Why lower the TTL before a DNS change?",
+    "a": "Resolvers cache a record for up to its TTL, and they learned that TTL when they last asked. A change made under a 24 hour TTL can keep serving the old answer for a full day. Lowering the TTL ahead of time, and waiting out the old TTL, means the actual switch propagates in minutes instead."
+  },
+  {
+    "q": "How long before the cutover should I lower it?",
+    "a": "At least one current TTL before the switch, because that is how long resolvers may hold the old TTL value. If the record sits at 24 hours, lower it at least 24 hours ahead. Earlier is harmless."
+  },
+  {
+    "q": "Why not just run a 60 second TTL forever?",
+    "a": "Every expiry is a fresh lookup, so very low TTLs raise resolver load, DNS bills on per-query pricing, and the user-visible cost of any DNS outage. Short TTLs are a tool for change windows; between changes, longer TTLs make the system calmer and cheaper."
+  },
+  {
+    "q": "Why does some traffic still hit the old target after the TTL expires?",
+    "a": "A few resolvers ignore TTLs or clamp them upward, some operating systems and JVMs pin addresses, and long-lived connections opened before the switch stay on the old target until they close. Plan to keep the old endpoint alive and draining for a grace period rather than cutting it dead at expiry."
+  },
+  {
+    "q": "Is anything I plan here sent anywhere?",
+    "a": "No. The timeline is computed in your browser and the page works offline."
+  }
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/dns-ttl-planner';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: "Cloudzeta DNS TTL & Cutover Planner",
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description: "Free DNS TTL and cutover planner. Enter your cutover time and TTLs and get a concrete timeline: when to lower the TTL, when propagation completes, when to restore. No ads, no tracking.",
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: ["Timeline anchored to your planned cutover moment", "TTL lowering scheduled one full old-TTL ahead", "Worst-case staleness and rollback windows made explicit", "Runs offline. Nothing is sent to a server"],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: "DNS TTL & Cutover Planner", item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="DNS TTL & Cutover Planner | Migration Timelines | Cloudzeta"
+  description="Plan a DNS cutover: when to lower the TTL, when the switch fully propagates, and when to restore. A concrete timeline from your inputs. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          DNS TTL &amp; Cutover Planner
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <DnsTtlPlanner client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          A concrete timeline for the day you repoint the record.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          DNS cutover FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

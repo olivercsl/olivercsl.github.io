@@ -1,0 +1,132 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { BandwidthCalculator } from '../../components/tools/BandwidthCalculator';
+
+const faqs = [
+  {
+    "q": "Why does my 1 Gbps link only move about 110 MB per second?",
+    "a": "Network speeds are quoted in bits per second and file sizes in bytes: eight bits to the byte. A 1 Gbps link therefore tops out at 125 MB/s before protocol overhead, and a healthy TCP transfer typically delivers 85 to 95% of that, which lands near 110 MB/s."
+  },
+  {
+    "q": "What is the difference between GB and GiB?",
+    "a": "GB is decimal, 10^9 bytes; GiB is binary, 2^30 bytes, about 7% larger. Storage vendors and network engineering use decimal, operating systems often display binary. The calculator shows both so the numbers reconcile."
+  },
+  {
+    "q": "How long does 10 TB take to transfer?",
+    "a": "At a full 1 Gbps, about 22 hours; at 100 Mbps, over nine days. This is why large migrations plan bandwidth first, and why shipping physical drives remains rational for very large datasets over slow links."
+  },
+  {
+    "q": "What efficiency figure should I use?",
+    "a": "90% is a reasonable default for TCP on a clean low-latency path. Use lower figures for high-latency links without tuning, many small files, or encrypted tunnels with small MTUs. Line rate, 100%, is a theoretical bound rather than an expectation."
+  },
+  {
+    "q": "Is anything I enter sent to a server?",
+    "a": "No. The math runs in your browser and the page works offline."
+  }
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/bandwidth-calculator';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: "Cloudzeta Bandwidth & Transfer Calculator",
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description: "Free bandwidth and transfer time calculator. Convert between GB, TB, GiB, Mbps and Gbps, and estimate how long a data transfer takes with protocol overhead. No ads, no tracking.",
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: ["Transfer time for any size over any link speed", "Decimal and binary size units side by side", "Protocol efficiency factor for realistic estimates", "Runs offline. Nothing is sent to a server"],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: "Bandwidth & Transfer Calculator", item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Bandwidth & Transfer Time Calculator | Cloudzeta"
+  description="How long does 10 TB take over 1 Gbps? Convert data sizes and link speeds, and estimate transfer times with protocol overhead. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Bandwidth &amp; Transfer Calculator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <BandwidthCalculator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Sizes, link speeds and honest transfer times, with the bits-versus-bytes confusion handled.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Bandwidth and transfer FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

@@ -1,0 +1,132 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { K8sQosCalculator } from '../../components/tools/K8sQosCalculator';
+
+const faqs = [
+  {
+    "q": "What are the three QoS classes?",
+    "a": "Guaranteed: every container sets requests and limits for both CPU and memory, with request equal to limit. BestEffort: nothing is set at all. Burstable: everything in between. One container falling short of the Guaranteed rules makes the whole pod Burstable."
+  },
+  {
+    "q": "Why does the QoS class matter?",
+    "a": "It sets the eviction order when a node runs short of memory: BestEffort pods go first, then Burstable pods exceeding their requests, and Guaranteed pods last. For anything stateful or latency-critical, the class is effectively your seat on the lifeboat."
+  },
+  {
+    "q": "Should everything be Guaranteed then?",
+    "a": "No. Guaranteed reserves the full limit for every pod, which forfeits the overcommit that makes clusters efficient. A common pattern is Guaranteed for critical stateful services, Burstable with honest requests for most workloads, and BestEffort only for genuinely disposable jobs."
+  },
+  {
+    "q": "What happens when a container exceeds its memory limit?",
+    "a": "It is OOM-killed by the kernel, regardless of QoS class. Exceeding the CPU limit merely throttles. That asymmetry is why the calculator flags missing memory limits: without one, a leak grows until the node itself comes under pressure and the eviction order decides who pays."
+  },
+  {
+    "q": "Is my configuration sent anywhere?",
+    "a": "No. Classification happens in your browser and the page works offline."
+  }
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/kubernetes-qos-calculator';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: "Cloudzeta Kubernetes QoS Calculator",
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description: "Free Kubernetes QoS calculator. Determine whether a pod is Guaranteed, Burstable or BestEffort from its requests and limits, with practical eviction and overcommit warnings. No ads, no tracking.",
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: ["Guaranteed, Burstable and BestEffort classification per the kubelet rules", "Multi-container pods supported", "Warnings for missing limits and overcommit patterns", "Runs offline. Nothing is sent to a server"],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: "Kubernetes QoS Calculator", item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Kubernetes QoS Class Calculator | Cloudzeta"
+  description="Enter container requests and limits and see the pod QoS class the kubelet will assign, with eviction-order and overcommit warnings. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Kubernetes QoS Calculator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <K8sQosCalculator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Requests and limits in, QoS class and eviction consequences out.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Kubernetes QoS FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

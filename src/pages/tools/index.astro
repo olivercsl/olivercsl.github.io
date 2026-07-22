@@ -1,59 +1,116 @@
 ---
 /**
- * Index of free tools. Exists partly for people and partly for crawlers: tools
- * published without an inbound link from the site are orphans, and orphans get
- * discovered slowly and rank poorly.
+ * Index of free tools, grouped by category. Exists partly for people and
+ * partly for crawlers: tools without an inbound link are orphans, and orphans
+ * get discovered slowly and rank poorly.
  *
- * Same rules as the tools themselves — no ads, no trackers, no call to action.
+ * Same rules as the tools themselves: no ads, no trackers, no call to action.
  */
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
 
-const tools = [
+const categories = [
   {
-    href: '/tools/sla-calculator',
-    name: 'SLA & Uptime Calculator',
-    desc: 'Turn availability targets like 99.9% into allowed downtime, combine the SLAs of a dependency chain, and track an error budget with its burn rate.',
-    tags: ['SLA', 'Uptime', 'Error budget'],
+    name: 'Cloud & networking',
+    tools: [
+      {
+        href: '/tools/subnet-calculator',
+        name: 'Subnet Calculator',
+        desc: 'IPv4 network, broadcast and usable range from any IP and CIDR prefix, with a splitter for planning VPC subnets.',
+        tags: ['IPv4', 'CIDR', 'VPC'],
+      },
+      {
+        href: '/tools/bandwidth-calculator',
+        name: 'Bandwidth & Transfer Calculator',
+        desc: 'Convert data sizes and link speeds, and estimate how long a transfer really takes with protocol overhead.',
+        tags: ['Bandwidth', 'Transfer time', 'Units'],
+      },
+      {
+        href: '/tools/dns-ttl-planner',
+        name: 'DNS TTL & Cutover Planner',
+        desc: 'A concrete migration timeline: when to lower the TTL, when the switch fully propagates, and when to restore it.',
+        tags: ['DNS', 'Migrations', 'TTL'],
+      },
+      {
+        href: '/tools/port-reference',
+        name: 'Network Port Reference',
+        desc: 'Searchable reference of the TCP and UDP ports engineers actually meet, with security notes.',
+        tags: ['Ports', 'TCP/UDP', 'Reference'],
+      },
+    ],
   },
   {
-    href: '/tools/subnet-calculator',
-    name: 'Subnet Calculator',
-    desc: 'IPv4 network, broadcast and usable range from any IP and CIDR prefix, with netmask, wildcard and binary forms, plus a splitter for planning VPC subnets.',
-    tags: ['IPv4', 'CIDR', 'VPC'],
+    name: 'Reliability & capacity',
+    tools: [
+      {
+        href: '/tools/sla-calculator',
+        name: 'SLA & Uptime Calculator',
+        desc: 'Turn availability targets into allowed downtime, combine the SLAs of a dependency chain, and track an error budget.',
+        tags: ['SLA', 'Uptime', 'Error budget'],
+      },
+      {
+        href: '/tools/latency-percentile-calculator',
+        name: 'Latency Percentile Calculator',
+        desc: 'Paste response-time samples and get P50 through P99.9 with min, mean, max and a long-tail warning.',
+        tags: ['Latency', 'Percentiles', 'P99'],
+      },
+      {
+        href: '/tools/littles-law-calculator',
+        name: "Little's Law Calculator",
+        desc: 'Solve concurrency, throughput and latency from the other two, and convert request rates across time windows.',
+        tags: ['Capacity', 'Throughput', 'Queueing'],
+      },
+      {
+        href: '/tools/kubernetes-qos-calculator',
+        name: 'Kubernetes QoS Calculator',
+        desc: 'See the QoS class the kubelet will assign from your requests and limits, with eviction and overcommit warnings.',
+        tags: ['Kubernetes', 'QoS', 'Resources'],
+      },
+    ],
   },
   {
-    href: '/tools/time-zone-converter',
-    name: 'Time Zone Converter',
-    desc: 'Compare cities side by side and find an hour that works for everyone, with daylight saving handled for any date. Share the result as a link or a pasteable table.',
-    tags: ['Time zones', 'Meetings', 'Scheduling'],
+    name: 'Time',
+    tools: [
+      {
+        href: '/tools/time-zone-converter',
+        name: 'Time Zone Converter',
+        desc: 'Compare cities side by side and find an hour that works for everyone, with daylight saving handled for any date.',
+        tags: ['Time zones', 'Meetings', 'Scheduling'],
+      },
+      {
+        href: '/tools/epoch-converter',
+        name: 'Epoch Converter',
+        desc: 'Unix timestamps to dates and back, with seconds, milliseconds, microseconds or nanoseconds detected automatically.',
+        tags: ['Unix time', 'Timestamps', 'Developer'],
+      },
+    ],
   },
   {
-    href: '/tools/epoch-converter',
-    name: 'Epoch Converter',
-    desc: 'Unix timestamps to dates and back, with seconds, milliseconds, microseconds or nanoseconds detected automatically. Live epoch clock included.',
-    tags: ['Unix time', 'Timestamps', 'Developer'],
-  },
-  {
-    href: '/tools/password-generator',
-    name: 'Password Generator',
-    desc: 'Strong random passwords and memorable passphrases, with entropy and crack-time shown so you can see exactly how strong the result is.',
-    tags: ['Passwords', 'Passphrases', 'Entropy'],
-  },
-  {
-    href: '/tools/uuid-generator',
-    name: 'UUID Generator',
-    desc: 'Generate v4, v7, v1 and nil UUIDs in bulk, with uppercase, no-hyphen and brace formatting. Clean results, no ad wall on click.',
-    tags: ['UUID', 'GUID', 'Developer'],
-  },
-  {
-    href: '/tools/qr-code-generator',
-    name: 'QR Code Generator',
-    desc: 'Turn any link or text into a QR code, customise the colours, and download as PNG or SVG. The link is encoded directly, with no tracking redirect.',
-    tags: ['QR code', 'Design', 'Sharing'],
+    name: 'Everyday utilities',
+    tools: [
+      {
+        href: '/tools/password-generator',
+        name: 'Password Generator',
+        desc: 'Strong random passwords and memorable passphrases, with entropy and crack time shown for every result.',
+        tags: ['Passwords', 'Passphrases', 'Entropy'],
+      },
+      {
+        href: '/tools/uuid-generator',
+        name: 'UUID Generator',
+        desc: 'Generate v4, v7, v1 and nil UUIDs in bulk, with formatting options and no ad wall on click.',
+        tags: ['UUID', 'GUID', 'Developer'],
+      },
+      {
+        href: '/tools/qr-code-generator',
+        name: 'QR Code Generator',
+        desc: 'Turn any link into a QR code and download it as PNG or SVG. The link is encoded directly, with no tracking redirect.',
+        tags: ['QR code', 'Design', 'Sharing'],
+      },
+    ],
   },
 ];
 
+const allTools = categories.flatMap((c) => c.tools);
 const pageUrl = 'https://cloudzeta.solutions/tools';
 
 const schema = {
@@ -70,7 +127,7 @@ const schema = {
     {
       '@type': 'ItemList',
       '@id': `${pageUrl}#list`,
-      itemListElement: tools.map((t, i) => ({
+      itemListElement: allTools.map((t, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         name: t.name,
@@ -90,7 +147,7 @@ const schema = {
 
 <Layout
   title="Free Developer & Cloud Tools | No Ads | Cloudzeta"
-  description="Free browser tools from Cloudzeta: SLA calculator, subnet calculator, time zone converter, password generator and more. No ads, no tracking."
+  description="13 free browser tools for engineers: SLA, subnet, bandwidth and Kubernetes calculators, DNS cutover planning, timestamps, passwords and more. No ads, no tracking."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -103,45 +160,52 @@ const schema = {
           Free Tools
         </h1>
         <p class="text-lg md:text-xl text-tx-secondary leading-relaxed text-balance">
-          Small, useful tools for engineers that run entirely in your browser. No ads, no trackers, no
-          account, and nothing to buy.
+          {allTools.length} small, useful tools for engineers that run entirely in your browser.
+          No ads, no trackers, no account, and nothing to buy.
         </p>
       </div>
     </section>
 
     <section class="pb-24 px-4 sm:px-6">
-      <div class="max-w-3xl mx-auto">
-        <ul class="grid gap-5">
-          {
-            tools.map((tool) => (
-              <li>
-                <a
-                  href={tool.href}
-                  class="group block bg-white p-7 rounded-2xl border border-glass-border shadow-sm hover:shadow-lg transition-all"
-                >
-                  <div class="flex items-start justify-between gap-4 mb-3">
-                    <h2 class="text-xl font-semibold text-tx-primary group-hover:text-accent transition-colors">
-                      {tool.name}
-                    </h2>
-                    <span class="text-accent shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      &rsaquo;
-                    </span>
-                  </div>
-                  <p class="text-tx-secondary leading-relaxed mb-4">{tool.desc}</p>
-                  <div class="flex flex-wrap gap-2">
-                    {tool.tags.map((tag) => (
-                      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-surface text-tx-secondary border border-glass-border">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="max-w-5xl mx-auto">
+        {
+          categories.map((cat) => (
+            <div class="mb-12">
+              <h2 class="text-xl font-semibold text-tx-primary mb-5 pb-2 border-b border-glass-border">
+                {cat.name}
+              </h2>
+              <ul class="grid sm:grid-cols-2 gap-5">
+                {cat.tools.map((tool) => (
+                  <li>
+                    <a
+                      href={tool.href}
+                      class="group flex flex-col h-full bg-white p-6 rounded-2xl border border-glass-border shadow-sm hover:shadow-lg transition-all"
+                    >
+                      <div class="flex items-start justify-between gap-4 mb-2">
+                        <h3 class="text-lg font-semibold text-tx-primary group-hover:text-accent transition-colors">
+                          {tool.name}
+                        </h3>
+                        <span class="text-accent shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          &rsaquo;
+                        </span>
+                      </div>
+                      <p class="text-sm text-tx-secondary leading-relaxed mb-4">{tool.desc}</p>
+                      <div class="flex flex-wrap gap-2 mt-auto">
+                        {tool.tags.map((tag) => (
+                          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-surface text-tx-secondary border border-glass-border">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
 
-        <div class="mt-10 p-6 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
+        <div class="p-6 bg-emerald-50/60 border border-emerald-100 rounded-2xl max-w-3xl mx-auto">
           <h2 class="text-base font-semibold text-emerald-900 mb-3">How these tools work</h2>
           <ul class="space-y-2 text-sm text-emerald-900/90">
             {
