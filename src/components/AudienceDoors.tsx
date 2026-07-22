@@ -67,8 +67,8 @@ export const AudienceDoors = () => {
             <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Reach China</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
               Your platform works everywhere except mainland China, where congested international
-              routes make it slow and unreliable. We fix that with premium CEN fibre routes and
-              Alibaba Cloud, engineered for low latency and minimal packet loss.
+              routes make it slow and unreliable. We fix that with premium fibre routes, engineered
+              for low latency and minimal packet loss.
             </p>
             <ul className="space-y-3 mb-8">
               {[
