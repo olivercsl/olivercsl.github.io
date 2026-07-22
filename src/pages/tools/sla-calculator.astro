@@ -1,0 +1,178 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { SlaCalculator } from '../../components/tools/SlaCalculator';
+
+const faqs = [
+  {
+    q: 'What does 99.9% uptime actually mean?',
+    a: 'It means the service may be down for at most 0.1% of the time: about 43.8 minutes in a month or 8 hours 46 minutes in a year. The calculator shows the allowed downtime for any target across a day, week, month, quarter and year.',
+  },
+  {
+    q: 'How do I work out the SLA of several services combined?',
+    a: 'When your product needs every dependency to be up at once, multiply their availabilities. Two services at 99.9% give 99.9% x 99.9% = 99.8%, which is nearly 9 hours more downtime per year than either service alone. Chains get worse fast, and the calculator does the multiplication for you.',
+  },
+  {
+    q: 'Why is my real availability worse than my cloud provider\'s SLA?',
+    a: 'Because your users experience the product, not a single component. Compute, database, DNS, CDN and third-party APIs each carry their own availability, and the serial combination is lower than any one of them. This is the main reason architects add redundancy for the weakest links.',
+  },
+  {
+    q: 'What is an error budget?',
+    a: 'The downtime your target still permits in the current period. A 99.9% monthly target gives a budget of roughly 44 minutes; if incidents have consumed 20, you have about 24 left. Teams following site reliability engineering practice use the remaining budget to decide when to ship risky changes and when to freeze.',
+  },
+  {
+    q: 'Does redundancy improve availability?',
+    a: 'Substantially, when failures are independent. Two independent instances at 99% availability fail together only 0.01% of the time, which is 99.99% availability. The catch is the word independent: shared dependencies, shared regions and shared deploy pipelines fail together.',
+  },
+  {
+    q: 'Why do month figures differ slightly between calculators?',
+    a: 'Some tools define a month as exactly 30 days, others as the calendar average. This calculator uses one twelfth of a 365.25 day year, which is 30.44 days. The difference is about one percent.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/sla-calculator';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta SLA and Uptime Calculator',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free SLA and uptime calculator. Convert availability targets like 99.9% into allowed downtime, combine the SLAs of dependent services, and track an error budget. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Downtime allowed per day, week, month, quarter and year',
+        'Composite SLA of a dependency chain',
+        'Error budget with burn rate',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'SLA Calculator', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="SLA & Uptime Calculator | Downtime, Composite SLA, Error Budget | Cloudzeta"
+  description="Free SLA and uptime calculator. See what 99.9% or 99.99% allows in downtime, combine the SLAs of dependent services, and track your error budget. Runs in your browser. No ads, no tracking."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          SLA &amp; Uptime Calculator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <SlaCalculator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Turn nines into minutes, stack dependency SLAs, and watch your error budget.
+        </p>
+      </div>
+    </section>
+
+    <!-- Explainer -->
+    <section class="py-24 px-6 border-t border-glass-border">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-4 text-center">
+          The arithmetic behind the nines
+        </h2>
+        <p class="text-xl text-tx-secondary text-center mb-14 max-w-2xl mx-auto">
+          Three rules cover most availability conversations.
+        </p>
+
+        <div class="grid sm:grid-cols-3 gap-6">
+          {
+            [
+              {
+                t: 'Each nine costs ten times more',
+                d: 'Going from 99.9% to 99.99% cuts allowed downtime from about 8.8 hours a year to 53 minutes. The engineering effort tends to rise as fast as the downtime falls.',
+              },
+              {
+                t: 'Chains multiply, and only downward',
+                d: 'A product that needs five dependencies, each at 99.9%, ships an effective 99.5%. Your availability is bounded by the product of everything you rely on.',
+              },
+              {
+                t: 'Redundancy multiplies the other way',
+                d: 'Two independent 99% instances give 99.99% together, because both must fail at once. The catch is independence: shared regions and pipelines fail together.',
+              },
+            ].map((item) => (
+              <div class="bg-white p-7 rounded-2xl border border-glass-border shadow-sm">
+                <h3 class="text-lg font-semibold text-tx-primary mb-2">{item.t}</h3>
+                <p class="text-tx-secondary leading-relaxed">{item.d}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          SLA calculator FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
