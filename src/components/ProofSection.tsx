@@ -8,6 +8,25 @@ import { motion } from 'framer-motion';
  */
 const cases = [
   {
+    tag: 'Enterprise brokerage',
+    tagColor: 'bg-rose-50 text-rose-700',
+    span: true,
+    title: 'Securing and scaling AWS for billions of trades a month',
+    body: 'Our largest engagement: a global brokerage with 300 staff and a full enterprise IT organisation, processing billions of trades every month on AWS. We work alongside their internal teams to secure and scale the environment as volumes grow.',
+  },
+  {
+    tag: 'Crypto exchange',
+    tagColor: 'bg-amber-50 text-amber-700',
+    title: 'AWS architecture support, lower monthly bill',
+    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
+  },
+  {
+    tag: 'Risk & dealing systems provider',
+    tagColor: 'bg-cyan-50 text-cyan-700',
+    title: 'The same problem, in the other direction',
+    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We put their team’s access to those environments on accelerated routes, alongside ongoing AWS support and cost optimization.',
+  },
+  {
     tag: 'Global FX & CFD broker',
     tagColor: 'bg-blue-50 text-blue-700',
     title: 'Website & client portal, accelerated into mainland China',
@@ -31,18 +50,6 @@ const cases = [
     title: 'A flagship annual congress, reachable from mainland China',
     body: 'A major American medical society with a large audience in mainland China. We put their annual event platform on accelerated routes into the mainland and supported it through the event itself — not just trading platforms; any global event or platform that needs to work well in China.',
   },
-  {
-    tag: 'Risk & dealing systems provider',
-    tagColor: 'bg-cyan-50 text-cyan-700',
-    title: 'The same problem, in the other direction',
-    body: 'A financial risk and dealing solutions provider whose engineers sit in China — but whose AWS dev and prod environments sit outside it. We put their team’s access to those environments on accelerated routes, alongside ongoing AWS support and cost optimization.',
-  },
-  {
-    tag: 'Crypto exchange',
-    tagColor: 'bg-amber-50 text-amber-700',
-    title: 'AWS architecture support, lower monthly bill',
-    body: 'A digital-asset exchange running its platform on AWS through us. Our engineers provide ongoing architecture support, and the move cut their cloud spend compared to their previous setup — proof the AWS side of the house earns its keep too.',
-  },
 ];
 
 export const ProofSection = () => {
@@ -57,9 +64,9 @@ export const ProofSection = () => {
             Trading platforms trust us.
           </h2>
           <p className="text-xl text-tx-secondary max-w-2xl mx-auto">
-            Seven global brands — from FX brokers to a major American medical society — run on
-            infrastructure we built: China acceleration in both directions, and AWS done properly.
-            Named references available on request.
+            Eight global brands — from enterprise brokerages to a major American medical society —
+            run on infrastructure we built: AWS secured and scaled to enterprise volume, and China
+            acceleration in both directions. Named references available on request.
           </p>
         </div>
 
