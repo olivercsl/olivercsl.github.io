@@ -29,8 +29,8 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl md:text-7xl font-semibold tracking-tight text-tx-primary leading-[1.05] text-balance"
         >
-          AWS done properly.<br />
-          <span className="text-accent">Reachable from mainland China.</span>
+          Enterprise AWS.<br />
+          <span className="text-accent">China Connectivity.</span>
         </motion.h1>
 
         {/* Subheadline */}
