@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 const cases = [
   {
     tag: 'Enterprise brokerage',
-    tagColor: 'bg-rose-50 text-rose-700',
+    tagColor: 'bg-slate-100 text-slate-700',
     span: true,
     title: 'Securing and scaling AWS for billions of trades a month',
     body: 'A global brokerage processing billions of trades a month on AWS, with its own enterprise IT organisation. We work alongside their teams to keep the environment secure and to scale it as trading volumes grow.',
@@ -57,7 +57,7 @@ export const ProofSection = () => {
     <section className="py-20 md:py-24 px-6 bg-surface border-y border-glass-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
-          <div className="inline-block px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold mb-5">
+          <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-5">
             Real engagements · anonymized
           </div>
           <h2 className="text-3xl md:text-4xl font-semibold text-tx-primary mb-4">
