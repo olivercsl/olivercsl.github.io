@@ -64,7 +64,7 @@ export const AudienceDoors = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18M3 12a9 9 0 1018 0 9 9 0 00-18 0" />
               </svg>
             </div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">Reach China</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-tx-primary mb-4">China Connectivity</h2>
             <p className="text-lg text-tx-secondary leading-relaxed mb-6">
               Your platform works everywhere except mainland China, where congested international
               routes make it slow and unreliable. We fix that with premium fibre routes, engineered
