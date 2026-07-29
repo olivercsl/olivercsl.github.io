@@ -1,64 +1,17 @@
 ---
-title: "Cloudflare free DNS: what you get, and how to move your domain"
-description: "Cloudflare hosts authoritative DNS at no cost, with unmetered DDoS protection, free SSL and a CDN. Here is exactly what the free plan includes, where the limits are, and how to migrate a domain without breaking email."
+title: "How to migrate DNS to Cloudflare without breaking email"
+description: "A step by step Cloudflare DNS migration: what to prepare, what happens during the 24 hour window, and the five failures that break most cutovers. Includes what the free plan covers, since free means a full nameserver migration."
 published: 2026-07-27
 topic: "DNS"
 readingMinutes: 14
 author: "Oliver Zhang"
 ---
 
-Cloudflare gives away authoritative DNS hosting. Not as a trial, not capped at a query volume, and not restricted to one domain. The free plan includes DNS, a CDN, a TLS certificate, unmetered DDoS protection and a web application firewall, at $0 per month with no expiry attached.
+Migrating a domain to Cloudflare takes about ten minutes of clicking and up to 24 hours to take effect. In the gap between those two numbers sits the part that catches people out: for a period you do not control, your domain answers from two DNS providers at once. Anything missing from the new zone fails for whichever visitors reach it first, while everyone else sees a working site and reports nothing.
 
-That is unusual enough to make people suspicious, so it is worth stating plainly what the offer is, where the genuine limits sit, and what it costs you to move. The short version: the money cost is zero, the real cost is a nameserver migration with a 24 hour window in which mistakes are invisible until they are expensive.
+That asymmetry explains why DNS migrations so often appear to succeed on the day and produce strange, intermittent problems for a week afterwards. It also explains why the most common casualty is not the website but email, which fails silently.
 
-This guide covers both halves. What the free plan actually includes and how it compares to paid alternatives, then how to run the migration without taking your email offline.
-
-## What you get on the free plan
-
-At $0 per month, Cloudflare lists the following:
-
-- **Authoritative DNS hosting.** Cloudflare becomes the nameserver for your domain, answering queries from its global anycast network.
-- **Unmetered DDoS protection.** There is no bandwidth ceiling on mitigation, which is the part most competing free tiers do not match.
-- **CDN.** Static content cached at edge locations worldwide.
-- **Universal SSL certificate.** A publicly trusted TLS certificate, issued and renewed automatically.
-- **Web Application Firewall** with Cloudflare's free managed ruleset.
-- **Single sign-on support** and role-based account control.
-
-For comparison, the next tier up, Pro, is listed at $20 per month billed annually or $25 billed monthly.
-
-## Is it genuinely free
-
-Three questions come up repeatedly, so here they are directly.
-
-**Is there a time limit?** No. Cloudflare positions the free plan as a permanent tier rather than a trial. There is no expiry date and no card required to stay on it.
-
-**Is there a query or bandwidth limit?** Cloudflare does not publish a DNS query cap on the free plan, and DDoS mitigation is explicitly described as unmetered. This is the detail that most surprises people evaluating it, because absorbing a large attack is exactly the service you would expect to be gated behind payment.
-
-**How many domains can I add?** The free plan is applied per domain rather than per account, so multiple domains can each sit on the free tier.
-
-The commercial logic is not mysterious. Free users add traffic to a network whose value grows with the traffic on it, they generate the threat intelligence that makes the paid product better, and some fraction eventually needs a feature that costs money.
-
-## What free does not include
-
-The omissions are mostly enterprise assurance rather than day-to-day capability: no uptime SLA, no PCI DSS compliance, no network prioritisation, and no lossless image optimisation.
-
-The **absent uptime SLA** is the one worth weighing. The service is not less reliable on the free plan; it runs on the same infrastructure. What you lack is contractual recourse when something fails. For a personal site or an internal tool that is irrelevant. For a platform where an hour of downtime has a number attached to it, that gap is the argument for paying.
-
-One further restriction bears directly on migration. Cloudflare's **partial setup**, sometimes called CNAME setup, lets you keep your existing DNS provider authoritative and route only selected subdomains through Cloudflare. It requires a Business or Enterprise plan.
-
-On the free plan, using Cloudflare means a **full setup**: the entire zone moves and your nameservers change. That constraint shapes everything that follows.
-
-## How it compares on cost
-
-DNS hosting is not usually a large line item, but the comparison is stark at small scale.
-
-**AWS Route 53** charges $0.50 per hosted zone per month for the first 25 zones, plus $0.40 per million standard queries. A handful of low-traffic domains therefore costs a few dollars a month, which is trivial for a company and annoying for a side project running ten domains.
-
-**Registrar-bundled DNS**, the kind included free with a domain from most registrars, costs nothing but typically offers basic hosting with no CDN, no WAF, and limited or no DDoS protection.
-
-**Cloudflare free** sits in an unusual position: no per-zone or per-query charge, while including the CDN and protection layers that the registrar option lacks.
-
-The honest caveat is that comparing on price alone misses the point. Route 53's value is deep integration with the rest of AWS, including alias records that point at load balancers and health-checked failover routing. If your infrastructure lives in AWS and your DNS needs to know about it, the few dollars is not the deciding factor.
+This guide walks through the migration end to end: what to prepare, what to watch during the window, how to verify afterwards, and the specific mistakes that account for most failed cutovers. It assumes a full setup, where Cloudflare becomes the authoritative DNS provider for your domain, which is also what the free plan requires.
 
 ## What migrating actually involves
 
@@ -69,6 +22,16 @@ Moving to Cloudflare on the free plan is a different operation. You are changing
 **The timing is not yours to set.** Delegation is published by the registry for your top level domain, and its cache lifetime is not something your current DNS provider can shorten. Cloudflare's documentation instructs users to allow up to 24 hours for a registrar update to take effect.
 
 **Both providers serve traffic meanwhile.** Until every resolver picks up the new delegation, some continue asking your old provider while others ask Cloudflare. Both copies of the zone must therefore return correct answers for the entire transition. A record present at the old provider but missing at Cloudflare does not fail cleanly. It fails for a shifting subset of the internet, which is why migrations appear to succeed on the day and generate strange, intermittent reports for a week.
+
+## What the free plan covers, and why it forces a full migration
+
+Cloudflare hosts authoritative DNS at no cost, which is why most small projects end up here. At $0 per month the plan lists DNS hosting, **unmetered** DDoS protection with no bandwidth ceiling on mitigation, a CDN, a Universal SSL certificate, a web application firewall with the free managed ruleset, and role-based account control. Pro, the next tier, is listed at $20 per month billed annually.
+
+It is a permanent tier rather than a trial, Cloudflare publishes no DNS query cap on it, and the plan applies per domain, so several domains can each sit on the free tier. For comparison, AWS Route 53 charges $0.50 per hosted zone per month plus $0.40 per million queries, which is immaterial to a company and irritating to someone running ten side projects.
+
+What free omits is enterprise assurance rather than capability: no uptime SLA, no PCI DSS compliance, no network prioritisation. The missing SLA is the one to weigh. The service is not less reliable on the free plan, but you have no contractual recourse if it fails, which matters more for a revenue-generating platform than a blog.
+
+One restriction shapes this entire guide. Cloudflare's **partial setup**, sometimes called CNAME setup, lets you keep your existing DNS provider authoritative and route only selected subdomains through Cloudflare. It requires a Business or Enterprise plan. On the free plan, using Cloudflare means a full setup: the whole zone moves and your nameservers change, with the timing consequences described above.
 
 ## Before the cutover
 
