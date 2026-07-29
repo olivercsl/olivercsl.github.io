@@ -1,66 +1,74 @@
 ---
-title: "Moving DNS to Cloudflare without breaking email"
-description: "Why teams move to Cloudflare, what the free plan really includes, and how to run the cutover without breaking email. Covers preparation, the 24 hour window, verification, and the five failures behind most broken migrations."
+title: "Cloudflare free DNS: what you get, and how to move your domain"
+description: "Cloudflare hosts authoritative DNS at no cost, with unmetered DDoS protection, free SSL and a CDN. Here is exactly what the free plan includes, where the limits are, and how to migrate a domain without breaking email."
 published: 2026-07-27
 topic: "DNS"
-readingMinutes: 12
+readingMinutes: 14
 author: "Oliver Zhang"
 ---
 
-Migrating a domain to Cloudflare takes about ten minutes of clicking and up to 24 hours to take effect. In the gap between those two numbers sits the part that catches people out: for a period you do not control, your domain answers from two DNS providers at once. Anything missing from the new zone fails for whichever visitors reach it first, while everyone else sees a working site and reports nothing.
+Cloudflare gives away authoritative DNS hosting. Not as a trial, not capped at a query volume, and not restricted to one domain. The free plan includes DNS, a CDN, a TLS certificate, unmetered DDoS protection and a web application firewall, at $0 per month with no expiry attached.
 
-That asymmetry explains why DNS migrations so often appear to succeed on the day and produce strange, intermittent problems for a week afterwards. It also explains why the most common casualty is not the website but email, which fails silently.
+That is unusual enough to make people suspicious, so it is worth stating plainly what the offer is, where the genuine limits sit, and what it costs you to move. The short version: the money cost is zero, the real cost is a nameserver migration with a 24 hour window in which mistakes are invisible until they are expensive.
 
-This guide follows a full setup, where Cloudflare becomes the authoritative DNS provider for the domain. It covers why teams make the move, what the free plan actually includes, then preparation, the cutover itself, verification, and the specific mistakes that account for most failed migrations.
+This guide covers both halves. What the free plan actually includes and how it compares to paid alternatives, then how to run the migration without taking your email offline.
 
-## Why teams move to Cloudflare
+## What you get on the free plan
 
-Cloudflare's documentation puts four arguments forward for using its DNS.
+At $0 per month, Cloudflare lists the following:
 
-**Performance and reliability**, delivered through its global anycast network, so queries are answered from a location near the person asking.
-
-**DDoS protection.** Authoritative DNS is a standing target, and an unreachable nameserver takes a domain offline as completely as an unreachable server does.
-
-**Protection against route leaks and hijacking**, through BGP security measures. This addresses a class of attack most teams never think about: traffic for your addresses being announced by somebody else and silently diverted.
-
-**DNSSEC**, which cryptographically signs your records so resolvers can detect tampered answers.
-
-Worth noting for accuracy: Cloudflare's DNS documentation makes the speed and resilience claims without publishing query-time benchmarks or uptime figures alongside them. The performance argument is credible on architecture, since anycast genuinely does shorten the path to a resolver, but it is asserted rather than evidenced in their own materials. Treat it accordingly.
-
-In practice, most teams migrate for a fifth reason that sits underneath all of these: consolidation. DNS, CDN, TLS certificates and a firewall arrive in one dashboard, which is usually simpler than assembling the same capabilities from four vendors.
-
-## What the free plan actually includes
-
-Cloudflare's free tier is unusually complete, and this genuinely surprises people evaluating it for a small project or a side venture.
-
-At $0 per month, the plan lists:
-
-- Authoritative DNS hosting
-- **Unmetered** DDoS protection, with no bandwidth ceiling on mitigation
-- CDN
-- Universal SSL certificate
-- Web Application Firewall with the free managed ruleset
-- Single sign-on support and role-based account control
+- **Authoritative DNS hosting.** Cloudflare becomes the nameserver for your domain, answering queries from its global anycast network.
+- **Unmetered DDoS protection.** There is no bandwidth ceiling on mitigation, which is the part most competing free tiers do not match.
+- **CDN.** Static content cached at edge locations worldwide.
+- **Universal SSL certificate.** A publicly trusted TLS certificate, issued and renewed automatically.
+- **Web Application Firewall** with Cloudflare's free managed ruleset.
+- **Single sign-on support** and role-based account control.
 
 For comparison, the next tier up, Pro, is listed at $20 per month billed annually or $25 billed monthly.
 
-For a personal site, a documentation site, an internal tool or an early product, the free plan is generally sufficient, and there is no expiry or trial period attached to it. Cloudflare positions it as a permanent tier rather than an on-ramp.
+## Is it genuinely free
 
-What the free plan omits is mostly enterprise assurance rather than day-to-day capability: no uptime SLA, no PCI DSS compliance, no network prioritisation, and no lossless image optimisation. The absent uptime SLA is the one worth weighing. The service is not less reliable on the free plan, but you have no contractual recourse if it fails, which matters more for a revenue-generating platform than for a blog.
+Three questions come up repeatedly, so here they are directly.
 
-One limitation bears directly on this guide. Cloudflare's **partial setup**, sometimes called CNAME setup, lets you keep your existing DNS provider authoritative and proxy only selected subdomains. It is restricted to Business and Enterprise plans. On the free plan, using Cloudflare means a full setup, which means handing over the whole zone and changing your nameservers.
+**Is there a time limit?** No. Cloudflare positions the free plan as a permanent tier rather than a trial. There is no expiry date and no card required to stay on it.
 
-That is why the rest of this article concerns a nameserver migration rather than a record change, and why the timing behaves the way it does.
+**Is there a query or bandwidth limit?** Cloudflare does not publish a DNS query cap on the free plan, and DDoS mitigation is explicitly described as unmetered. This is the detail that most surprises people evaluating it, because absorbing a large attack is exactly the service you would expect to be gated behind payment.
 
-## What you are actually changing
+**How many domains can I add?** The free plan is applied per domain rather than per account, so multiple domains can each sit on the free tier.
+
+The commercial logic is not mysterious. Free users add traffic to a network whose value grows with the traffic on it, they generate the threat intelligence that makes the paid product better, and some fraction eventually needs a feature that costs money.
+
+## What free does not include
+
+The omissions are mostly enterprise assurance rather than day-to-day capability: no uptime SLA, no PCI DSS compliance, no network prioritisation, and no lossless image optimisation.
+
+The **absent uptime SLA** is the one worth weighing. The service is not less reliable on the free plan; it runs on the same infrastructure. What you lack is contractual recourse when something fails. For a personal site or an internal tool that is irrelevant. For a platform where an hour of downtime has a number attached to it, that gap is the argument for paying.
+
+One further restriction bears directly on migration. Cloudflare's **partial setup**, sometimes called CNAME setup, lets you keep your existing DNS provider authoritative and route only selected subdomains through Cloudflare. It requires a Business or Enterprise plan.
+
+On the free plan, using Cloudflare means a **full setup**: the entire zone moves and your nameservers change. That constraint shapes everything that follows.
+
+## How it compares on cost
+
+DNS hosting is not usually a large line item, but the comparison is stark at small scale.
+
+**AWS Route 53** charges $0.50 per hosted zone per month for the first 25 zones, plus $0.40 per million standard queries. A handful of low-traffic domains therefore costs a few dollars a month, which is trivial for a company and annoying for a side project running ten domains.
+
+**Registrar-bundled DNS**, the kind included free with a domain from most registrars, costs nothing but typically offers basic hosting with no CDN, no WAF, and limited or no DDoS protection.
+
+**Cloudflare free** sits in an unusual position: no per-zone or per-query charge, while including the CDN and protection layers that the registrar option lacks.
+
+The honest caveat is that comparing on price alone misses the point. Route 53's value is deep integration with the rest of AWS, including alias records that point at load balancers and health-checked failover routing. If your infrastructure lives in AWS and your DNS needs to know about it, the few dollars is not the deciding factor.
+
+## What migrating actually involves
 
 Most DNS work means editing a record. You point `www` at a new address and, if you lowered the time to live beforehand, resolvers follow within minutes.
 
-A Cloudflare migration is a different operation. You are changing the **nameserver delegation** at your registrar, handing the entire zone to a new provider. Two consequences follow.
+Moving to Cloudflare on the free plan is a different operation. You are changing the **nameserver delegation** at your registrar, handing the entire zone to a new provider. Two consequences follow, and most migration surprises come from them.
 
 **The timing is not yours to set.** Delegation is published by the registry for your top level domain, and its cache lifetime is not something your current DNS provider can shorten. Cloudflare's documentation instructs users to allow up to 24 hours for a registrar update to take effect.
 
-**Both providers serve traffic meanwhile.** Until every resolver picks up the new delegation, some continue asking your old provider while others ask Cloudflare. Both copies of the zone must therefore return correct answers for the entire transition. A record present at the old provider but missing at Cloudflare does not fail cleanly; it fails for a shifting subset of the internet.
+**Both providers serve traffic meanwhile.** Until every resolver picks up the new delegation, some continue asking your old provider while others ask Cloudflare. Both copies of the zone must therefore return correct answers for the entire transition. A record present at the old provider but missing at Cloudflare does not fail cleanly. It fails for a shifting subset of the internet, which is why migrations appear to succeed on the day and generate strange, intermittent reports for a week.
 
 ## Before the cutover
 
@@ -97,27 +105,23 @@ This does not accelerate the nameserver change. It means that if a record needs 
 
 If DNSSEC is enabled, disable it at the registrar and wait for that change to take effect before switching nameservers. Cloudflare warns that changing nameservers with DNSSEC active "can make domains unreachable."
 
-This failure is total rather than partial. Validating resolvers will refuse to answer at all, because the signatures no longer match the delegation. Of every step in this process, it is the one most capable of taking a working domain completely offline, and it is entirely avoidable.
+This failure is total rather than partial. Validating resolvers refuse to answer at all, because the signatures no longer match the delegation. Of every step in this process, it is the one most capable of taking a working domain completely offline, and it is entirely avoidable.
 
 ### Decide proxy status per record in advance
 
 Cloudflare can proxy A, AAAA and CNAME records. A proxied record returns Cloudflare's anycast addresses instead of yours, which is what provides caching, the firewall and origin protection. All other record types, including MX and TXT, are served as ordinary DNS.
 
-Determine the intended state for each record before activating rather than during. A sound default:
+Determine the intended state for each record before activating rather than during:
 
 - **Proxy** hostnames serving HTTP traffic to browsers.
 - **Do not proxy** the hostname your MX records point at. Mail does not traverse an HTTP proxy, and proxying that host stops inbound delivery.
 - **Do not proxy** domain verification records, or hostnames used by non-HTTP services such as SSH, VPN endpoints or databases.
 
-### Establish what your origin does with HTTPS
-
-You will choose an SSL mode during the migration, and the correct choice depends on whether your origin already presents a valid certificate. Determine this beforehand, not mid cutover.
-
 ## During the cutover
 
 ### Reconcile against the export
 
-Compare Cloudflare's imported records line by line with the zone you exported: type, name, value, MX priority, TTL. This reconciliation is the step that prevents the fortnight of intermittent breakage, and it is the step most often skipped because the scanned list looks plausible at a glance.
+Compare Cloudflare's imported records line by line with the zone you exported: type, name, value, MX priority, TTL. This is the step that prevents the fortnight of intermittent breakage, and the step most often skipped because the scanned list looks plausible at a glance.
 
 ### Set the SSL mode before traffic arrives
 
@@ -129,7 +133,7 @@ Configure the encryption mode before the nameservers change, because it takes ef
 
 **Flexible** should be avoided. Visitors reach Cloudflare over HTTPS, but Cloudflare reaches the origin over unencrypted HTTP. Cloudflare's documentation describes this as creating a false sense of security: the padlock tells visitors they are protected while the connection behind Cloudflare is not.
 
-Flexible mode also produces the classic redirect loop. Where an origin redirects HTTP to HTTPS, and Cloudflare arrives over HTTP, the origin redirects, Cloudflare requests again over HTTP, and the browser eventually abandons the request. The site appears entirely broken within minutes of activation, and the error message gives no hint of the cause.
+Flexible mode also produces the classic redirect loop. Where an origin redirects HTTP to HTTPS, and Cloudflare arrives over HTTP, the origin redirects, Cloudflare requests again over HTTP, and the browser eventually abandons the request. The site appears entirely broken within minutes of activation, and the error gives no hint of the cause.
 
 ### Change the nameservers
 
@@ -183,9 +187,9 @@ The 300 second TTLs used for the migration cost additional queries and amplify t
 
 Proxying conceals your origin address from casual observation. It does not prevent anyone who already knows the address from connecting directly, and old addresses persist in DNS history services indefinitely. A single record left unproxied can expose the same server.
 
-Where origin protection is part of the reason for moving to Cloudflare, restrict the origin firewall to accept HTTP traffic only from Cloudflare's published address ranges. Without that, the proxy is a suggestion rather than a control.
+Where origin protection is part of the reason for moving, restrict the origin firewall to accept HTTP traffic only from Cloudflare's published address ranges. Without that, the proxy is a suggestion rather than a control.
 
-## The five failures that account for most broken migrations
+## The five failures behind most broken migrations
 
 Ordered by frequency rather than severity.
 

@@ -14,8 +14,9 @@ export default defineConfig({
   redirects: {
     '/features/password-generator': '/tools/password-generator',
     '/features/time-zone-converter': '/tools/time-zone-converter',
-    // Published briefly under the old slug before the how-to naming rule.
-    '/blog/dns-cutover-to-cloudflare': '/blog/how-to-migrate-dns-to-cloudflare',
+    // Earlier slugs for the Cloudflare DNS guide, kept resolving.
+    '/blog/dns-cutover-to-cloudflare': '/blog/cloudflare-free-dns',
+    '/blog/how-to-migrate-dns-to-cloudflare': '/blog/cloudflare-free-dns',
   },
 
   vite: {
