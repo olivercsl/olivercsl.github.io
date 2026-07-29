@@ -1,0 +1,144 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  A zone file is sensitive infrastructure detail, so it must never leave the
+ *  browser. Any external script would break that promise.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { ZoneFileChecker } from '../../components/tools/ZoneFileChecker';
+
+const faqs = [
+  {
+    "q": "What does this checker look for?",
+    "a": "It parses a BIND format zone file and reports what a DNS migration would break: missing SPF, DKIM or DMARC records, hostnames that must not be proxied because mail is delivered to them, verification records that need carrying across untouched, TTLs still too long to allow a quick correction, and structural problems such as a CNAME sharing a name with another record type."
+  },
+  {
+    "q": "How is this different from a zone file validator?",
+    "a": "A validator answers whether the syntax parses, which named-checkzone and several online tools already do well. That is a different question from whether the migration will succeed. A zone file can be perfectly valid and still take your email offline once migrated, because the damaging failures are missing records rather than malformed ones."
+  },
+  {
+    "q": "Is my zone file uploaded anywhere?",
+    "a": "No. Parsing and analysis run entirely in your browser, and the page works offline. This matters more than usual here: a zone file is a map of your infrastructure, listing internal hostnames, mail servers and the third-party services you depend on."
+  },
+  {
+    "q": "Which zone file format does it accept?",
+    "a": "The BIND master file format described in RFC 1035, which is what most providers produce when you export a zone. It handles $ORIGIN and $TTL directives, @ for the apex, relative and absolute names, optional class fields, parenthesised multi-line records such as SOA, semicolon comments, and TTLs written either as seconds or as durations like 1h and 300s."
+  },
+  {
+    "q": "Why does it flag records with a TTL above one hour?",
+    "a": "Before a migration you want short TTLs, so that a record needing correction mid-cutover propagates in minutes rather than hours. Lower them to around 300 seconds at your current provider at least one full old-TTL before the change, then restore normal values once the migration has settled."
+  },
+  {
+    "q": "Why should the mail hostname not be proxied?",
+    "a": "Cloudflare’s proxy handles HTTP traffic. Mail does not travel over it, so proxying the hostname your MX records point at stops inbound delivery. The failure is confusing because the MX record itself still looks correct in the dashboard; only the A record behind it has changed behaviour."
+  }
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/dns-zone-file-checker';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta DNS Zone File Checker',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free DNS zone file checker. Paste a BIND zone file and see what a migration would break: missing SPF, DKIM and DMARC records, hostnames that must stay unproxied, and TTLs that need lowering. Runs in the browser.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Parses BIND master file format including $ORIGIN, $TTL and multi-line records',
+        'Flags missing SPF, DKIM and DMARC records',
+        'Identifies mail hostnames that must not be proxied',
+        'Highlights TTLs too long for a safe cutover',
+        'Runs offline. Your zone file never leaves the browser',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'DNS Zone File Checker', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="DNS Zone File Checker | Migration Readiness | Cloudzeta"
+  description="Paste a BIND zone file and see what a DNS migration would break: missing SPF, DKIM or DMARC, mail hosts that must stay unproxied, and TTLs that need lowering. Free, runs in your browser."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          DNS Zone File Checker
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <ZoneFileChecker client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Not whether the syntax parses, but whether the migration will break your email.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Zone file checker FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        Migrating soon? Read <a href="/blog/how-to-migrate-dns-to-cloudflare" class="text-tx-primary hover:text-accent font-medium">how to migrate DNS to Cloudflare</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

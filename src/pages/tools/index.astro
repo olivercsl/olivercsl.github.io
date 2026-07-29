@@ -32,6 +32,12 @@ const categories = [
         tags: ['DNS', 'Migrations', 'TTL'],
       },
       {
+        href: '/tools/dns-zone-file-checker',
+        name: 'DNS Zone File Checker',
+        desc: 'Paste a zone file and see what a migration would break: missing SPF, DKIM or DMARC, mail hosts that must stay unproxied, and TTLs still too long.',
+        tags: ['DNS', 'Migrations', 'Email'],
+      },
+      {
         href: '/tools/port-reference',
         name: 'Network Port Reference',
         desc: 'Searchable reference of the TCP and UDP ports engineers actually meet, with security notes.',
@@ -147,7 +153,7 @@ const schema = {
 
 <Layout
   title="Free Developer & Cloud Tools | No Ads | Cloudzeta"
-  description="13 free browser tools for engineers: SLA, subnet, bandwidth and Kubernetes calculators, DNS cutover planning, timestamps, passwords and more. No ads, no tracking."
+  description="14 free browser tools for engineers: SLA, subnet and bandwidth calculators, DNS cutover planning and zone file checking, timestamps, passwords and more. No ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
