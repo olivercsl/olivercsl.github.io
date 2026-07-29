@@ -1,19 +1,36 @@
 ---
 import '../styles/global.css';
 
+interface ArticleMeta {
+	/** ISO date string. Emitted as article:published_time. */
+	published: string;
+	/** ISO date string. Emitted as article:modified_time. */
+	modified?: string;
+	author?: string;
+	section?: string;
+	tags?: string[];
+}
+
 interface Props {
 	title: string;
 	description?: string;
 	image?: string;
+	/** Present on articles: switches og:type and adds article metadata. */
+	article?: ArticleMeta;
+	/** Set to false on pages that should not be indexed. */
+	index?: boolean;
 }
 
-const { 
+const {
 	title,
-	description = "Cloud infrastructure, engineered properly.",
-	image = "/og-image.png"
+	description = 'AWS Advanced Partner delivering cloud infrastructure and China connectivity.',
+	image = '/og-image.png',
+	article,
+	index = true,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, 'https://cloudzeta.solutions');
+const imageURL = new URL(image, canonicalURL);
 ---
 
 <!doctype html>
@@ -25,20 +42,54 @@ const canonicalURL = new URL(Astro.url.pathname, 'https://cloudzeta.solutions');
 		<link rel="icon" type="image/svg+xml" href="/logo-circuit.svg" />
 		<link rel="canonical" href={canonicalURL} />
 		<meta name="generator" content={Astro.generator} />
-		
-		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
+		{!index && <meta name="robots" content="noindex" />}
+
+		<!-- Language and region. The audience is worldwide, so the page is
+		     declared as generic English rather than tied to one country. -->
+		<meta http-equiv="content-language" content="en" />
+		<link rel="alternate" hreflang="en" href={canonicalURL} />
+		<link rel="alternate" hreflang="x-default" href={canonicalURL} />
+
+		<!-- Where the business operates. Helps local and regional queries
+		     without constraining the pages to a single market. -->
+		<meta name="geo.region" content="AU-NSW" />
+		<meta name="geo.placename" content="Sydney" />
+		<meta name="geo.region" content="HK" />
+		<meta name="geo.placename" content="Hong Kong" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content={article ? 'article' : 'website'} />
+		<meta property="og:site_name" content="Cloudzeta Solutions" />
+		<meta property="og:locale" content="en" />
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content={new URL(image, canonicalURL)} />
+		<meta property="og:image" content={imageURL} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Cloudzeta Solutions" />
+
+		{
+			article && (
+				<>
+					<meta property="article:published_time" content={article.published} />
+					{article.modified && (
+						<meta property="article:modified_time" content={article.modified} />
+					)}
+					{article.author && <meta property="article:author" content={article.author} />}
+					{article.section && <meta property="article:section" content={article.section} />}
+					{article.tags?.map((t) => <meta property="article:tag" content={t} />)}
+					{article.author && <meta name="author" content={article.author} />}
+				</>
+			)
+		}
 
 		<!-- Twitter -->
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:url" content={canonicalURL} />
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content={new URL(image, canonicalURL)} />
+		<meta property="twitter:image" content={imageURL} />
 
 		<title>{title}</title>
 
