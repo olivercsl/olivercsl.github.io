@@ -67,6 +67,24 @@ const categories = [
         tags: ['Capacity', 'Throughput', 'Queueing'],
       },
       {
+        href: '/tools/retry-backoff-calculator',
+        name: 'Retry & Backoff Calculator',
+        desc: 'The full exponential backoff schedule with jitter, checked against your caller timeout, plus the load retries add to a failing dependency.',
+        tags: ['Retries', 'Backoff', 'Resilience'],
+      },
+      {
+        href: '/tools/downtime-cost-calculator',
+        name: 'Cost of Downtime Calculator',
+        desc: 'Price an outage, and see what the downtime each availability tier allows is worth per month, quarter or year.',
+        tags: ['Downtime', 'SLA', 'Cost'],
+      },
+      {
+        href: '/tools/latency-budget-calculator',
+        name: 'Latency Budget Calculator',
+        desc: 'Split an end to end response time target across components, see what is left, and check the round trip floor distance imposes.',
+        tags: ['Latency', 'Budget', 'Architecture'],
+      },
+      {
         href: '/tools/kubernetes-qos-calculator',
         name: 'Kubernetes QoS Calculator',
         desc: 'See the QoS class the kubelet will assign from your requests and limits, with eviction and overcommit warnings.',
@@ -153,7 +171,7 @@ const schema = {
 
 <Layout
   title="Free Developer & Cloud Tools | No Ads | Cloudzeta"
-  description="14 free browser tools for engineers: SLA, subnet and bandwidth calculators, DNS cutover planning and zone file checking, timestamps, passwords and more. No ads."
+  description="17 free browser tools for engineers: SLA, subnet, bandwidth, retry backoff and latency budget calculators, DNS cutover planning and zone file checking, timestamps, passwords and more. No ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 

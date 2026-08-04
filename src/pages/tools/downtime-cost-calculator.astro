@@ -1,0 +1,148 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { DowntimeCostCalculator } from '../../components/tools/DowntimeCostCalculator';
+
+const faqs = [
+  {
+    q: 'How do I calculate the cost of downtime?',
+    a: 'Multiply the hourly cost of an outage by its duration in hours. The hourly figure is usually lost revenue, which you can derive by dividing annual revenue by 8,766 hours. That gives an even spread, so weight it upward if your traffic concentrates in business hours.',
+  },
+  {
+    q: 'How much downtime does each availability target allow?',
+    a: 'Per year: 99% allows about 3.65 days, 99.9% about 8.8 hours, 99.95% about 4.4 hours, 99.99% about 53 minutes, and 99.999% about 5 minutes. Each additional nine cuts the allowance to a tenth, and typically costs considerably more than a tenth to achieve.',
+  },
+  {
+    q: 'Is the next nine worth buying?',
+    a: 'Compare the saving column against what the engineering would cost. Moving from 99.9% to 99.99% removes about 90% of the allowed downtime, so it saves about 90% of what that tier costs you. If multi-region failover, on-call rotation and the testing to prove it all works cost more per year than that saving, the target is not worth having.',
+  },
+  {
+    q: 'What does this calculation leave out?',
+    a: 'Reputation damage and churn, SLA credits owed to customers, engineering hours spent on the incident and the follow-up, and the fact that outages rarely land at quiet hours. All push the number up, so treat the result as a floor rather than a forecast.',
+  },
+  {
+    q: 'Which period should I use?',
+    a: 'Whichever matches the conversation. Annual figures make the case for investment; monthly figures fit an error budget review. A month here is 30.44 days, one twelfth of an astronomical year, so it agrees with the annual figure rather than assuming 30 days.',
+  },
+  {
+    q: 'Is anything sent to a server?',
+    a: 'No. The arithmetic runs in your browser and the page works offline, which matters when the inputs are your revenue figures.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/downtime-cost-calculator';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Cost of Downtime Calculator',
+      url: pageUrl,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free cost of downtime calculator. Price a single incident, and see what the downtime each availability tier allows is worth per month, quarter or year. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Cost of a single incident by duration',
+        'Cost of the downtime each availability tier permits',
+        'Saving from each additional nine',
+        'Hourly cost derived from annual revenue',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cloudzeta Solutions',
+        url: 'https://cloudzeta.solutions',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'Cost of Downtime Calculator', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Cost of Downtime Calculator | Uptime in Money | Cloudzeta"
+  description="Price an outage and see what the downtime each availability tier allows costs per month, quarter or year, plus the saving from each additional nine. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Cost of Downtime Calculator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <DowntimeCostCalculator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Availability targets are budget decisions. This turns each one into a number you can put
+          in front of a finance team.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Downtime cost FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
