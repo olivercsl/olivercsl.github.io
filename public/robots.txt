@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# /docs/ holds share-by-link collateral (sales decks etc). Nothing confidential,
+# but it must not be crawled or indexed: reachable only when the URL is given out.
+Disallow: /docs/
+
 Sitemap: https://cloudzeta.solutions/sitemap-index.xml
