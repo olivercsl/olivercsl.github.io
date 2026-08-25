@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import {
   wallTimeIn,
   wallTimeToInstant,
@@ -22,6 +22,11 @@ import {
  * the actual local times shown for whichever hour you are pointing at. You
  * choose from options you can already evaluate, instead of picking blind and
  * checking afterwards.
+ *
+ * Both controls commit on click. Minutes used to set local state only, so
+ * choosing :30 moved the preview and left the actual time untouched, with no
+ * apply button and no hint that clicking the already-selected hour was what
+ * finished the job.
  */
 
 const CELL: Record<Suitability, string> = {
@@ -31,6 +36,14 @@ const CELL: Record<Suitability, string> = {
 };
 
 const MINUTES = [0, 15, 30, 45];
+
+/** Positioning has to happen before paint, or the popover shows centred for a
+ *  frame and then jumps. useLayoutEffect warns during SSR, hence the swap. */
+const useBeforePaint = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+/** Matches the sm: breakpoint, below which the popover becomes a centred sheet. */
+const DESKTOP = '(min-width: 640px)';
+const GAP = 8;
 
 const hourLabel = (h: number) => {
   const suffix = h < 12 ? 'am' : 'pm';
@@ -48,21 +61,26 @@ interface Props {
   wall: WallTime;
   /** Every location, so an hour can be rated for the whole group. */
   locs: SearchResult[];
+  /** The button that opened this, so the popover can sit against it. */
+  anchor: HTMLElement | null;
   onPick: (instant: Date) => void;
   onClose: () => void;
 }
 
-export const TimePicker = ({ zone, wall, locs, onPick, onClose }: Props) => {
-  const [minute, setMinute] = useState(MINUTES.includes(wall.minute) ? wall.minute : 0);
+export const TimePicker = ({ zone, wall, locs, anchor, onPick, onClose }: Props) => {
   // Defaults to the selected hour, and returns to it on mouse-out. Touch
   // devices never fire hover, so this panel would otherwise be dead space on a
   // phone — instead it always explains the current choice.
   const [preview, setPreview] = useState<number>(wall.hour);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+      const t = e.target as Node;
+      // The anchor is excluded so its own click toggles the popover shut,
+      // rather than this closing it and the button reopening it.
+      if (ref.current && !ref.current.contains(t) && !anchor?.contains(t)) onClose();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -73,9 +91,40 @@ export const TimePicker = ({ zone, wall, locs, onPick, onClose }: Props) => {
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey);
     };
-  }, [onClose]);
+  }, [onClose, anchor]);
 
-  const instantFor = (hour: number) => wallTimeToInstant({ ...wall, hour, minute }, zone);
+  /**
+   * The card around this has overflow-hidden to clip its rounded corners, which
+   * also cut the bottom off an absolutely positioned popover. Fixed positioning
+   * escapes that, but then the popover has to be placed by hand.
+   */
+  useBeforePaint(() => {
+    if (!anchor) return;
+    const place = () => {
+      const el = ref.current;
+      if (!el || !window.matchMedia(DESKTOP).matches) {
+        setPos(null);
+        return;
+      }
+      const a = anchor.getBoundingClientRect();
+      const { offsetWidth: w, offsetHeight: h } = el;
+      const left = Math.min(Math.max(GAP, a.right - w), window.innerWidth - w - GAP);
+      // Below the button, or above it when there is no room below.
+      const below = a.bottom + GAP;
+      const top = below + h > window.innerHeight - GAP ? Math.max(GAP, a.top - h - GAP) : below;
+      setPos({ top, left });
+    };
+    place();
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, true);
+    return () => {
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, true);
+    };
+  }, [anchor]);
+
+  const instantFor = (hour: number, minute = wall.minute) =>
+    wallTimeToInstant({ ...wall, hour, minute }, zone);
 
   /** Worst rating across all locations — a green cell suits everyone at once. */
   const rateAcrossGroup = (hour: number): Suitability => {
@@ -94,10 +143,12 @@ export const TimePicker = ({ zone, wall, locs, onPick, onClose }: Props) => {
       ref={ref}
       role="dialog"
       aria-label="Choose a time"
-      /* Anchored popover on desktop. On a phone there is not enough room beside
-         the button — it ran off the left edge — so it becomes a centred sheet. */
-      className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 bg-white border border-glass-border rounded-2xl shadow-2xl p-4
-                 sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:translate-y-0 sm:mt-2 sm:w-[22rem] sm:z-40"
+      /* On a phone there is not enough room beside the button — it ran off the
+         left edge — so it becomes a centred sheet instead. */
+      className={`fixed z-50 bg-white border border-glass-border rounded-2xl shadow-2xl p-4 sm:w-[22rem] ${
+        pos ? '' : 'inset-x-4 top-1/2 -translate-y-1/2'
+      }`}
+      style={pos ? { top: pos.top, left: pos.left } : undefined}
     >
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-semibold text-tx-primary">Choose an hour</span>
@@ -143,9 +194,12 @@ export const TimePicker = ({ zone, wall, locs, onPick, onClose }: Props) => {
           <button
             key={m}
             type="button"
-            onClick={() => setMinute(m)}
+            // Applies straight away. The grid stays open, so the hour can still
+            // be changed afterwards.
+            onClick={() => onPick(instantFor(wall.hour, m))}
+            aria-pressed={m === wall.minute}
             className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-              m === minute
+              m === wall.minute
                 ? 'bg-accent text-white border-accent'
                 : 'bg-white text-tx-secondary border-glass-border hover:border-accent/40'
             }`}

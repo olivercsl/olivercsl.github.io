@@ -120,6 +120,9 @@ export const TimeZoneConverter = () => {
   /** id of the row whose time picker is open, if any */
   const [picking, setPicking] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  // The button that opened the time picker. Only one is ever open, so one ref
+  // does; the picker needs it to position itself and to ignore its own trigger.
+  const pickerAnchor = useRef<HTMLButtonElement | null>(null);
 
   // Hydrate on the client only: local zone and "now" both differ on the server.
   useEffect(() => {
@@ -480,7 +483,10 @@ export const TimeZoneConverter = () => {
                     aria-label={`Change time in ${loc.city}`}
                     aria-haspopup="dialog"
                     aria-expanded={picking === loc.id}
-                    onClick={() => setPicking((p) => (p === loc.id ? null : loc.id))}
+                    onClick={(e) => {
+                      pickerAnchor.current = e.currentTarget;
+                      setPicking((p) => (p === loc.id ? null : loc.id));
+                    }}
                     className={`px-3 py-1.5 rounded-lg border bg-white text-base font-semibold text-tx-primary tabular-nums transition-all hover:border-accent/50 ${
                       picking === loc.id ? 'border-accent ring-2 ring-accent/30' : 'border-glass-border'
                     }`}
@@ -493,6 +499,7 @@ export const TimeZoneConverter = () => {
                       zone={loc.zone}
                       wall={w}
                       locs={locs}
+                      anchor={pickerAnchor.current}
                       onPick={applyInstant}
                       onClose={() => setPicking(null)}
                     />
