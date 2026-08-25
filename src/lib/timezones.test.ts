@@ -219,3 +219,109 @@ describe('city data', () => {
     expect(cityForZone('Antarctica/Troll').city).toBe('Troll');
   });
 });
+
+describe('searching by country', () => {
+  it('finds Cyprus, which has no zone id containing the country name', () => {
+    const r = searchCities('cyprus');
+    expect(r[0]).toMatchObject({ city: 'Nicosia', cc: 'CY', zone: 'Asia/Nicosia' });
+  });
+
+  it('returns the capital first when the country matched', () => {
+    expect(searchCities('australia')[0]!.city).toBe('Canberra');
+    expect(searchCities('brazil')[0]!.city).toBe('Brasília');
+    expect(searchCities('kenya')[0]!.city).toBe('Nairobi');
+  });
+
+  it('matches the distinctive half of a country name', () => {
+    // "korea" is a substring, not a prefix, of "South Korea"
+    expect(searchCities('korea').some((r) => r.cc === 'KR')).toBe(true);
+    expect(searchCities('emirates').some((r) => r.cc === 'AE')).toBe(true);
+  });
+
+  it('answers to the names people actually type', () => {
+    // Intl.DisplayNames returns Türkiye, Côte d'Ivoire and Netherlands
+    expect(searchCities('turkey')[0]!.cc).toBe('TR');
+    expect(searchCities('ivory')[0]!.cc).toBe('CI');
+    expect(searchCities('holland')[0]!.cc).toBe('NL');
+    expect(searchCities('scotland')[0]!.city).toBe('Edinburgh');
+    expect(searchCities('wales')[0]!.city).toBe('Cardiff');
+  });
+
+  it('answers to former city names', () => {
+    expect(searchCities('bombay')[0]!.city).toBe('Mumbai');
+    expect(searchCities('saigon')[0]!.city).toBe('Ho Chi Minh City');
+    expect(searchCities('peking')[0]!.city).toBe('Beijing');
+    expect(searchCities('kiev')[0]!.city).toBe('Kyiv');
+  });
+
+  it('prefers an exact alias over a country whose name merely starts the same', () => {
+    // "uk" is a prefix of Ukraine but the whole of an alias for Britain
+    expect(searchCities('uk')[0]!.cc).toBe('GB');
+  });
+
+  it('breaks ties on prominence rather than alphabet', () => {
+    // Both Koreas match, and both entries are capitals, so the tie-break
+    // decides. Alphabetically Pyongyang wins, which is not what anyone means.
+    expect(searchCities('korea')[0]!.city).toBe('Seoul');
+  });
+
+  it('still ranks an exact city name above any country match', () => {
+    // Georgia is both a country and a US state; the city wins on an exact hit
+    expect(searchCities('tbilisi')[0]!.zone).toBe('Asia/Tbilisi');
+    expect(searchCities('monaco')[0]!.cc).toBe('MC');
+  });
+
+  it('has a city for every country the browser knows a zone for', () => {
+    const covered = new Set(CITIES.map((c) => c.cc));
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const names = new Intl.DisplayNames(['en'], { type: 'region' });
+    // Superseded codes that still resolve to a name, each an alias for a
+    // country covered under its current code, plus the territories that have a
+    // zone and no permanent population.
+    const skip = new Set([
+      'AN', 'BU', 'CS', 'DD', 'DY', 'FX', 'HV', 'NH', 'RH', 'SU', 'TP', 'UK', 'VD', 'YD', 'YU',
+      'ZR', 'AQ', 'UM', 'GS', 'TF',
+    ]);
+    const missing: string[] = [];
+    for (const a of letters)
+      for (const b of letters) {
+        const cc = a + b;
+        if (skip.has(cc) || covered.has(cc)) continue;
+        // Withdrawn codes have no display name, so ICU echoes the code back.
+        let name: string | undefined;
+        try {
+          name = names.of(cc);
+        } catch {
+          continue;
+        }
+        if (!name || name === cc) continue;
+        let zones: string[] = [];
+        try {
+          zones = (new Intl.Locale('und-' + cc) as any).getTimeZones?.() ?? [];
+        } catch {
+          continue;
+        }
+        if (zones.length) missing.push(`${cc} ${name}`);
+      }
+    expect(missing).toEqual([]);
+  });
+
+  it('flags exactly one capital per country', () => {
+    const perCountry = new Map<string, string[]>();
+    for (const c of CITIES.filter((x) => x.cap)) {
+      const list = perCountry.get(c.cc) ?? [];
+      list.push(c.c);
+      perCountry.set(c.cc, list);
+    }
+    // Bolivia is the real exception: Sucre is the constitutional capital and
+    // La Paz the seat of government, and both are worth returning.
+    const doubled = [...perCountry].filter(([cc, list]) => list.length > 1 && cc !== 'BO');
+    expect(doubled).toEqual([]);
+  });
+
+  it('points every capital at a zone the runtime accepts', () => {
+    for (const city of CITIES.filter((c) => c.cap)) {
+      expect(() => new Intl.DateTimeFormat('en', { timeZone: city.z })).not.toThrow();
+    }
+  });
+});
