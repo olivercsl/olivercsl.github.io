@@ -6,7 +6,12 @@ import {
   epochStrings,
   utcToMs,
   formatRelative,
+  readInZone,
+  isoInZone,
+  zoneTable,
+  ZONE_PRESETS,
 } from './epoch';
+import { offsetMinutes } from './timezones';
 
 // 2026-07-22T00:00:00Z
 const T = 1784678400;
@@ -113,5 +118,54 @@ describe('formatRelative', () => {
   it('describes future instants', () => {
     expect(formatRelative(now + 7_200_000, now)).toBe('in 2 hours');
     expect(formatRelative(now + 86_400_000, now)).toBe('in 1 day');
+  });
+});
+
+describe('zone readings', () => {
+  // 2026-08-26T04:05:09Z. Northern summer, so the US zones are on daylight time
+  // and Sydney is on standard time.
+  const MS = Date.UTC(2026, 7, 26, 4, 5, 9);
+
+  it('reads one instant in a named zone', () => {
+    const la = readInZone(MS, 'America/Los_Angeles', 'Los Angeles');
+    expect(la.formatted).toBe('25 Aug 2026, 21:05:09');
+    expect(la.offset).toBe('UTC -7');
+    expect(la.abbr).toBe('PDT');
+  });
+
+  it('gives the standard abbreviation in winter', () => {
+    const january = Date.UTC(2026, 0, 26, 4, 5, 9);
+    expect(readInZone(january, 'America/Los_Angeles').abbr).toBe('PST');
+    expect(readInZone(january, 'America/New_York').abbr).toBe('EST');
+  });
+
+  it('carries the zone offset in ISO output rather than normalising to UTC', () => {
+    expect(isoInZone(MS, 'UTC')).toBe('2026-08-26T04:05:09Z');
+    expect(isoInZone(MS, 'Asia/Kolkata')).toBe('2026-08-26T09:35:09+05:30');
+    expect(isoInZone(MS, 'America/Los_Angeles')).toBe('2026-08-25T21:05:09-07:00');
+  });
+
+  it('agrees with toISOString for UTC', () => {
+    expect(isoInZone(MS, 'UTC')).toBe(new Date(MS).toISOString().replace('.000Z', 'Z'));
+  });
+
+  it('keeps seconds identical across zones', () => {
+    const seconds = zoneTable(MS).map((r) => r.formatted.slice(-2));
+    expect(new Set(seconds).size).toBe(1);
+  });
+
+  it('appends the visitor zone only when it is not already a preset', () => {
+    expect(zoneTable(MS, 'Asia/Tokyo').length).toBe(ZONE_PRESETS.length);
+    const withKarachi = zoneTable(MS, 'Asia/Karachi');
+    expect(withKarachi.length).toBe(ZONE_PRESETS.length + 1);
+    expect(withKarachi[withKarachi.length - 1]!.label).toBe('Karachi');
+  });
+
+  it('orders the presets west to east', () => {
+    const offsets = ZONE_PRESETS.map((p) => offsetMinutes(new Date(MS), p.zone));
+    // UTC leads, then the rest ascend
+    expect(offsets[0]).toBe(0);
+    const rest = offsets.slice(1);
+    expect([...rest].sort((a, b) => a - b)).toEqual(rest);
   });
 });

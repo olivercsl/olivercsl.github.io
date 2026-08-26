@@ -25,6 +25,14 @@ const faqs = [
     a: 'Systems that store epoch seconds in a signed 32-bit integer overflow on 19 January 2038 at 03:14:07 UTC. Modern platforms use 64-bit time values, which postpone the problem by roughly 292 billion years, but old embedded systems and legacy file formats can still be affected.',
   },
   {
+    q: 'How do I convert an epoch timestamp to PST or EST?',
+    a: 'Paste the timestamp and read the zone table. It shows the instant in UTC, Los Angeles, Denver, Chicago, New York, São Paulo, London, Berlin, Dubai, Kolkata, Shanghai, Tokyo and Sydney at once, plus your own zone if it is not already listed. The abbreviation follows the date rather than being fixed, so a July timestamp reads PDT and a January one reads PST, which is the detail most conversions get wrong.',
+  },
+  {
+    q: 'How do I convert epoch milliseconds rather than seconds?',
+    a: 'Just paste them. A 13-digit value is milliseconds, 16 is microseconds and 19 is nanoseconds, and the unit is detected from the magnitude. If you have a value from an unusual source, the dropdown next to the input forces a specific unit instead.',
+  },
+  {
     q: 'Does epoch time depend on my timezone?',
     a: 'No. An epoch value names one instant, identical everywhere on Earth. Timezones only change how that instant is displayed as a wall-clock date. That is why this page shows the same timestamp as both UTC and your local time: same moment, two renderings.',
   },
@@ -60,12 +68,14 @@ const schema = {
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'Any modern web browser',
       description:
-        'Free Unix epoch and timestamp converter. Auto-detects seconds, milliseconds, microseconds and nanoseconds, converts dates both ways, and shows a live epoch clock. No ads, no tracking.',
+        'Free Unix epoch and timestamp converter. Reads one timestamp across UTC, PST, EST and ten other zones, auto-detects seconds, milliseconds, microseconds and nanoseconds, and converts dates both ways. No ads, no tracking.',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       featureList: [
         'Live epoch clock in seconds and milliseconds',
         'Unit auto-detection for s, ms, us and ns timestamps',
         'Timestamp to UTC, local time and relative time',
+        'One instant read across 13 time zones, with PST/PDT style abbreviations',
+        'ISO 8601 output carrying each zone offset, not normalised to UTC',
         'Date to epoch, interpreted in local time or UTC',
         'Runs offline. Nothing is sent to a server',
       ],
@@ -84,8 +94,8 @@ const schema = {
 ---
 
 <Layout
-  title="Epoch & Unix Timestamp Converter | Cloudzeta"
-  description="Convert Unix timestamps to dates and back. Auto-detects seconds, milliseconds, microseconds and nanoseconds. Free, in your browser, no ads, works offline."
+  title="Epoch Converter | Unix Timestamp to UTC, PST, EST | No Ads"
+  description="Convert a Unix timestamp to a date in UTC, PST, EST and 10 more time zones at once. Seconds, milliseconds, microseconds and nanoseconds detected automatically. No ads, no signup, works offline."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -102,8 +112,67 @@ const schema = {
       <div class="max-w-3xl mx-auto">
         <EpochConverter client:load />
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
-          Unix timestamps to dates and back, with the unit detected for you.
+          Unix timestamps to dates and back, read across every zone you care about,
+          with the unit detected for you.
         </p>
+      </div>
+    </section>
+
+    <!--
+      The zone table inside the widget only exists once the clock has started,
+      so a crawler sees its heading and nothing under it. This section carries
+      the same ground in plain HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Converting epoch time to UTC, PST and EST
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            An epoch value is an instant, not a time of day. It names the same moment everywhere on
+            Earth, and a time zone only decides how that moment is written down. So
+            <span class="font-mono text-sm text-tx-primary">1787744559</span> is one instant that
+            reads as 04:22 in UTC, 21:22 the previous day in Los Angeles and 09:52 in Kolkata.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The table above does all of those at once: UTC, Los Angeles, Denver, Chicago, New York,
+            São Paulo, London, Berlin, Dubai, Kolkata, Shanghai, Tokyo and Sydney, plus your own zone
+            when it is not already among them. Abbreviations are worked out from the date rather than
+            hardcoded, so a June timestamp in New York reads EDT and a December one reads EST. Getting
+            that backwards is the most common error in a hand-written conversion, and it is an hour
+            wrong every time.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Seconds, milliseconds, microseconds and nanoseconds
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            The unit is readable from the length. A present-day timestamp is 10 digits in seconds, 13
+            in milliseconds, 16 in microseconds and 19 in nanoseconds, and those magnitudes are far
+            enough apart to tell without being told. Paste any of them and the unit is detected;
+            override it from the dropdown if a value comes from somewhere unusual.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            Reading milliseconds as seconds is the classic mistake: it puts the date somewhere around
+            the year 56000 rather than this week, which at least fails loudly. The reverse is worse,
+            because seconds read as milliseconds land in January 1970 and look plausible enough in a
+            log to be believed.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">ISO 8601 with the right offset</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Every row gives ISO 8601 carrying that zone's own offset, such as
+            <span class="font-mono text-sm text-tx-primary">2026-08-26T09:52:39+05:30</span>, rather
+            than normalising everything to a Z suffix. Both describe the same instant, but the offset
+            form keeps the zone the reading was taken in, which is what you want when the string is
+            going into a bug report, a changelog or a message to somebody in another country.
+          </p>
+        </div>
       </div>
     </section>
 

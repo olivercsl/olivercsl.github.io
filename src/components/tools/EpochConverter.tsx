@@ -4,6 +4,7 @@ import {
   epochStrings,
   utcToMs,
   formatRelative,
+  zoneTable,
   UNIT_LABELS,
   type EpochUnit,
 } from '../../lib/epoch';
@@ -122,6 +123,14 @@ export const EpochConverter = () => {
 
   const nowStrings = now !== null ? epochStrings(now) : null;
 
+  // The parsed instant if there is one, otherwise the clock. Null before mount
+  // so the server and the client render the same thing.
+  const zoneRows = useMemo(() => {
+    const ms = parsed ? parsed.ms : now;
+    if (ms === null) return null;
+    return zoneTable(ms, localZone());
+  }, [parsed, now]);
+
   return (
     <div className="bg-white rounded-3xl border border-glass-border shadow-xl overflow-hidden">
 
@@ -196,6 +205,66 @@ export const EpochConverter = () => {
                 </>
               )}
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Every zone at once. A timestamp is an instant, and the question people
+          actually have is what it reads as somewhere specific. */}
+      <div className="p-5 md:p-6 border-b border-glass-border">
+        <h2 className="text-sm font-semibold text-tx-primary mb-1">
+          Epoch to UTC, PST, EST and other time zones
+        </h2>
+        <p className="text-xs text-tx-secondary mb-3">
+          {parsed
+            ? 'The timestamp above, read in each zone. Abbreviations follow the date, so a July timestamp shows PDT and a January one shows PST.'
+            : 'The current time in each zone. Paste a timestamp above to convert that instant instead.'}
+        </p>
+        {zoneRows && (
+          <div className="overflow-x-auto -mx-1 px-1">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wide text-tx-secondary border-b border-glass-border">
+                  <th className="py-2 pr-3 font-semibold">Zone</th>
+                  <th className="py-2 pr-3 font-semibold">Local time</th>
+                  <th className="py-2 font-semibold">ISO 8601</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {zoneRows.map((r) => (
+                  <tr key={r.zone}>
+                    <td className="py-2 pr-3 whitespace-nowrap">
+                      <span className="font-medium text-tx-primary">{r.label}</span>{' '}
+                      <span className="text-xs text-tx-secondary">
+                        {r.abbr} · {r.offset}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-3 whitespace-nowrap tabular-nums text-tx-primary">
+                      {r.formatted}
+                    </td>
+                    <td className="py-2 whitespace-nowrap">
+                      <span className="flex items-center gap-1.5">
+                        <span className="font-mono text-xs text-tx-secondary">{r.iso}</span>
+                        <button
+                          type="button"
+                          onClick={() => copy(r.iso)}
+                          aria-label={`Copy ISO 8601 for ${r.label}`}
+                          className="shrink-0 p-1 rounded text-tx-secondary hover:text-accent"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
