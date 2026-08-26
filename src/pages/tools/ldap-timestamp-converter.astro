@@ -1,0 +1,240 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { LdapTimestampConverter } from '../../components/tools/LdapTimestampConverter';
+
+const faqs = [
+  {
+    q: 'What is an LDAP or Active Directory timestamp?',
+    a: 'A count of 100-nanosecond intervals since 1 January 1601 at 00:00 UTC. Windows calls it FILETIME, and Active Directory stores pwdLastSet, accountExpires, lastLogon, lastLogonTimestamp, badPasswordTime and lockoutTime in it. Present-day values run to 18 digits, for example 133801632000000000 for 1 January 2025.',
+  },
+  {
+    q: 'Why does 1601 matter?',
+    a: 'It is the start of the 400-year Gregorian calendar cycle that was current when Windows NT was designed, which made leap-year arithmetic tidy. It has no significance beyond that, and it is the only reason an Active Directory timestamp is not simply a Unix timestamp.',
+  },
+  {
+    q: 'What does accountExpires = 0 mean?',
+    a: 'That the account never expires. It does not mean 1 January 1601. Zero is a sentinel, and its meaning depends on the attribute: on pwdLastSet it means the user must change their password at next logon, on lockoutTime it means the account is not locked out, and on lastLogon it means no logon has been recorded on that domain controller. Converters that render zero as a date in 1601 are the reason this question keeps being asked.',
+  },
+  {
+    q: 'What does 9223372036854775807 mean?',
+    a: 'It is Int64 max, and it also means never. Active Directory uses both zero and Int64 max for accountExpires depending on how the value was written, so a tool has to recognise both. As a date it would be somewhere in the year 30828, which is a reliable sign you are looking at a sentinel rather than a real time.',
+  },
+  {
+    q: 'Why is my maxPwdAge value negative?',
+    a: 'Because it is a duration, not an instant. Active Directory stores maxPwdAge, minPwdAge and lockoutDuration as a negative count of 100-nanosecond intervals. The default domain policy value of -36288000000000 is 42 days, and -18000000000 is the 30 minute lockout duration. Paste a negative value here and it is read as a span.',
+  },
+  {
+    q: 'What is the difference between lastLogon and lastLogonTimestamp?',
+    a: 'lastLogon is accurate but is not replicated, so it is only true for the domain controller you queried, and you have to check every DC to find the real answer. lastLogonTimestamp is replicated but is deliberately lagged, by default by up to 14 days, to keep replication traffic down. Neither is wrong; they answer different questions.',
+  },
+  {
+    q: 'What is Generalized Time?',
+    a: 'The other format Active Directory uses, seen on whenCreated and whenChanged: YYYYMMDDHHMMSS.0Z, always in UTC. This page accepts it as well and converts in both directions.',
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. The conversion runs entirely in your browser and the page works offline. Directory timestamps come out of incident investigations and audit exports, and they stay on your machine.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/ldap-timestamp-converter';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta LDAP Timestamp Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free LDAP, Active Directory and Windows FILETIME timestamp converter. Handles the zero and Int64 max sentinels, negative duration attributes such as maxPwdAge, and Generalized Time. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'FILETIME to date and back, with full 100-nanosecond precision',
+        'Explains what zero means for each Active Directory attribute',
+        'Recognises Int64 max as never rather than the year 30828',
+        'Reads negative maxPwdAge and lockoutDuration values as durations',
+        'Generalized Time (YYYYMMDDHHMMSS.0Z) in both directions',
+        'The result across 13 time zones',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cloudzeta Solutions',
+        url: 'https://cloudzeta.solutions',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'LDAP Timestamp Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="LDAP Timestamp Converter | Active Directory & FILETIME | No Ads"
+  description="Convert LDAP, Active Directory and Windows FILETIME timestamps to a date. Handles accountExpires = 0, Int64 max, and negative maxPwdAge durations that other converters get wrong. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          LDAP Timestamp Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <LdapTimestampConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Active Directory and Windows FILETIME values to a readable date, including the ones that
+          are not dates at all.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      The widget renders its results only after input, so a crawler sees the
+      form and nothing else. These sections carry the substance in plain HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Converting an Active Directory timestamp
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Active Directory stores times as Windows FILETIME: the number of 100-nanosecond
+            intervals since 1 January 1601 at 00:00 UTC. A present-day value is 18 digits, so
+            <span class="font-mono text-sm text-tx-primary">133801632000000000</span> is 1 January
+            2025. The arithmetic is a division by 10,000 to reach milliseconds and a subtraction of
+            11,644,473,600,000 to reach the Unix epoch.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The catch is that 18 digits is past what a JavaScript or spreadsheet number holds
+            exactly, so a conversion done in a float quietly loses the last few digits. This page
+            does the arithmetic in arbitrary precision and keeps the sub-millisecond remainder,
+            which is why it can print the seven fractional digits .NET shows.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            When the value is not a date: zero and Int64 max
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Two values are sentinels, and what they mean depends on the attribute they came from.
+            This is the part that sends people to forums, because a converter that renders
+            <span class="font-mono text-sm text-tx-primary">accountExpires = 0</span> as a date in
+            1601 is arithmetically correct and completely unhelpful.
+          </p>
+          <ul class="space-y-2 text-tx-secondary leading-relaxed">
+            <li><span class="font-mono text-sm text-tx-primary">accountExpires = 0</span> or Int64 max: the account never expires.</li>
+            <li><span class="font-mono text-sm text-tx-primary">pwdLastSet = 0</span>: the user must change their password at next logon.</li>
+            <li><span class="font-mono text-sm text-tx-primary">lockoutTime = 0</span>: the account is not locked out.</li>
+            <li><span class="font-mono text-sm text-tx-primary">lastLogon = 0</span>: no logon recorded on the domain controller you asked.</li>
+          </ul>
+          <p class="text-tx-secondary leading-relaxed mt-3">
+            Int64 max is 9223372036854775807. As a date it lands in the year 30828, which is a
+            dependable sign that you are holding a sentinel rather than a time.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Negative values: maxPwdAge and lockoutDuration
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A handful of attributes store a span rather than an instant, as a negative count of the
+            same 100-nanosecond intervals. The default domain policy
+            <span class="font-mono text-sm text-tx-primary">maxPwdAge</span> of
+            <span class="font-mono text-sm text-tx-primary">-36288000000000</span> is 42 days, and
+            <span class="font-mono text-sm text-tx-primary">-18000000000</span> is the 30 minute
+            lockoutDuration. Paste a negative value above and it is read as a duration instead of
+            being run through the date arithmetic, which is what produces the impossible sixteenth
+            century results people report.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            lastLogon against lastLogonTimestamp
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Both are FILETIME values and they routinely disagree, which is by design rather than a
+            fault. <span class="font-mono text-sm text-tx-primary">lastLogon</span> is exact but is
+            not replicated, so it is only true for the domain controller you queried and finding the
+            real answer means asking all of them.
+            <span class="font-mono text-sm text-tx-primary">lastLogonTimestamp</span> is replicated
+            but deliberately lagged, by default up to 14 days, to keep replication traffic down. If
+            you are hunting stale accounts, the lag is the thing to account for.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          LDAP timestamp FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        Working with Unix timestamps instead? Try the
+        <a href="/tools/epoch-converter" class="text-tx-primary hover:text-accent font-medium">epoch converter</a>,
+        or see all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
