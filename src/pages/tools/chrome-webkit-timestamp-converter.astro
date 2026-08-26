@@ -1,0 +1,225 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { BrowserTimestampConverter } from '../../components/tools/BrowserTimestampConverter';
+
+const faqs = [
+  {
+    q: 'What is a Chrome or WebKit timestamp?',
+    a: 'A 64-bit count of microseconds since 1 January 1601 at 00:00 UTC. Chrome, Edge, Chromium and older WebKit builds use it in their SQLite databases, so a present-day value is 17 digits. It shares the 1601 epoch with Windows FILETIME but counts microseconds rather than 100-nanosecond intervals, which makes it exactly ten times smaller for the same instant.',
+  },
+  {
+    q: 'Which columns hold these values?',
+    a: 'In Chrome History, urls.last_visit_time, visits.visit_time and downloads.start_time. In Chrome Cookies, cookies.creation_utc, expires_utc and last_access_utc. In Login Data, logins.date_created. Safari History uses history_visits.visit_time, which is a Cocoa timestamp instead. Firefox places.sqlite uses microseconds since the Unix epoch, so it is a different thing again.',
+  },
+  {
+    q: 'What is a Cocoa, Core Data or NSDate timestamp?',
+    a: 'Seconds since 1 January 2001 at 00:00 UTC, the reference date Apple frameworks use. Values are around 700 to 800 million today, and they are often stored as a float with a fractional part. Safari, Core Data stores and many plists use it. Read as a Unix timestamp by mistake it lands in the early 1990s, which is a plausible-looking wrong answer rather than an obvious one.',
+  },
+  {
+    q: 'Why does this show several answers instead of one?',
+    a: 'Because a ten-digit number is a valid Cocoa, HFS+ and Unix timestamp at the same time, and the three decode to dates decades apart. Only you know which database the value came from. Guessing one and presenting it as the answer is how a forensic timeline ends up wrong by thirty years, so every reading is shown and the plausible ones are ordered first.',
+  },
+  {
+    q: 'What does a zero mean?',
+    a: 'That the row has no value, not a date in 1601. In Chrome Cookies, expires_utc = 0 is a session cookie that is not persisted to disk. In History, a zero visit time means no visit was recorded. Converters that render zero as 1 January 1601 are technically right and practically misleading.',
+  },
+  {
+    q: 'What is a Mac HFS+ timestamp?',
+    a: 'Seconds since 1 January 1904, used for file creation and modification times on HFS+ volumes. Modern APFS uses nanoseconds since the Unix epoch instead, so a value from a current Mac is far more likely to be Unix or Cocoa.',
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. The conversion runs entirely in your browser and the page works offline. These values come out of browser histories and forensic images, which is exactly the sort of thing that should not be pasted into a server you do not control.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/chrome-webkit-timestamp-converter';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Chrome & WebKit Timestamp Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free Chrome, WebKit, Cocoa and HFS+ timestamp converter. Decodes a raw value from Chrome History or Cookies, shows every plausible reading rather than guessing one, and names the SQLite columns each format comes from. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Chrome and WebKit microseconds since 1601 to a date and back',
+        'Cocoa, Core Data and NSDate seconds since 2001',
+        'Mac HFS+ seconds since 1904',
+        'Every plausible reading shown, since ten digits fits several formats',
+        'Names the Chrome, Safari and Firefox SQLite columns for each format',
+        'The result across 13 time zones',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cloudzeta Solutions',
+        url: 'https://cloudzeta.solutions',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 3, name: 'Chrome & WebKit Timestamp Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Chrome & WebKit Timestamp Converter | Cocoa, HFS+ | No Ads"
+  description="Decode a Chrome or WebKit timestamp from History or Cookies, plus Cocoa NSDate and Mac HFS+ values. Shows every plausible reading instead of guessing, and names the SQLite column each comes from. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Chrome & WebKit Timestamp Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <BrowserTimestampConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          Raw values out of browser databases, decoded as every format they could be.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      The widget renders results only after input, so a crawler sees the form
+      and the column table and nothing else. These sections carry the substance.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Chrome and WebKit: microseconds since 1601
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Chrome, Edge and Chromium store times as a 64-bit count of microseconds since 1 January
+            1601 at 00:00 UTC. A present-day value is 17 digits, so
+            <span class="font-mono text-sm text-tx-primary">13350000000000000</span> is 17 January
+            2024. Divide by a million for seconds, then subtract 11,644,473,600 to reach the Unix
+            epoch.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            It shares the 1601 epoch with Windows FILETIME, which is where the confusion usually
+            starts. FILETIME counts 100-nanosecond intervals, so for the same instant it is exactly
+            ten times larger and 18 digits long. If a value converts to a date roughly ten times too
+            far in the future, you have used the wrong one of the two. Our
+            <a href="/tools/ldap-timestamp-converter" class="text-tx-primary hover:text-accent font-medium">LDAP
+            timestamp converter</a> handles the FILETIME side.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Why the same digits decode three ways
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            A ten-digit number is a valid Cocoa timestamp, a valid HFS+ timestamp and a valid Unix
+            timestamp all at once, and the three land decades apart.
+            <span class="font-mono text-sm text-tx-primary">725843000</span> is 2024 read as Cocoa
+            and 1992 read as Unix. Both are ordinary-looking dates, so nothing about the result tells
+            you which is right.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            That is why this page shows every reading rather than picking one. Only the person
+            holding the file knows which database the value came out of, and a confident wrong answer
+            in a timeline is worse than three labelled candidates.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Cocoa, Core Data and NSDate</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Apple frameworks count seconds from 1 January 2001 at 00:00 UTC, the reference date
+            behind NSDate and Core Data. Today that is a number in the seven hundred millions, often
+            with a fractional part because the value is a double rather than an integer. Safari
+            history, plists and Core Data stores all use it. Read as Unix seconds by mistake it lands
+            in the early nineties, which is the sort of wrong answer that survives review because it
+            looks reasonable.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Zero is not 1601</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A zero in one of these columns means the row has no value.
+            <span class="font-mono text-sm text-tx-primary">expires_utc = 0</span> in Chrome Cookies
+            is a session cookie that is never written to disk with an expiry, and a zero visit time
+            in History means no visit was recorded. Rendering it as 1 January 1601 is arithmetically
+            correct and tells you nothing about what you are looking at.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          Browser timestamp FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See also the <a href="/tools/epoch-converter" class="text-tx-primary hover:text-accent font-medium">epoch
+        converter</a> and the <a href="/tools/ldap-timestamp-converter" class="text-tx-primary hover:text-accent font-medium">LDAP
+        timestamp converter</a>, or all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
