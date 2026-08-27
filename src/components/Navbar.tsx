@@ -10,8 +10,8 @@ interface NavbarProps {
 
 const LINKS = [
   { href: '/#services', label: 'Services' },
-  { href: '/tools', label: 'Tools' },
-  { href: '/blog', label: 'Notes' },
+  { href: '/tools/', label: 'Tools' },
+  { href: '/blog/', label: 'Notes' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -61,8 +61,8 @@ export const Navbar = ({ minimal = false }: NavbarProps) => {
                 sub-pages (e.g. /tools/*) too. */}
             <div className="hidden md:flex items-center gap-8 text-xs font-medium text-tx-primary/80">
               <a href="/#services" className="hover:text-accent transition-colors">Services</a>
-              <a href="/tools" className="hover:text-accent transition-colors">Tools</a>
-              <a href="/blog" className="hover:text-accent transition-colors">Notes</a>
+              <a href="/tools/" className="hover:text-accent transition-colors">Tools</a>
+              <a href="/blog/" className="hover:text-accent transition-colors">Notes</a>
               <a href="/#contact" className="px-3 py-1.5 bg-tx-primary text-white rounded-full hover:bg-tx-primary/90 transition-colors">
                 Contact
               </a>

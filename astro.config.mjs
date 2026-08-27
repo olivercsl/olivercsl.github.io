@@ -12,11 +12,11 @@ export default defineConfig({
   // The tools briefly lived under /features/. Both URLs were public, so keep
   // them resolving rather than 404ing anyone who saved or shared one.
   redirects: {
-    '/features/password-generator': '/tools/password-generator',
-    '/features/time-zone-converter': '/tools/time-zone-converter',
+    '/features/password-generator': '/tools/password-generator/',
+    '/features/time-zone-converter': '/tools/time-zone-converter/',
     // Earlier slugs for the Cloudflare DNS guide, kept resolving.
-    '/blog/dns-cutover-to-cloudflare': '/blog/how-to-migrate-dns-to-cloudflare',
-    '/blog/cloudflare-free-dns': '/blog/how-to-migrate-dns-to-cloudflare',
+    '/blog/dns-cutover-to-cloudflare': '/blog/how-to-migrate-dns-to-cloudflare/',
+    '/blog/cloudflare-free-dns': '/blog/how-to-migrate-dns-to-cloudflare/',
   },
 
   vite: {

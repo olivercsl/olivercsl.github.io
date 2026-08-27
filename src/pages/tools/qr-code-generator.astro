@@ -39,7 +39,7 @@ const faqs = [
   },
 ];
 
-const pageUrl = 'https://cloudzeta.solutions/tools/qr-code-generator';
+const pageUrl = 'https://cloudzeta.solutions/tools/qr-code-generator/';
 
 const schema = {
   '@context': 'https://schema.org',
@@ -75,8 +75,8 @@ const schema = {
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions' },
-        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools' },
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
         { '@type': 'ListItem', position: 3, name: 'QR Code Generator', item: pageUrl },
       ],
     },
@@ -173,7 +173,7 @@ const schema = {
         A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
         Solutions</a>. No ads, no tracking, no account. It stays that way.
         <br class="hidden sm:block" />
-        See all <a href="/tools" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+        See all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
       </p>
     </footer>
   </main>

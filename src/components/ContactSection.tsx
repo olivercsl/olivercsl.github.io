@@ -39,13 +39,13 @@ export const ContactSection = () => {
            <p className="mb-4">
               Free tools:{' '}
               {[
-                ['/tools/sla-calculator', 'SLA calculator'],
-                ['/tools/subnet-calculator', 'Subnet calculator'],
-                ['/tools/time-zone-converter', 'Time zone converter'],
-                ['/tools/epoch-converter', 'Epoch converter'],
-                ['/tools/password-generator', 'Password generator'],
-                ['/tools/uuid-generator', 'UUID generator'],
-                ['/tools/qr-code-generator', 'QR code generator'],
+                ['/tools/sla-calculator/', 'SLA calculator'],
+                ['/tools/subnet-calculator/', 'Subnet calculator'],
+                ['/tools/time-zone-converter/', 'Time zone converter'],
+                ['/tools/epoch-converter/', 'Epoch converter'],
+                ['/tools/password-generator/', 'Password generator'],
+                ['/tools/uuid-generator/', 'UUID generator'],
+                ['/tools/qr-code-generator/', 'QR code generator'],
               ].map(([href, label], i) => (
                 <React.Fragment key={href}>
                   {i > 0 && ' · '}

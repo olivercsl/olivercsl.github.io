@@ -41,7 +41,7 @@ Cloudflare scans your existing DNS during onboarding and imports what it finds. 
 
 Export the zone file from your current provider before touching anything. That export becomes both your reconciliation checklist and your rollback reference.
 
-Once you have it, our [DNS zone file checker](/tools/dns-zone-file-checker) reads it in your browser and reports what a migration would break: missing SPF, DKIM or DMARC records, hostnames that must stay unproxied because mail is delivered to them, and TTLs still too long for a safe cutover. It answers a different question from a syntax validator, which tells you whether the file parses rather than whether the migration will hold.
+Once you have it, our [DNS zone file checker](/tools/dns-zone-file-checker/) reads it in your browser and reports what a migration would break: missing SPF, DKIM or DMARC records, hostnames that must stay unproxied because mail is delivered to them, and TTLs still too long for a safe cutover. It answers a different question from a syntax validator, which tells you whether the file parses rather than whether the migration will hold.
 
 ### Account for every email record
 
@@ -172,4 +172,4 @@ That asymmetry is the case for front-loading the preparation. The migration is q
 
 ## Planning the timing
 
-To lay this sequence against real dates, our [DNS TTL and cutover planner](/tools/dns-ttl-planner) converts a cutover time and your current TTLs into a timeline: when to lower the TTL, when the change is effectively propagated, and when it is safe to restore normal values.
+To lay this sequence against real dates, our [DNS TTL and cutover planner](/tools/dns-ttl-planner/) converts a cutover time and your current TTLs into a timeline: when to lower the TTL, when the change is effectively propagated, and when it is safe to restore normal values.
