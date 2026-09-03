@@ -21,6 +21,22 @@ const faqs = [
     "a": "99% of sampled requests completed at or below that value. If P99 is 800ms, one request in a hundred took longer. At scale that is a lot of requests: a million requests a day means ten thousand of them beyond P99."
   },
   {
+    "q": "What does P50 latency mean?",
+    "a": "P50 is the median: half of requests were faster, half slower. It describes the typical experience, which is why it is a better summary than the average. An average of 100ms can come from every request taking 100ms, or from most taking 20ms and a few taking four seconds, and those are very different services. P50 cannot be dragged around by a handful of slow outliers."
+  },
+  {
+    "q": "How is P99 calculated?",
+    "a": "Sort every sample from fastest to slowest, then take the value at 99% of the way through the list. With 1,000 samples that is the 990th. When the position lands between two samples, the usual approach is linear interpolation between them, which is what this calculator does. There is no averaging involved: a percentile is always a position in the sorted data."
+  },
+  {
+    "q": "What is the difference between P90, P95 and P99?",
+    "a": "Only how far into the tail you look. P90 is the slowest request in ten, P95 the slowest in twenty, P99 the slowest in a hundred. They usually diverge sharply: a service might run 80ms at P90, 200ms at P95 and 2 seconds at P99, because the causes differ. P90 mostly reflects ordinary load, while P99 exposes garbage collection pauses, cold caches, lock contention and retries."
+  },
+  {
+    "q": "Which percentile should I use for an SLO?",
+    "a": "P95 or P99 for most user-facing services, and P50 alongside it so you can see both the typical and the worst case. P99.9 is worth tracking only when you have enough traffic to measure it, since it needs thousands of samples to mean anything. Setting an SLO on the average is the common mistake: it can be met while a meaningful share of users have a bad time."
+  },
+  {
     "q": "How many samples do I need for a trustworthy P99?",
     "a": "As a rule of thumb, at least a few hundred for P99 and a few thousand for P99.9. With ten samples, the top percentiles are just your maximum wearing a costume."
   },
@@ -73,8 +89,8 @@ const schema = {
 ---
 
 <Layout
-  title="Latency Percentile Calculator | P50 to P99.9 | Cloudzeta"
-  description="Paste latency samples and get P50, P90, P95, P99 and P99.9 with min, mean, max and a long-tail warning. Free, in your browser, no ads."
+  title="Latency Percentile Calculator | What P50, P95 and P99 Mean"
+  description="What P50, P90, P95 and P99 latency actually mean, how each is calculated, and which to use. Paste your own samples and get all of them, with a long-tail warning. Free, no ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -93,6 +109,79 @@ const schema = {
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
           Paste samples straight from a log and read the percentiles that matter.
         </p>
+      </div>
+    </section>
+
+    <!--
+      Google matches this page to explainer questions rather than tool
+      searches: "p50 latency meaning", "how is p99 calculated", "p50 vs p90".
+      The calculator alone answers none of those, so the explanation is here
+      in plain HTML where a crawler can read it.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            What P50, P95 and P99 latency mean
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            A percentile is a position in your sorted response times, not a calculation over them.
+            P50 is the value half your requests came in under. P95 is the value 95% came in under.
+            P99 is the value 99% came in under, so one request in a hundred was slower than that.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The reason engineers reach for percentiles rather than the average is that averages
+            conceal the people having a bad time. A service averaging 100ms could be serving every
+            request in 100ms, or serving most in 20ms and one in fifty in three seconds. Those are
+            different services, and only one of them has angry users. The average cannot tell them
+            apart; P50 next to P99 can.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">How a percentile is calculated</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Sort every sample from fastest to slowest, then read off the value at the position you
+            want. For P99 of 1,000 samples that is the 990th value. For P95 of the same set, the
+            950th. No arithmetic is performed on the numbers themselves, which is exactly why a
+            percentile resists outliers in a way the mean does not.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The position rarely lands on a whole number, and how you handle that is where tools
+            disagree. This one interpolates linearly between the two neighbouring samples, which is
+            the common convention. With small sample counts the difference between methods is
+            visible, which is a good reason not to trust a P99 taken from a handful of requests.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">P90 against P95 against P99</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            They differ only in how far into the tail you look, but in practice they describe
+            different failures. A service might read 80ms at P90, 200ms at P95 and two seconds at
+            P99. P90 largely reflects ordinary load. P99 is where garbage collection pauses, cold
+            caches, lock contention, connection pool exhaustion and retries show up.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            That gap is the useful signal. When P99 sits at many multiples of the median, a minority
+            of requests is taking a genuinely different path through the system, and the fix is
+            usually structural rather than a matter of general tuning. Our
+            <a href="/tools/latency-budget-calculator/" class="text-tx-primary hover:text-accent font-medium">latency
+            budget calculator</a> is the companion for deciding where that time is allowed to go.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            How many samples a percentile needs
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Roughly a few hundred requests before P99 means anything, and a few thousand before
+            P99.9 does. Below that you are not measuring the tail, you are reporting your slowest
+            sample with a decimal point attached. Ten samples cannot have a 99th percentile in any
+            meaningful sense, however confidently a dashboard prints one.
+          </p>
+        </div>
       </div>
     </section>
 

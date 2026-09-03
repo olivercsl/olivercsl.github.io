@@ -17,6 +17,14 @@ const faqs = [
     "a": "Guaranteed: every container sets requests and limits for both CPU and memory, with request equal to limit. BestEffort: nothing is set at all. Burstable: everything in between. One container falling short of the Guaranteed rules makes the whole pod Burstable."
   },
   {
+    "q": "What is a QoS class in Kubernetes?",
+    "a": "A label the kubelet assigns to every pod at admission time, based purely on the requests and limits its containers declare. You never set it directly; it is derived. Its job is to rank pods for eviction when a node runs short of resources, so it decides which workloads are sacrificed first when the node is under pressure."
+  },
+  {
+    "q": "How does Kubernetes decide the QoS class?",
+    "a": "Three rules, checked in order. If every container in the pod sets both CPU and memory requests and limits, and each request equals its limit, the pod is Guaranteed. If no container sets any request or limit at all, it is BestEffort. Everything else is Burstable. A single container missing a single value is enough to drop the whole pod from Guaranteed to Burstable, which is the rule that surprises people most."
+  },
+  {
     "q": "Why does the QoS class matter?",
     "a": "It sets the eviction order when a node runs short of memory: BestEffort pods go first, then Burstable pods exceeding their requests, and Guaranteed pods last. For anything stateful or latency-critical, the class is effectively your seat on the lifeboat."
   },
@@ -73,8 +81,8 @@ const schema = {
 ---
 
 <Layout
-  title="Kubernetes QoS Class Calculator | Cloudzeta"
-  description="Enter container requests and limits and see the pod QoS class the kubelet will assign, with eviction-order and overcommit warnings. Free, no ads."
+  title="Kubernetes QoS Classes Explained | Guaranteed, Burstable, BestEffort"
+  description="What a Kubernetes QoS class is, how the kubelet decides between Guaranteed, Burstable and BestEffort, and what it means for eviction order. Enter your requests and limits to see which you get. Free, no ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -93,6 +101,83 @@ const schema = {
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
           Requests and limits in, QoS class and eviction consequences out.
         </p>
+      </div>
+    </section>
+
+    <!--
+      The queries reaching this page are questions rather than tool searches:
+      "what is qos class in kubernetes", "k8s qos classes". The calculator
+      answers none of them on its own, so the explanation lives here in plain
+      HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            What a Kubernetes QoS class is
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A label the kubelet attaches to every pod when it is admitted, derived entirely from the
+            requests and limits its containers declare. There is no field to set it in: you get the
+            class your resource spec earns. Its purpose is to rank pods against each other for
+            eviction, so when a node runs out of memory the class decides who is killed first.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Guaranteed, Burstable and BestEffort
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Three rules, checked in order:
+          </p>
+          <ul class="space-y-2 text-tx-secondary leading-relaxed mb-3">
+            <li>
+              <strong class="text-tx-primary">Guaranteed</strong>: every container sets CPU and
+              memory requests and limits, and each request equals its limit.
+            </li>
+            <li>
+              <strong class="text-tx-primary">BestEffort</strong>: no container sets any request or
+              limit at all.
+            </li>
+            <li>
+              <strong class="text-tx-primary">Burstable</strong>: anything else.
+            </li>
+          </ul>
+          <p class="text-tx-secondary leading-relaxed">
+            The rule that catches people is how unforgiving Guaranteed is. One container in a pod
+            missing one value, or a request set a little below its limit, drops the entire pod to
+            Burstable. Sidecars are the usual culprit: the application container is specified
+            carefully and the log shipper beside it is not.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">What the class actually changes</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Eviction order under memory pressure. BestEffort pods are removed first, then Burstable
+            pods that have grown past their requests, and Guaranteed pods last. For a stateful or
+            latency-critical service, the class is effectively its seat on the lifeboat.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            Worth separating from a different mechanism people conflate with it: exceeding a memory
+            limit gets a container OOM-killed by the kernel immediately, whatever its class.
+            Exceeding a CPU limit only throttles it. That asymmetry is why a missing memory limit is
+            worth flagging, since without one a leak grows until the node itself is in trouble and
+            the eviction order decides who pays for it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Should everything be Guaranteed?</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            No. Guaranteed reserves the full limit for every pod, which gives up the overcommit that
+            makes a cluster affordable. The usual shape is Guaranteed for critical stateful
+            services, Burstable with honest requests for the bulk of workloads, and BestEffort only
+            for jobs you would not mind losing. Setting requests you know to be inflated in order to
+            reach Guaranteed just moves the waste somewhere harder to see.
+          </p>
+        </div>
       </div>
     </section>
 
