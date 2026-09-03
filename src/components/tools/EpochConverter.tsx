@@ -134,38 +134,31 @@ export const EpochConverter = () => {
   return (
     <div className="bg-white rounded-3xl border border-glass-border shadow-xl overflow-hidden">
 
-      {/* Now */}
+      {/*
+        The input leads. It used to sit under the live clock, and with a bare
+        number as its placeholder it read as one more row of read-only output
+        on a page already full of monospace numbers. Somebody arriving with a
+        timestamp to convert could not find where to put it.
+      */}
       <div className="p-5 md:p-6 border-b border-glass-border">
-        <h2 className="text-sm font-semibold text-tx-primary mb-3">Current epoch time</h2>
-        {nowStrings ? (
-          <div className="grid sm:grid-cols-2 gap-x-8">
-            <CopyRow label="Seconds" value={nowStrings.s} onCopy={copy} />
-            <CopyRow label="Milliseconds" value={nowStrings.ms} onCopy={copy} />
-            <CopyRow label="ISO 8601 UTC" value={isoUtc(now!)} onCopy={copy} />
-            <CopyRow label={localZone()} value={localString(now!)} onCopy={copy} />
-          </div>
-        ) : (
-          <div className="h-24 rounded-xl bg-surface animate-pulse" />
-        )}
-      </div>
-
-      {/* Timestamp -> date */}
-      <div className="p-5 md:p-6 border-b border-glass-border">
-        <h2 className="text-sm font-semibold text-tx-primary mb-1">Timestamp to date</h2>
+        <h2 className="text-base font-semibold text-tx-primary mb-1">
+          <label htmlFor="epoch-in">Unix timestamp to date</label>
+        </h2>
         <p className="text-xs text-tx-secondary mb-3">
-          Paste an epoch in seconds, milliseconds, microseconds or nanoseconds. The unit is detected
-          from the magnitude. Date strings like 2026-07-22T09:00Z work too.
+          Seconds, milliseconds, microseconds or nanoseconds. The unit is detected from the
+          magnitude. Date strings like 2026-07-22T09:00Z work too.
         </p>
 
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <input
+            id="epoch-in"
             type="text"
             inputMode="numeric"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={nowStrings ? nowStrings.s : 'e.g. 1784678400'}
+            placeholder="Paste your timestamp here, e.g. 1784678400"
             spellCheck={false}
-            className="flex-1 min-w-56 px-4 py-2.5 rounded-xl border border-glass-border bg-surface focus:bg-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
+            className="flex-1 min-w-56 px-4 py-3 rounded-xl border-2 border-glass-border bg-white font-mono text-base text-tx-primary placeholder:font-sans placeholder:text-sm placeholder:text-tx-secondary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all"
           />
           <select
             value={forcedUnit}
@@ -206,6 +199,21 @@ export const EpochConverter = () => {
               )}
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Now */}
+      <div className="p-5 md:p-6 border-b border-glass-border">
+        <h2 className="text-sm font-semibold text-tx-primary mb-3">Current epoch time</h2>
+        {nowStrings ? (
+          <div className="grid sm:grid-cols-2 gap-x-8">
+            <CopyRow label="Seconds" value={nowStrings.s} onCopy={copy} />
+            <CopyRow label="Milliseconds" value={nowStrings.ms} onCopy={copy} />
+            <CopyRow label="ISO 8601 UTC" value={isoUtc(now!)} onCopy={copy} />
+            <CopyRow label={localZone()} value={localString(now!)} onCopy={copy} />
+          </div>
+        ) : (
+          <div className="h-24 rounded-xl bg-surface animate-pulse" />
         )}
       </div>
 
