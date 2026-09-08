@@ -73,8 +73,8 @@ const schema = {
 ---
 
 <Layout
-  title="Bandwidth & Transfer Time Calculator | Cloudzeta"
-  description="How long does 10 TB take over 1 Gbps? Convert data sizes and link speeds, and estimate transfer times with protocol overhead. Free, no ads."
+  title="Bandwidth & Transfer Time Calculator | With Latency and Loss"
+  description="How long does 10 TB really take over 1 Gbps? Converts sizes and link speeds, then shows what one TCP stream actually achieves once round trip time and packet loss are counted. Free, no ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -93,6 +93,83 @@ const schema = {
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
           Sizes, link speeds and honest transfer times, with the bits-versus-bytes confusion handled.
         </p>
+      </div>
+    </section>
+
+    <!--
+      Three of the queries this page is shown for ask for latency:
+      "data transfer calculator with latency", "file transfer calculator
+      latency", "tcp bandwidth calculator". The widget answers them now; this
+      explains them where a crawler can read it.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Why size divided by link speed is optimistic
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            On a local network, dividing the file size by the link speed is close enough. Over
+            distance it is not, because a single TCP stream is not limited by the link. It is
+            limited by how much data it is allowed to have unacknowledged in flight, and by how
+            often loss forces it to back off.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The gap is not small. A 1 Gbps path with a 200ms round trip and a default receive window
+            carries about 2.6 Mbps on one stream. That is a quarter of one percent of the link, and
+            a 10 TB transfer that the simple arithmetic puts at a day takes closer to a year.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Bandwidth delay product and the receive window
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            The bandwidth delay product is bandwidth multiplied by round trip time: the amount of
+            data that must be in flight to keep the pipe full. At 1 Gbps and 200ms that is roughly
+            24 MiB. If the receive window is smaller than that, the sender spends most of its time
+            waiting for acknowledgements rather than sending.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            A window that has not been scaled tops out at 64 KiB, which is why the ceiling is one
+            window per round trip: 64 KiB every 200ms is 2.6 Mbps and no more, on a link of any
+            speed. Window scaling, from RFC 1323, is what lifts that, and it is why tuning
+            <span class="font-mono text-sm text-tx-primary">tcp_rmem</span> matters far more on a
+            long path than a short one.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            What packet loss does over distance
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Loss-based congestion control halves the window on every loss and grows back slowly, so
+            throughput falls with the square root of the loss rate. The Mathis approximation puts it
+            at roughly MSS divided by round trip, times one over the square root of loss.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The consequence is that loss and distance multiply. At 0.1% loss, a 20ms path carries
+            about 23 Mbps on one stream and a 200ms path about 2.3 Mbps: same loss, ten times the
+            distance, a tenth of the throughput. It is also why cutting loss from 0.1% to 0.01% only
+            about triples throughput rather than multiplying it by ten. Both are estimates of a
+            classic congestion control sawtooth, so a stack using BBR will behave differently.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            What to do about it
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Three levers, in the order they usually pay. Raise the receive window so it exceeds the
+            bandwidth delay product, which is free and often enough on a clean path. Run parallel
+            streams, since the ceilings apply per stream and the calculator above tells you how many
+            you would need. Or shorten the path, because both formulas have round trip time in the
+            denominator and nothing else you tune has that leverage.
+          </p>
+        </div>
       </div>
     </section>
 
