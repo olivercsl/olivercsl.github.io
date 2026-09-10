@@ -1,0 +1,228 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { IsoDurationConverter } from '../../components/tools/IsoDurationConverter';
+
+const faqs = [
+  {
+    q: 'What does PT1H30M mean?',
+    a: 'One hour and thirty minutes. P opens every ISO 8601 duration, T separates the date part from the time part, and each number is followed by the letter naming its unit. So PT1H30M is 1 hour 30 minutes, PT4M13S is 4 minutes 13 seconds, and P3DT4H is 3 days 4 hours.',
+  },
+  {
+    q: 'Why are there two Ms?',
+    a: 'Because M means months before the T and minutes after it. P1M is one month. PT1M is one minute. They differ by roughly a factor of forty thousand, which makes it the most expensive typo in the format, and it is why the T is not optional decoration.',
+  },
+  {
+    q: 'How many seconds is P1M?',
+    a: 'There is no single answer. One month is 28, 29, 30 or 31 days depending on which month, so a duration containing years or months cannot be converted to seconds without knowing when it starts. Give this page a start date and it measures the real interval. Without one it falls back to the mean Gregorian month of 30.44 days and says so.',
+  },
+  {
+    q: 'What is the difference between a duration and an interval?',
+    a: 'A duration is a length with no position: PT1H30M is ninety minutes, whenever it happens. An interval is anchored to real time, written as two instants or an instant and a duration. The distinction matters exactly where calendar components are involved, since a month only has a length once you know where it sits.',
+  },
+  {
+    q: 'Can a duration be negative?',
+    a: 'ISO 8601 allows a leading minus, as in -PT1H, and .NET and Java both accept it. Some parsers do not, so it is worth checking what receives your value before relying on it.',
+  },
+  {
+    q: 'Where will I meet this format?',
+    a: 'schema.org uses it for recipe cookTime and video duration, which is why it matters for structured data. The YouTube Data API returns contentDetails.duration this way. XML Schema calls it xs:duration, .NET round-trips TimeSpan through it, and a number of Kubernetes CRDs use it for timeout fields.',
+  },
+  {
+    q: 'What does P2W mean, and can I mix weeks with other units?',
+    a: 'P2W is two weeks. Strict ISO 8601 treats the week form as exclusive, so P2W3D is not valid by the letter of the standard even though many parsers accept it. If you control both ends it usually works; if you do not, prefer P17D.',
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. The parsing runs entirely in your browser and the page works offline.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/iso-8601-duration-converter/';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta ISO 8601 Duration Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free ISO 8601 duration converter. Turns PT1H30M or P3DT4H5M6S into words, seconds and clock time, and converts seconds back. Handles the months problem exactly by measuring from a real date. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'PT1H30M and P3DT4H5M6S to words, seconds and clock time',
+        'Seconds back to a canonical ISO 8601 duration',
+        'Exact totals for durations containing months, measured from a start date',
+        'Says when a total is approximate rather than hiding it',
+        'Negative durations and the week form',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: {
+        '@type': 'Organization',
+        name: 'Cloudzeta Solutions',
+        url: 'https://cloudzeta.solutions',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
+        { '@type': 'ListItem', position: 3, name: 'ISO 8601 Duration Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="ISO 8601 Duration Converter | PT1H30M to Seconds | No Ads"
+  description="Convert PT1H30M or P3DT4H5M6S to words, seconds and clock time, and back again. Handles months exactly by measuring from a real date instead of guessing 30 days. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          ISO 8601 Duration Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <IsoDurationConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          PT1H30M in, ninety minutes out. And an honest answer when the duration contains months.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      The widget renders nothing before input, so a crawler would see the form
+      and the format table alone. The substance lives here.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">How to read an ISO 8601 duration</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Every duration opens with <span class="font-mono text-sm text-tx-primary">P</span>, for
+            period. A <span class="font-mono text-sm text-tx-primary">T</span> separates the date
+            part from the time part, and each number is followed by a letter naming its unit.
+          </p>
+          <ul class="space-y-1.5 text-tx-secondary leading-relaxed">
+            <li><span class="font-mono text-sm text-tx-primary">PT1H30M</span> is 1 hour 30 minutes</li>
+            <li><span class="font-mono text-sm text-tx-primary">PT4M13S</span> is 4 minutes 13 seconds</li>
+            <li><span class="font-mono text-sm text-tx-primary">P3DT4H5M6S</span> is 3 days, 4 hours, 5 minutes, 6 seconds</li>
+            <li><span class="font-mono text-sm text-tx-primary">P1Y2M</span> is 1 year 2 months</li>
+            <li><span class="font-mono text-sm text-tx-primary">P2W</span> is 2 weeks</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">The two Ms</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            <span class="font-mono text-sm text-tx-primary">M</span> means months before the T and
+            minutes after it. <span class="font-mono text-sm text-tx-primary">P1M</span> is one
+            month; <span class="font-mono text-sm text-tx-primary">PT1M</span> is one minute. The
+            two differ by about forty thousand times, which makes the missing T the most expensive
+            single character in the format. If a scheduled job has been running once a month instead
+            of once a minute, or the reverse, this is usually why.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Why P1M has no answer in seconds
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Hours, minutes, seconds, days and weeks all have fixed lengths, so converting them is
+            arithmetic. Years and months do not. One month is 28, 29, 30 or 31 days depending
+            entirely on which month, so
+            <span class="font-mono text-sm text-tx-primary">P1M</span> has no length until you say
+            when it starts.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            Most converters quietly answer 2,592,000 seconds, which is thirty days, and is wrong
+            eleven months of the year. This page does it the other way: give it a start date and it
+            applies the duration to a real calendar and measures the result. From 1 January that is
+            31 days; from 1 February 2026 it is 28. Without a date it falls back to the mean
+            Gregorian month of 30.44 days and labels the answer approximate rather than hiding it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            One month after 31 January
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A related trap. Adding a month to 31 January has no obvious right answer, and naive date
+            arithmetic overflows into 3 March, because 31 February gets normalised forward. The
+            convention almost everything else follows is to clamp to the last day of the target
+            month, giving 28 February, or 29 in a leap year. This page clamps. It is worth knowing
+            which convention your own stack uses, because the two differ by three days and only ever
+            at month ends.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">
+          ISO 8601 duration FAQs
+        </h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        Working with timestamps instead? Try the
+        <a href="/tools/epoch-converter/" class="text-tx-primary hover:text-accent font-medium">epoch converter</a>,
+        or see all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
