@@ -85,6 +85,12 @@ const categories = [
         tags: ['Latency', 'Budget', 'Architecture'],
       },
       {
+        href: '/tools/kubernetes-resource-units-converter/',
+        name: 'Kubernetes Resource Units Converter',
+        desc: 'CPU millicores and memory quantities like 128Mi, 1G and 129e6, with warnings for the suffix mistakes the API server accepts.',
+        tags: ['Kubernetes', 'Memory', 'CPU'],
+      },
+      {
         href: '/tools/kubernetes-qos-calculator/',
         name: 'Kubernetes QoS Calculator',
         desc: 'See the QoS class the kubelet will assign from your requests and limits, with eviction and overcommit warnings.',
@@ -100,6 +106,12 @@ const categories = [
         name: 'Time Zone Converter',
         desc: 'Compare cities side by side and find an hour that works for everyone, with daylight saving handled for any date.',
         tags: ['Time zones', 'Meetings', 'Scheduling'],
+      },
+      {
+        href: '/tools/excel-serial-date-converter/',
+        name: 'Excel Serial Date Converter',
+        desc: 'Excel serial numbers to dates and back, Unix timestamps included, with the 1904 date system and the 1900 leap year bug handled.',
+        tags: ['Excel', 'Dates', 'Spreadsheets'],
       },
       {
         href: '/tools/iso-8601-duration-converter/',
@@ -189,7 +201,7 @@ const schema = {
 
 <Layout
   title="Free Developer & Cloud Tools | No Ads | Cloudzeta"
-  description="20 free browser tools for engineers: SLA, subnet, bandwidth, retry backoff and latency budget calculators, DNS cutover planning and zone file checking, timestamps, passwords and more. No ads."
+  description="22 free browser tools for engineers: SLA, subnet, bandwidth, retry backoff and latency budget calculators, DNS cutover planning and zone file checking, timestamps, passwords and more. No ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 

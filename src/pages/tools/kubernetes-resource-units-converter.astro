@@ -1,0 +1,214 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { K8sUnitsConverter } from '../../components/tools/K8sUnitsConverter';
+
+const faqs = [
+  {
+    q: 'What is the difference between Mi and M in Kubernetes?',
+    a: 'Mi is a mebibyte, 1,048,576 bytes. M is a megabyte, 1,000,000 bytes. So 128Mi is 134,217,728 bytes and 128M is 128,000,000, about 5% less, and the gap widens to around 7% at gigabyte scale. For memory you almost always want the binary forms, Mi and Gi, because that is how operating systems and the kubelet report usage.',
+  },
+  {
+    q: 'What does memory: 128m mean?',
+    a: 'Probably not what was intended. The m suffix means milli everywhere in Kubernetes, so 128m of memory is 0.128 bytes. The API server accepts it without complaint, which is why it is one of the most common typos in manifests. On CPU, m is exactly right: 128m is 128 millicores.',
+  },
+  {
+    q: 'How many millicores are in a CPU?',
+    a: 'One thousand. 1000m is one core, 500m is half a core, and 250m is a quarter. You can write whole cores as plain numbers too, so 0.5 and 500m mean the same thing. Kubernetes does not accept precision finer than 1m and rounds anything smaller up.',
+  },
+  {
+    q: 'Is one Kubernetes CPU one physical core?',
+    a: 'It is one vCPU, meaning one hyperthread on most cloud instances rather than a full physical core. On AWS, an m5.large reports two vCPUs, which is one physical core with hyperthreading. That is why CPU-bound work often gets less throughput per request than the number suggests.',
+  },
+  {
+    q: 'Why does kubectl show memory in Ki?',
+    a: 'Because the API stores quantities canonically and kubectl prints what it stores, often converting to the smallest binary suffix that represents the value exactly. A request written as 1Gi can come back as 1048576Ki. It is the same amount, just a less convenient spelling.',
+  },
+  {
+    q: 'Can I use MB or GB in a manifest?',
+    a: 'No. The valid suffixes are case sensitive and short: k, M, G, T, P and E for decimal, Ki, Mi, Gi, Ti, Pi and Ei for binary, plus m, u and n for fractions. MB, GB and a capital K are rejected by the API server.',
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. Parsing runs entirely in your browser and the page works offline.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/kubernetes-resource-units-converter/';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Kubernetes Resource Units Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free Kubernetes resource units converter. Converts CPU millicores and memory quantities such as 128Mi, 1G and 129e6, and flags the mistakes that pass validation: memory in millibytes, M instead of Mi, and CPU finer than 1m. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'CPU cores and millicores',
+        'Memory in binary, decimal and bytes',
+        'Flags memory written in millibytes, such as 128m',
+        'Shows the gap between M and Mi',
+        'Warns about CPU precision finer than 1m',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
+        { '@type': 'ListItem', position: 3, name: 'Kubernetes Resource Units Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Kubernetes Resource Units Converter | Mi vs M, Millicores"
+  description="Convert Kubernetes CPU millicores and memory quantities like 128Mi, 1G and 129e6. Catches the mistakes the API server accepts: memory in millibytes, M instead of Mi, CPU finer than 1m. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Kubernetes Resource Units Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <K8sUnitsConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          What 500m, 128Mi and 1G really mean, and the suffix mistakes that validation lets through.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      Page one for this search is mostly explainers: Medium posts, the official
+      docs and forum threads. The widget renders nothing before input, so the
+      explanation lives here in plain HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Mi against M: binary and decimal memory</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Kubernetes accepts two families of memory suffix and they are not interchangeable.
+            <span class="font-mono text-sm text-tx-primary">Ki</span>,
+            <span class="font-mono text-sm text-tx-primary">Mi</span> and
+            <span class="font-mono text-sm text-tx-primary">Gi</span> are powers of 1,024;
+            <span class="font-mono text-sm text-tx-primary">k</span>,
+            <span class="font-mono text-sm text-tx-primary">M</span> and
+            <span class="font-mono text-sm text-tx-primary">G</span> are powers of 1,000. So
+            <span class="font-mono text-sm text-tx-primary">1Gi</span> is 1,073,741,824 bytes and
+            <span class="font-mono text-sm text-tx-primary">1G</span> is 1,000,000,000, about 7% less.
+            Operating systems and the kubelet count memory in binary units, so a limit written in
+            decimal leaves a container with less headroom than its author thought, and it is a common
+            reason for OOM kills that look impossible on paper.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">The lowercase m trap</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            In Kubernetes, <span class="font-mono text-sm text-tx-primary">m</span> means milli on every
+            resource. On CPU that is millicores, which is exactly what you want. On memory it is
+            millibytes, so <span class="font-mono text-sm text-tx-primary">memory: 128m</span> requests
+            0.128 bytes. The API server accepts it, the scheduler happily places the pod, and the problem
+            surfaces later as an unschedulable limit or a container killed on start. If you find a
+            lowercase m next to memory anywhere in a manifest, it is almost certainly a typo for
+            <span class="font-mono text-sm text-tx-primary">Mi</span>.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">CPU millicores and what a core is</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            One CPU is 1,000 millicores: <span class="font-mono text-sm text-tx-primary">500m</span>
+            and <span class="font-mono text-sm text-tx-primary">0.5</span> are the same request.
+            Kubernetes refuses precision finer than 1m and rounds up. Worth knowing too that one
+            Kubernetes CPU is one vCPU, and on most cloud instances that is a single hyperthread rather
+            than a physical core, so a two vCPU node is typically one core with hyperthreading. Once
+            you have settled the numbers, the
+            <a href="/tools/kubernetes-qos-calculator/" class="text-tx-primary hover:text-accent font-medium">Kubernetes
+            QoS calculator</a> shows which eviction class your requests and limits put a pod in.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Suffixes the API server rejects</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Quantities are case sensitive and use short suffixes only. <span class="font-mono text-sm text-tx-primary">MB</span>,
+            <span class="font-mono text-sm text-tx-primary">GB</span>,
+            <span class="font-mono text-sm text-tx-primary">GiB</span> and a capital
+            <span class="font-mono text-sm text-tx-primary">K</span> are all invalid and fail at apply
+            time. Scientific notation such as <span class="font-mono text-sm text-tx-primary">129e6</span>
+            is valid but hard to review, and kubectl may print a value back in a different spelling from
+            the one you wrote, such as <span class="font-mono text-sm text-tx-primary">1048576Ki</span>
+            for <span class="font-mono text-sm text-tx-primary">1Gi</span>. Same amount, less readable.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">Kubernetes units FAQs</h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

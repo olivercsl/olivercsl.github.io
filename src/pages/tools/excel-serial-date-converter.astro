@@ -1,0 +1,218 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import { ExcelSerialConverter } from '../../components/tools/ExcelSerialConverter';
+
+const faqs = [
+  {
+    q: 'What is an Excel serial date?',
+    a: 'The number Excel actually stores for a date. It counts days, so 45321 is a day in January 2024, and the fraction is the time of day: 45321.5 is noon, 45321.75 is six in the evening. Set a date cell to General format and this is what you see.',
+  },
+  {
+    q: 'How do I convert a Unix timestamp to a date in Excel?',
+    a: 'Use =A1/86400+25569 and format the cell as a date. Dividing by 86,400 turns seconds into days, and 25569 is the serial number of 1 January 1970, the Unix epoch. For milliseconds divide by 86,400,000 instead. Going the other way, =(A1-25569)*86400 turns an Excel date back into Unix seconds.',
+  },
+  {
+    q: 'Why does Excel think 29 February 1900 exists?',
+    a: 'Because Lotus 1-2-3 did. Lotus treated 1900 as a leap year, which it was not, and Microsoft kept the error so spreadsheets moved between the two would not shift by a day. The result is that serial 60 is a date that never happened, and every serial from 1 to 59 is a day away from where honest arithmetic would put it.',
+  },
+  {
+    q: 'What is the 1904 date system?',
+    a: 'A second counting scheme, starting on 1 January 1904, that early Mac versions of Excel used. The same serial number means a date four years and a day later in 1904 than in 1900. Copying cells between workbooks using different systems shifts every date by 1,462 days, which is the usual cause of dates that are mysteriously four years out.',
+  },
+  {
+    q: 'Do Google Sheets and Excel use the same serial numbers?',
+    a: 'For every date from 1 March 1900 onwards, yes. Before that they differ by a day, because Sheets and LibreOffice count from 30 December 1899 without inventing a 29 February. It almost never matters for real data, which is exactly why it catches people out when it does.',
+  },
+  {
+    q: 'What timezone is an Excel date in?',
+    a: 'None. A serial is a calendar date and a clock reading with no zone attached, so 45321.75 is six in the evening on whatever clock the person typing it was looking at. If the values came from a system log in UTC they are UTC; if someone in Sydney typed them in they are Sydney time. The spreadsheet cannot tell you which.',
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. The conversion runs entirely in your browser and the page works offline.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/excel-serial-date-converter/';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta Excel Serial Date Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free Excel serial date converter. Turns a serial number into a date and time, converts dates and Unix timestamps back, handles the 1904 date system and the 1900 leap year bug, and gives ready-to-paste formulas. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'Serial number to date and time of day',
+        'Date and Unix timestamp to Excel serial',
+        '1900 and 1904 date systems, with conversion between them',
+        'Flags the nonexistent 29 February 1900',
+        'Shows where Excel and Google Sheets disagree',
+        'Formulas to paste straight into a sheet',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
+        { '@type': 'ListItem', position: 3, name: 'Excel Serial Date Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="Excel Serial Date Converter | Serial Number to Date and Unix Time"
+  description="Convert an Excel serial number to a date and time, or a date or Unix timestamp back to a serial. Handles the 1904 date system and the 1900 leap year bug, with formulas to paste. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          Excel Serial Date Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <ExcelSerialConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          The number behind a spreadsheet date, turned into something readable, including the dates
+          Excel gets wrong on purpose.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      Page one for this search is entirely how-to articles, with no converter
+      on it. The widget renders nothing before input, so the explanation that
+      competes with those articles lives here in plain HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">How Excel stores a date</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            As a number of days. <span class="font-mono text-sm text-tx-primary">1</span> is 1
+            January 1900, <span class="font-mono text-sm text-tx-primary">25569</span> is 1 January
+            1970, and a date in 2024 is somewhere around 45,000. The time of day is the fraction:
+            <span class="font-mono text-sm text-tx-primary">.5</span> is noon and
+            <span class="font-mono text-sm text-tx-primary">.75</span> is six in the evening. Formatting
+            only changes how the number is displayed, which is why a date cell switched to General turns
+            into a five-digit number, and why dates exported to CSV so often arrive that way.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Converting between Excel dates and Unix timestamps
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Unix time counts seconds from 1 January 1970; Excel counts days from 1900. So the whole
+            conversion is a division and an offset:
+          </p>
+          <ul class="space-y-1.5 text-tx-secondary leading-relaxed mb-3">
+            <li><span class="font-mono text-sm text-tx-primary">=A1/86400+25569</span> turns Unix seconds into an Excel date</li>
+            <li><span class="font-mono text-sm text-tx-primary">=A1/86400000+25569</span> does the same for milliseconds</li>
+            <li><span class="font-mono text-sm text-tx-primary">=(A1-25569)*86400</span> turns an Excel date back into Unix seconds</li>
+          </ul>
+          <p class="text-tx-secondary leading-relaxed">
+            Format the result as a date, or it displays as a number. And remember what Excel will not
+            tell you: a Unix timestamp is UTC, while the resulting cell has no timezone at all. If you
+            want local time in the sheet, add or subtract the offset as a fraction of a day, such as
+            <span class="font-mono text-sm text-tx-primary">+10/24</span> for Sydney in winter.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">The 1900 leap year bug</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            1900 was not a leap year, because century years are only leap years when divisible by 400.
+            Lotus 1-2-3 treated it as one anyway, and Excel copied the mistake so that spreadsheets
+            moving between the two would keep their dates. So serial 60 is 29 February 1900, a day that
+            never existed, and every serial from 1 to 59 is one day earlier than straightforward
+            arithmetic from the real epoch would suggest. Google Sheets and LibreOffice avoid the bug by
+            starting their count on 30 December 1899, which means they agree with Excel on every date
+            from 1 March 1900 and disagree by a day on every date before it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">1900 against 1904: dates four years out</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            Early Mac versions of Excel counted from 1 January 1904 instead, sidestepping the leap year
+            problem at the cost of a second, incompatible system. The same serial number lands 1,462 days
+            later under 1904. Modern Excel defaults to 1900 on both platforms, but the setting travels
+            with the workbook, so an old Mac file or a template made from one still carries it. When
+            copied dates come out almost exactly four years wrong, this is nearly always the reason, and
+            adding or subtracting 1462 fixes it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">Excel date FAQs</h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        Working with Unix timestamps directly? Try the
+        <a href="/tools/epoch-converter/" class="text-tx-primary hover:text-accent font-medium">epoch converter</a>,
+        or see all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
