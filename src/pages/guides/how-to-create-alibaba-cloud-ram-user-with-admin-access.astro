@@ -15,7 +15,7 @@ import { Navbar } from '../../components/Navbar';
 
 const title = 'How to create an Alibaba Cloud RAM user with administrator access';
 const description =
-  'Step by step: create a RAM user for Cloudzeta, grant it the AdministratorAccess policy, find its logon name and password, and hand the details over securely. Based on Alibaba Cloud documentation.';
+  'Step by step: create a RAM user for Cloudzeta, grant it the AdministratorAccess policy, copy its User Logon Name and Logon Password, and hand both over securely. Based on Alibaba Cloud documentation.';
 const published = new Date('2026-09-17T00:00:00Z');
 const author = 'Oliver Zhang';
 const pageUrl =
@@ -147,10 +147,15 @@ const fmtDate = (d: Date) =>
             <li>Confirm to create the user.</li>
           </ol>
           <p>
-            <strong>Copy the password as soon as it appears.</strong> Alibaba Cloud's documentation
-            states that "the auto-generated password is displayed only once. It cannot be retrieved
-            after you close the panel." If you miss it, see
-            <a href="#if-you-lost-the-password">If you lost the password</a> below.
+            Once the user is created, the console shows its sign-in details in this form:
+          </p>
+          <pre><code>User Logon Name   cloudzeta@1234567890.onaliyun.com
+Logon Password    (the generated password)</code></pre>
+          <p>
+            <strong>Copy both the User Logon Name and the Logon Password before you close that
+            screen.</strong> Alibaba Cloud's documentation states that "the auto-generated password is
+            displayed only once. It cannot be retrieved after you close the panel." If you miss it,
+            see <a href="#if-you-lost-the-password">If you lost the password</a> below.
           </p>
 
           <h2>Step 2: Grant administrator access</h2>
@@ -184,27 +189,23 @@ const fmtDate = (d: Date) =>
             the account. That warning is expected for this step, and you can confirm it.
           </p>
 
-          <h2>Step 3: Find the logon name and password</h2>
-          <p>We need three details to sign in:</p>
+          <h2>Step 3: Copy the logon name and password</h2>
+          <p>We need both values you copied in Step 1:</p>
           <ul>
             <li>
-              <strong>The password</strong> you copied in Step 1.
+              <strong>User Logon Name</strong>, in full, such as
+              <code>cloudzeta@1234567890.onaliyun.com</code>. The name alone is not enough: the part
+              after the <code>@</code> is your account's logon suffix, and it tells Alibaba Cloud
+              which account to sign in to.
             </li>
             <li>
-              <strong>The full logon name.</strong> A RAM user signs in with the logon name plus your
-              account's logon suffix, in the form
-              <code>cloudzeta@your-alias.onaliyun.com</code>. The part after the <code>@</code> is
-              your default logon suffix.
-            </li>
-            <li>
-              <strong>The RAM user logon URL.</strong> It takes the form
-              <code>https://signin.alibabacloud.com/your-alias.onaliyun.com/login.htm</code>.
+              <strong>Logon Password</strong>, exactly as generated.
             </li>
           </ul>
           <p>
-            You can find the default logon suffix and the logon URL on the
-            <strong>Overview</strong> page of the RAM console. Alibaba Cloud's documentation directs
-            account owners there to copy the URL for sharing with RAM users.
+            If you copied the password but not the full logon name, you can rebuild it: it is the logon
+            name you chose, followed by <code>@</code> and the default logon suffix shown on the
+            <strong>Overview</strong> page of the RAM console.
           </p>
 
           <h3 id="if-you-lost-the-password">If you lost the password</h3>
@@ -224,14 +225,17 @@ const fmtDate = (d: Date) =>
             </li>
             <li>Click <strong>OK</strong>, then copy the new password straight away.</li>
           </ol>
+          <p>The User Logon Name stays the same; only the password changes.</p>
 
           <h2>Step 4: Send the details to Cloudzeta</h2>
           <p>
-            Send us the full logon name, the logon URL and the password.
+            Send us both values: the full <strong>User Logon Name</strong> and the
+            <strong>Logon Password</strong>.
           </p>
           <p>
-            <strong>Please send the password securely.</strong> It gives administrator access to your
-            whole Alibaba Cloud account, so treat it with the same care as the account itself.
+            <strong>Please send the password securely.</strong> Together with the logon name it gives
+            administrator access to your whole Alibaba Cloud account, so treat it with the same care as
+            the account itself.
           </p>
           <p>
             Once we have signed in for the first time, we will set our own password and bind our MFA
@@ -341,5 +345,21 @@ const fmtDate = (d: Date) =>
     padding: 0.1em 0.35em;
     color: var(--color-tx-primary);
     word-break: break-all;
+  }
+  .prose-cz pre {
+    background: var(--color-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .prose-cz pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    word-break: normal;
+    white-space: pre;
   }
 </style>
