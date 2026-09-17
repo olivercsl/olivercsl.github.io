@@ -13,5 +13,12 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
+  // The Alibaba Cloud RAM guide first went out at /guides/ and customers may
+  // already have that link. It now lives in Notes.
+  redirects: {
+    '/guides/how-to-create-alibaba-cloud-ram-user-with-admin-access/':
+      '/blog/how-to-create-alibaba-cloud-ram-user-with-admin-access/',
+  },
+
   integrations: [react(), sitemap()]
 });
