@@ -10,6 +10,22 @@
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
 import { BrowserTimestampConverter } from '../../components/tools/BrowserTimestampConverter';
+import { BULK, FORMATS, excelFormula } from '../../lib/browsertime';
+
+// Whole-column recipes for the browser formats. Plain Unix seconds and
+// milliseconds are left to the epoch converter, which is linked instead.
+const bulk = BULK.filter((b) => !['unix_s', 'unix_ms'].includes(b.format)).map((b) => {
+  const f = FORMATS.find((x) => x.id === b.format)!;
+  return {
+    name: f.name,
+    detail: `${f.unit} since ${f.epoch}`,
+    rows: [
+      { label: 'SQLite', code: b.sqlite.replace('COL', 'your_column') },
+      { label: 'Excel', code: excelFormula(b) },
+      { label: 'Python', code: b.python },
+    ],
+  };
+});
 
 const faqs = [
   {
@@ -27,6 +43,14 @@ const faqs = [
   {
     q: 'Why does this show several answers instead of one?',
     a: 'Because a ten-digit number is a valid Cocoa, HFS+ and Unix timestamp at the same time, and the three decode to dates decades apart. Only you know which database the value came from. Guessing one and presenting it as the answer is how a forensic timeline ends up wrong by thirty years, so every reading is shown and the plausible ones are ordered first.',
+  },
+  {
+    q: 'How do I convert a WebKit timestamp in Excel?',
+    a: 'Put =A2/86400000000-109205 next to the value and format the cell as a date. Dividing by 86,400,000,000 turns microseconds into days, and 109205 is the number of days between 1 January 1601 and Excel day zero. Excel cannot display a date before 1900 but the arithmetic is fine, and the result is in UTC. For a Cocoa or Core Data value, the formula is =A2/86400+36892.',
+  },
+  {
+    q: 'How do I convert a whole column in SQLite?',
+    a: "Use SQLite's own datetime function in the query. For Chrome History, SELECT datetime(last_visit_time / 1000000 - 11644473600, 'unixepoch') FROM urls returns UTC dates for every row. For Safari, add 978307200 to visit_time instead, and for Firefox divide last_visit_date by 1000000. The recipes for each format are on this page.",
   },
   {
     q: 'What does a zero mean?',
@@ -72,6 +96,7 @@ const schema = {
         'Mac HFS+ seconds since 1904',
         'Every plausible reading shown, since ten digits fits several formats',
         'Names the Chrome, Safari and Firefox SQLite columns for each format',
+        'SQLite, Excel and Python formulas to convert a whole column',
         'The result across 13 time zones',
         'Runs offline. Nothing is sent to a server',
       ],
@@ -95,7 +120,7 @@ const schema = {
 
 <Layout
   title="Chrome & WebKit Timestamp Converter | Cocoa, HFS+ | No Ads"
-  description="Decode a Chrome or WebKit timestamp from History or Cookies, plus Cocoa NSDate and Mac HFS+ values. Shows every plausible reading instead of guessing, and names the SQLite column each comes from. Free, no ads."
+  description="Decode a Chrome or WebKit timestamp from History or Cookies, plus Cocoa NSDate, Firefox and Mac HFS+ values. Every plausible reading shown, plus SQLite, Excel and Python formulas to convert a whole column. Free, no ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -182,6 +207,48 @@ const schema = {
             is a session cookie that is never written to disk with an expiry, and a zero visit time
             in History means no visit was recorded. Rendering it as 1 January 1601 is arithmetically
             correct and tells you nothing about what you are looking at.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Convert a whole column: SQLite, Excel and Python
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-5">
+            One value at a time is fine for a spot check. For a whole History table, convert inside
+            the query or the spreadsheet instead. Every recipe below gives UTC and was checked against
+            this converter. In Python, import <span class="font-mono text-sm text-tx-primary">datetime</span>,
+            <span class="font-mono text-sm text-tx-primary">timezone</span> and
+            <span class="font-mono text-sm text-tx-primary">timedelta</span> from
+            <span class="font-mono text-sm text-tx-primary">datetime</span> first, and in Excel format
+            the result cell as a date.
+          </p>
+          <div class="space-y-5">
+            {
+              bulk.map((b) => (
+                <div class="rounded-2xl border border-glass-border bg-white overflow-hidden">
+                  <div class="px-4 py-2.5 border-b border-glass-border bg-surface/60 text-sm">
+                    <span class="font-semibold text-tx-primary">{b.name}</span>
+                    <span class="text-tx-secondary">, {b.detail}</span>
+                  </div>
+                  <dl class="divide-y divide-gray-50">
+                    {b.rows.map((r) => (
+                      <div class="px-4 py-2.5 sm:flex sm:gap-4 sm:items-baseline">
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-tx-secondary sm:w-16 shrink-0 mb-1 sm:mb-0">
+                          {r.label}
+                        </dt>
+                        <dd class="font-mono text-[13px] text-tx-primary [overflow-wrap:anywhere]">{r.code}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))
+            }
+          </div>
+          <p class="text-tx-secondary leading-relaxed mt-5">
+            For plain Unix seconds or milliseconds, the
+            <a href="/tools/epoch-converter/" class="text-tx-primary hover:text-accent font-medium">epoch
+            converter</a> covers the same ground.
           </p>
         </div>
       </div>

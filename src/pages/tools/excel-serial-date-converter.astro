@@ -11,6 +11,32 @@ import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
 import { ExcelSerialConverter } from '../../components/tools/ExcelSerialConverter';
 
+// Checked against Python 3, pandas, Node and .NET (PowerShell) with 45321.75,
+// which is 30 January 2024 at 18:00. The 1899-12-30 origin matches Excel for
+// every serial from 61 (1 March 1900) up.
+const codeRecipes = [
+  {
+    lang: 'Python',
+    toDate: 'datetime(1899, 12, 30) + timedelta(days=serial)',
+    toSerial: '(dt - datetime(1899, 12, 30)) / timedelta(days=1)',
+  },
+  {
+    lang: 'pandas',
+    toDate: 'pd.to_datetime(df["col"], unit="D", origin="1899-12-30")',
+    toSerial: '(s - pd.Timestamp("1899-12-30")) / pd.Timedelta(days=1)',
+  },
+  {
+    lang: 'JavaScript',
+    toDate: 'new Date(Math.round((serial - 25569) * 86400000))',
+    toSerial: 'date.getTime() / 86400000 + 25569',
+  },
+  {
+    lang: 'C# and PowerShell',
+    toDate: 'DateTime.FromOADate(serial)',
+    toSerial: 'dt.ToOADate()',
+  },
+];
+
 const faqs = [
   {
     q: 'What is an Excel serial date?',
@@ -19,6 +45,10 @@ const faqs = [
   {
     q: 'How do I convert a Unix timestamp to a date in Excel?',
     a: 'Use =A1/86400+25569 and format the cell as a date. Dividing by 86,400 turns seconds into days, and 25569 is the serial number of 1 January 1970, the Unix epoch. For milliseconds divide by 86,400,000 instead. Going the other way, =(A1-25569)*86400 turns an Excel date back into Unix seconds.',
+  },
+  {
+    q: 'How do I convert an Excel serial date in Python?',
+    a: 'Add the serial as a number of days to 30 December 1899: datetime(1899, 12, 30) + timedelta(days=serial). In pandas, pd.to_datetime(df["col"], unit="D", origin="1899-12-30") converts a whole column at once. The 1899 origin is deliberate: it absorbs the 1900 leap year bug, so the result matches Excel for every date from 1 March 1900 onwards. For a workbook using the 1904 system, add 1462 to the serial first.',
   },
   {
     q: 'Why does Excel think 29 February 1900 exists?',
@@ -73,6 +103,7 @@ const schema = {
         'Flags the nonexistent 29 February 1900',
         'Shows where Excel and Google Sheets disagree',
         'Formulas to paste straight into a sheet',
+        'Python, pandas, JavaScript and C# equivalents, both directions',
         'Runs offline. Nothing is sent to a server',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
@@ -177,6 +208,47 @@ const schema = {
             with the workbook, so an old Mac file or a template made from one still carries it. When
             copied dates come out almost exactly four years wrong, this is nearly always the reason, and
             adding or subtracting 1462 fixes it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Excel dates in Python, pandas, JavaScript and C#
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-5">
+            Serial dates usually turn up in code after a CSV export or an Excel file read by a script.
+            Every recipe below counts from 30 December 1899, which absorbs the leap year bug and
+            matches Excel from 1 March 1900 onwards. For a workbook in the 1904 system, add 1462 to the
+            serial first. Each was checked against this converter using 45321.75, which is 30 January
+            2024 at 18:00.
+          </p>
+          <div class="space-y-5">
+            {
+              codeRecipes.map((r) => (
+                <div class="rounded-2xl border border-glass-border bg-white overflow-hidden">
+                  <div class="px-4 py-2.5 border-b border-glass-border bg-surface/60 text-sm font-semibold text-tx-primary">
+                    {r.lang}
+                  </div>
+                  <dl class="divide-y divide-gray-50">
+                    {[
+                      { label: 'To date', code: r.toDate },
+                      { label: 'To serial', code: r.toSerial },
+                    ].map((row) => (
+                      <div class="px-4 py-2.5 sm:flex sm:gap-4 sm:items-baseline">
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-tx-secondary sm:w-20 shrink-0 mb-1 sm:mb-0">
+                          {row.label}
+                        </dt>
+                        <dd class="font-mono text-[13px] text-tx-primary [overflow-wrap:anywhere]">{row.code}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))
+            }
+          </div>
+          <p class="text-tx-secondary leading-relaxed mt-5">
+            Python and pandas give a time with no zone, like Excel itself. JavaScript reads the serial
+            as UTC, so display the result with its UTC methods or it shifts by your local offset.
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@
  *   Chrome / WebKit   microseconds since 1601-01-01   17 digits
  *   Cocoa / NSDate    seconds since 2001-01-01        10 digits, often a float
  *   Mac HFS+          seconds since 1904-01-01        10 digits
- *   Unix              seconds or ms since 1970-01-01  10 or 13 digits
+ *   Unix              seconds, ms or µs since 1970    10, 13 or 16 digits
  *
  * Cocoa and HFS+ values collide in length with Unix seconds, and the three
  * decode to dates decades apart, so guessing by magnitude alone is not safe.
@@ -16,10 +16,10 @@
  * worse than three labelled candidates.
  */
 
-export type BrowserTimeFormat = 'webkit' | 'cocoa' | 'hfs' | 'unix_s' | 'unix_ms';
+export type BrowserTimeFormat = 'webkit' | 'cocoa' | 'hfs' | 'unix_s' | 'unix_ms' | 'unix_us';
 
 /** Seconds between each epoch and the Unix epoch. Verified, not copied. */
-export const EPOCH_OFFSET_S: Record<Exclude<BrowserTimeFormat, 'unix_ms'>, number> = {
+export const EPOCH_OFFSET_S: Record<Exclude<BrowserTimeFormat, 'unix_ms' | 'unix_us'>, number> = {
   webkit: 11_644_473_600, // 1601-01-01
   hfs: 2_082_844_800, // 1904-01-01
   cocoa: -978_307_200, // 2001-01-01, after the Unix epoch, hence negative
@@ -59,7 +59,7 @@ export const FORMATS: {
     name: 'Unix seconds',
     unit: 'seconds',
     epoch: '1970-01-01',
-    where: 'Firefox places.sqlite uses microseconds; most everything else uses these',
+    where: 'Most server logs, databases and APIs',
   },
   {
     id: 'unix_ms',
@@ -67,6 +67,13 @@ export const FORMATS: {
     unit: 'milliseconds',
     epoch: '1970-01-01',
     where: 'JavaScript, Java, and most JSON APIs',
+  },
+  {
+    id: 'unix_us',
+    name: 'Unix microseconds',
+    unit: 'microseconds',
+    epoch: '1970-01-01',
+    where: 'Firefox places.sqlite (PRTime)',
   },
 ];
 
@@ -84,7 +91,9 @@ export const KNOWN_COLUMNS: { db: string; table: string; column: string; format:
   { db: 'Chrome Cookies', table: 'cookies', column: 'last_access_utc', format: 'webkit' },
   { db: 'Chrome Login Data', table: 'logins', column: 'date_created', format: 'webkit' },
   { db: 'Safari History', table: 'history_visits', column: 'visit_time', format: 'cocoa' },
-  { db: 'Firefox places', table: 'moz_places', column: 'last_visit_date', format: 'unix_s' },
+  // PRTime: microseconds since 1970, not seconds. 16 digits today.
+  { db: 'Firefox places', table: 'moz_places', column: 'last_visit_date', format: 'unix_us' },
+  { db: 'Firefox places', table: 'moz_historyvisits', column: 'visit_date', format: 'unix_us' },
 ];
 
 export interface Reading {
@@ -115,6 +124,8 @@ export function toUnixMs(value: number, format: BrowserTimeFormat): number {
       return value * 1000;
     case 'unix_ms':
       return value;
+    case 'unix_us':
+      return value / 1000;
   }
 }
 
@@ -132,7 +143,78 @@ export function fromUnixMs(ms: number, format: BrowserTimeFormat): string {
       return String(Math.floor(ms / 1000));
     case 'unix_ms':
       return String(Math.round(ms));
+    case 'unix_us':
+      return (BigInt(Math.round(ms)) * 1000n).toString();
   }
+}
+
+/**
+ * The same conversion for a whole column rather than one value, which is what
+ * people holding a History database actually need. Page one for these searches
+ * is Stack Overflow threads asking exactly this for Excel and Python.
+ *
+ * Excel has no date before 1900, so every Excel formula is the linear map
+ * serial = value / divisor + offset, where offset is the serial number of the
+ * format's epoch (negative for 1601). Results are UTC.
+ */
+export interface BulkRecipe {
+  format: BrowserTimeFormat;
+  /** SQLite expression; COL stands for the column name. */
+  sqlite: string;
+  excelDivisor: number;
+  excelOffset: number;
+  /** Python expression; v stands for the value. */
+  python: string;
+}
+
+export const BULK: BulkRecipe[] = [
+  {
+    format: 'webkit',
+    sqlite: "datetime(COL / 1000000 - 11644473600, 'unixepoch')",
+    excelDivisor: 86_400_000_000,
+    excelOffset: -109_205,
+    python: 'datetime(1601, 1, 1, tzinfo=timezone.utc) + timedelta(microseconds=v)',
+  },
+  {
+    format: 'cocoa',
+    sqlite: "datetime(COL + 978307200, 'unixepoch')",
+    excelDivisor: 86_400,
+    excelOffset: 36_892,
+    python: 'datetime(2001, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=v)',
+  },
+  {
+    format: 'hfs',
+    sqlite: "datetime(COL - 2082844800, 'unixepoch')",
+    excelDivisor: 86_400,
+    excelOffset: 1_462,
+    python: 'datetime(1904, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=v)',
+  },
+  {
+    format: 'unix_us',
+    sqlite: "datetime(COL / 1000000, 'unixepoch')",
+    excelDivisor: 86_400_000_000,
+    excelOffset: 25_569,
+    python: 'datetime.fromtimestamp(v / 1_000_000, tz=timezone.utc)',
+  },
+  {
+    format: 'unix_ms',
+    sqlite: "datetime(COL / 1000, 'unixepoch')",
+    excelDivisor: 86_400_000,
+    excelOffset: 25_569,
+    python: 'datetime.fromtimestamp(v / 1000, tz=timezone.utc)',
+  },
+  {
+    format: 'unix_s',
+    sqlite: "datetime(COL, 'unixepoch')",
+    excelDivisor: 86_400,
+    excelOffset: 25_569,
+    python: 'datetime.fromtimestamp(v, tz=timezone.utc)',
+  },
+];
+
+export function excelFormula(r: BulkRecipe, cell = 'A2'): string {
+  const sign = r.excelOffset < 0 ? '-' : '+';
+  return `=${cell}/${r.excelDivisor}${sign}${Math.abs(r.excelOffset)}`;
 }
 
 /**

@@ -6,6 +6,8 @@ import {
   isSentinel,
   EPOCH_OFFSET_S,
   KNOWN_COLUMNS,
+  BULK,
+  excelFormula,
   FORMATS,
 } from './browsertime';
 
@@ -125,5 +127,55 @@ describe('column reference', () => {
   it('maps every column to a format that exists', () => {
     const ids = new Set(FORMATS.map((f) => f.id));
     for (const c of KNOWN_COLUMNS) expect(ids.has(c.format)).toBe(true);
+  });
+});
+
+describe('Firefox microseconds', () => {
+  it('decodes a 16-digit places.sqlite value to a plausible date', () => {
+    // Before unix_us existed this value had no plausible reading at all
+    const r = decodeAll('1726000000000000');
+    expect(r[0]!.format).toBe('unix_us');
+    expect(new Date(r[0]!.ms).toISOString()).toBe('2024-09-10T20:26:40.000Z');
+  });
+
+  it('round-trips a date through microseconds exactly', () => {
+    expect(fromUnixMs(1726000000123, 'unix_us')).toBe('1726000000123000');
+  });
+
+  it('labels the Firefox columns as microseconds, not seconds', () => {
+    for (const c of KNOWN_COLUMNS.filter((c) => c.db.startsWith('Firefox'))) {
+      expect(c.format).toBe('unix_us');
+    }
+  });
+});
+
+describe('bulk conversion recipes', () => {
+  // The SQLite and Python recipes were checked against sqlite3 and python3
+  // when written. Excel cannot run here, so check its arithmetic instead:
+  // serial = value / divisor + offset must land on the same instant.
+  const samples: Record<string, number> = {
+    webkit: 13350000000000000,
+    cocoa: 725843000,
+    hfs: 3808000000,
+    unix_us: 1726000000000000,
+    unix_ms: 1726000000000,
+    unix_s: 1726000000,
+  };
+
+  it('covers every format', () => {
+    expect(new Set(BULK.map((b) => b.format))).toEqual(new Set(FORMATS.map((f) => f.id)));
+  });
+
+  it('gives Excel formulas that land on the same instant as the converter', () => {
+    for (const b of BULK) {
+      const v = samples[b.format]!;
+      const serial = v / b.excelDivisor + b.excelOffset;
+      expect(Math.round((serial - 25569) * 86400000)).toBe(Math.round(toUnixMs(v, b.format)));
+    }
+  });
+
+  it('writes the 1601 offset as a subtraction', () => {
+    expect(excelFormula(BULK.find((b) => b.format === 'webkit')!)).toBe('=A2/86400000000-109205');
+    expect(excelFormula(BULK.find((b) => b.format === 'cocoa')!)).toBe('=A2/86400+36892');
   });
 });

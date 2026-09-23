@@ -5,6 +5,7 @@ import {
   ipToString,
   subnetInfo,
   splitSubnets,
+  cloudSubnets,
 } from '../../lib/subnet';
 
 const fmtCount = (n: number) => n.toLocaleString('en-US');
@@ -28,6 +29,7 @@ export const SubnetCalculator = () => {
 
   const ip = parseIPv4(ipInput);
   const info = ip !== null ? subnetInfo(ip, prefix) : null;
+  const cloud = ip !== null ? cloudSubnets(ip, prefix) : [];
 
   const split = useMemo(
     () => (ip !== null && splitPrefix !== null ? splitSubnets(ip, prefix, splitPrefix) : null),
@@ -165,6 +167,37 @@ export const SubnetCalculator = () => {
                 </div>
               ))}
             </dl>
+
+            {/* Cloud VPCs reserve more than the network and broadcast addresses */}
+            <div className="px-5 md:px-6 py-4 border-b border-glass-border">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-tx-secondary mb-2">
+                Usable in a cloud VPC
+              </div>
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-gray-50">
+                  {cloud.map((c) => (
+                    <tr key={c.provider}>
+                      <td className="py-1.5 pr-3 text-tx-secondary whitespace-nowrap">{c.provider}</td>
+                      {c.usableHosts === null ? (
+                        <td colSpan={2} className="py-1.5 text-right text-xs text-tx-secondary">
+                          Subnets must be /{c.minPrefix} to /{c.maxPrefix}
+                        </td>
+                      ) : (
+                        <>
+                          <td className="py-1.5 pr-3 font-semibold font-mono text-tx-primary text-right whitespace-nowrap">
+                            {fmtCount(c.usableHosts)}
+                            <span className="font-sans font-normal text-xs text-tx-secondary"> ({c.reserved} reserved)</span>
+                          </td>
+                          <td className="py-1.5 font-mono text-xs text-tx-secondary text-right hidden sm:table-cell">
+                            {c.firstUsable} to {c.lastUsable}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             <div className="px-5 md:px-6 py-4 border-b border-glass-border bg-surface/40">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-tx-secondary mb-2">Binary</div>

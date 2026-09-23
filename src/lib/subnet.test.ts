@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   parseIPv4,
+  cloudSubnets,
   ipToString,
   ipToBinary,
   maskFromPrefix,
@@ -123,5 +124,45 @@ describe('splitSubnets', () => {
   it('returns nothing for an invalid target prefix', () => {
     expect(splitSubnets(parseIPv4('10.0.0.0')!, 24, 24).count).toBe(0);
     expect(splitSubnets(parseIPv4('10.0.0.0')!, 24, 16).count).toBe(0);
+  });
+});
+
+describe('cloud subnets', () => {
+  const byProvider = (cidr: string) => {
+    const [a, p] = cidr.split('/');
+    return Object.fromEntries(cloudSubnets(parseIPv4(a!)!, Number(p)).map((c) => [c.provider, c]));
+  };
+
+  it('takes five addresses off an AWS /24, starting at .4', () => {
+    const aws = byProvider('10.0.0.0/24').AWS!;
+    expect(aws.usableHosts).toBe(251);
+    expect(aws.firstUsable).toBe('10.0.0.4');
+    expect(aws.lastUsable).toBe('10.0.0.254');
+  });
+
+  it('matches Azure to AWS on the reserved five', () => {
+    expect(byProvider('10.0.0.0/24').Azure!.usableHosts).toBe(251);
+  });
+
+  it('takes four off Google Cloud, including the second-to-last', () => {
+    const gcp = byProvider('10.0.0.0/24')['Google Cloud']!;
+    expect(gcp.usableHosts).toBe(252);
+    expect(gcp.firstUsable).toBe('10.0.0.2');
+    expect(gcp.lastUsable).toBe('10.0.0.253');
+  });
+
+  it('leaves 11 hosts in the smallest AWS subnet', () => {
+    expect(byProvider('10.0.0.16/28').AWS!.usableHosts).toBe(11);
+  });
+
+  it('refuses sizes a provider does not accept', () => {
+    const tiny = byProvider('10.0.0.0/29');
+    expect(tiny.AWS!.usableHosts).toBeNull();
+    expect(tiny.Azure!.usableHosts).toBe(3);
+    expect(byProvider('10.0.0.0/8').AWS!.usableHosts).toBeNull();
+  });
+
+  it('works from any address inside the block', () => {
+    expect(byProvider('10.0.37.99/24').AWS!.firstUsable).toBe('10.0.37.4');
   });
 });

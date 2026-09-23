@@ -154,3 +154,58 @@ export function splitSubnets(ip: number, prefix: number, newPrefix: number, limi
   }
   return { count, shown, truncated: count > limit };
 }
+
+/**
+ * What a subnet actually yields inside a cloud VPC, which is fewer hosts than
+ * the textbook count. Checked against each provider's documentation in
+ * September 2026:
+ *
+ *   AWS           first four and last reserved (network, VPC router, DNS,
+ *                 future use, broadcast). Subnets /16 to /28.
+ *   Azure         first four and last reserved (network, gateway, two for
+ *                 Azure DNS, broadcast). Subnets /2 to /29.
+ *   Google Cloud  network, gateway, second-to-last and broadcast reserved.
+ *                 Primary ranges /4 to /29, though Google advises /8 at most.
+ */
+export interface CloudSubnet {
+  provider: 'AWS' | 'Azure' | 'Google Cloud';
+  reserved: number;
+  /** Null when the provider does not accept a subnet of this size. */
+  usableHosts: number | null;
+  firstUsable: string | null;
+  lastUsable: string | null;
+  minPrefix: number;
+  maxPrefix: number;
+}
+
+const CLOUD_RULES: {
+  provider: CloudSubnet['provider'];
+  minPrefix: number;
+  maxPrefix: number;
+  /** Addresses reserved at the start and end of the block. */
+  head: number;
+  tail: number;
+}[] = [
+  { provider: 'AWS', minPrefix: 16, maxPrefix: 28, head: 4, tail: 1 },
+  { provider: 'Azure', minPrefix: 2, maxPrefix: 29, head: 4, tail: 1 },
+  { provider: 'Google Cloud', minPrefix: 4, maxPrefix: 29, head: 2, tail: 2 },
+];
+
+export function cloudSubnets(ip: number, prefix: number): CloudSubnet[] {
+  const mask = maskFromPrefix(prefix);
+  const network = (ip & mask) >>> 0;
+  const broadcast = (network | (~mask >>> 0)) >>> 0;
+  const total = 2 ** (32 - prefix);
+  return CLOUD_RULES.map((r) => {
+    const ok = prefix >= r.minPrefix && prefix <= r.maxPrefix;
+    return {
+      provider: r.provider,
+      reserved: r.head + r.tail,
+      usableHosts: ok ? total - r.head - r.tail : null,
+      firstUsable: ok ? ipToString(network + r.head) : null,
+      lastUsable: ok ? ipToString(broadcast - r.tail) : null,
+      minPrefix: r.minPrefix,
+      maxPrefix: r.maxPrefix,
+    };
+  });
+}

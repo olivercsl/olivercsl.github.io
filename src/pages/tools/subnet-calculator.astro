@@ -10,6 +10,15 @@
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
 import { SubnetCalculator } from '../../components/tools/SubnetCalculator';
+import { cloudSubnets, parseIPv4 } from '../../lib/subnet';
+
+// Reference table for the sizes people actually create, from the same rules
+// the calculator uses, so the two can never disagree.
+const cloudTable = [16, 20, 22, 24, 25, 26, 27, 28, 29].map((p) => {
+  const c = cloudSubnets(parseIPv4('10.0.0.0')!, p);
+  return { prefix: p, total: 2 ** (32 - p), cells: c.map((x) => x.usableHosts) };
+});
+const fmt = (n: number | null) => (n === null ? 'not allowed' : n.toLocaleString('en-US'));
 
 const faqs = [
   {
@@ -26,7 +35,11 @@ const faqs = [
   },
   {
     q: 'How do I plan subnets for a cloud VPC?',
-    a: 'Start with the VPC block, say a /16, then use the split section to divide it at a longer prefix. A common pattern is one pair of subnets per availability zone, public and private, sized to leave room to grow. Cloud platforms also reserve a few addresses per subnet beyond the usual two, so leave headroom.',
+    a: 'Start with the VPC block, say a /16, then use the split section to divide it at a longer prefix. A common pattern is one pair of subnets per availability zone, public and private, sized to leave room to grow. Size them on the cloud figure rather than the textbook one: AWS and Azure keep five addresses in every subnet and Google Cloud keeps four, which the calculator shows for whatever block you enter.',
+  },
+  {
+    q: 'How many IP addresses does AWS reserve in a subnet?',
+    a: 'Five: the first four and the last. In 10.0.0.0/24 those are 10.0.0.0 for the network, 10.0.0.1 for the VPC router, 10.0.0.2 for Amazon DNS, 10.0.0.3 held for future use, and 10.0.0.255, the broadcast address a VPC does not support. A /24 therefore gives 251 usable addresses, and the smallest subnet AWS allows, a /28, gives 11. Azure also reserves five; Google Cloud reserves four.',
   },
   {
     q: 'What is a wildcard mask?',
@@ -67,6 +80,7 @@ const schema = {
         'Netmask, wildcard mask, class and scope',
         'RFC 3021 aware /31 and /32 handling',
         'Split a network into smaller subnets with copyable CIDR blocks',
+        'Usable addresses after AWS, Azure and Google Cloud reservations',
         'Runs offline. Nothing is sent to a server',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
@@ -84,8 +98,8 @@ const schema = {
 ---
 
 <Layout
-  title="Subnet Calculator | IPv4, CIDR & VPC Planner | Cloudzeta"
-  description="IPv4 subnet calculator: network and broadcast, host ranges, netmask and wildcard from any CIDR, plus a subnet splitter for VPC planning. No ads."
+  title="Subnet Calculator | IPv4 CIDR, AWS & Azure VPC Planner"
+  description="IPv4 subnet calculator: network, broadcast, host range, netmask and wildcard from any CIDR, with usable addresses after AWS, Azure and Google Cloud reservations and a VPC subnet splitter. No ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -103,6 +117,58 @@ const schema = {
         <SubnetCalculator client:load />
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
           IPv4 networks, netmasks and host ranges, with a splitter for planning VPC subnets.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      The widget is the tool; this table is the reference people search for
+      when sizing VPC subnets, and it is visible to crawlers without input.
+    -->
+    <section class="py-16 px-4 sm:px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+          Usable addresses in AWS, Azure and Google Cloud
+        </h2>
+        <p class="text-tx-secondary leading-relaxed mb-5">
+          A textbook /24 has 254 usable hosts. In a cloud VPC it has fewer. AWS and Azure reserve the
+          first four addresses and the last in every subnet, for the network, the router or gateway,
+          DNS and the broadcast address. Google Cloud reserves four: the network, the gateway, the
+          second-to-last and the broadcast. Each also limits subnet size, which is where
+          <em>not allowed</em> comes from below.
+        </p>
+        <div class="overflow-x-auto rounded-2xl border border-glass-border bg-white">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-[11px] uppercase tracking-wide text-tx-secondary border-b border-glass-border bg-surface/60">
+                <th class="py-2.5 px-4 font-semibold">Prefix</th>
+                <th class="py-2.5 px-4 font-semibold text-right">Addresses</th>
+                <th class="py-2.5 px-4 font-semibold text-right">AWS</th>
+                <th class="py-2.5 px-4 font-semibold text-right">Azure</th>
+                <th class="py-2.5 px-4 font-semibold text-right">Google Cloud</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50 font-mono">
+              {
+                cloudTable.map((r) => (
+                  <tr>
+                    <td class="py-2 px-4 text-tx-primary font-semibold">/{r.prefix}</td>
+                    <td class="py-2 px-4 text-right text-tx-secondary">{r.total.toLocaleString('en-US')}</td>
+                    {r.cells.map((c) => (
+                      <td class={`py-2 px-4 text-right whitespace-nowrap ${c === null ? 'font-sans text-xs text-tx-secondary' : 'text-tx-primary'}`}>
+                        {fmt(c)}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="text-tx-secondary leading-relaxed mt-5 text-sm">
+          Limits: AWS subnets run from /16 to /28, Azure from /2 to /29, and Google Cloud primary ranges
+          from /4 to /29, though Google advises nothing larger than /8. Checked against each
+          provider's documentation in September 2026.
         </p>
       </div>
     </section>
