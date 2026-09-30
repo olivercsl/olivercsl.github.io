@@ -22,16 +22,32 @@ const faqs = [
     a: 'No. Many free QR generators route the code through their own domain as a redirect, which lets them count scans and, in some cases, change or disable the link later. This one encodes your link directly into the code, in your browser. There is no redirect, no expiry and no tracking. The code works forever and points only where you told it to.',
   },
   {
+    q: 'How do I turn a link into a QR code?',
+    a: 'Paste the link into the Link box and the code appears straight away. Download it as PNG or SVG. If you type a bare address such as example.com, the tool adds https:// for you, because without it some phone cameras treat the code as text and offer a web search instead of opening the page.',
+  },
+  {
+    q: 'Can a QR code be in colour?',
+    a: 'Yes. Scanners care about contrast, not colour, so any dark shade on a light background works: navy, forest green, deep red, purple. Problems start when the two colours are close in brightness, such as yellow on white or mid grey on light grey. The tool warns you about low contrast and runs a scan check on the result.',
+  },
+  {
+    q: 'How do I make a Wi-Fi QR code?',
+    a: 'Choose Wi-Fi, enter the network name and password, and pick the security type, which is WPA for almost every modern router. Scanning it with an iPhone or Android camera offers to join the network, with no typing. The password is encoded into the code itself, so anyone who can see the code can join; print it for guests, not for a staff network.',
+  },
+  {
+    q: 'Can I put a logo in the middle of a QR code?',
+    a: 'Yes. Upload an image and it is placed in the centre, with the modules behind it cleared. The error correction is set to High, which lets a scanner rebuild up to about 30% of the code, and the logo is capped well under that. The scan check confirms the result still reads. Your image never leaves your browser.',
+  },
+  {
+    q: 'Can I make a QR code with a transparent background?',
+    a: 'Yes. Tick Transparent background and both downloads, PNG and SVG, leave the background empty so the code sits directly on your artwork. Put a dark code on a light area of the design, and keep a clear margin around it: scanners need the quiet zone to find the edges.',
+  },
+  {
     q: 'PNG or SVG: which should I download?',
-    a: 'Use SVG for print, signage or anything that needs to scale, since it stays sharp at any size. Use PNG for slides, documents and the web. The PNG is rendered at 1024 pixels, which is large enough for most uses.',
+    a: 'Use SVG for print, signage or anything that needs to scale, since it stays sharp at any size. Use PNG for slides, documents and the web, at 512, 1024 or 2048 pixels. 1024 suits most uses; pick 2048 for large prints if your printer will not take SVG.',
   },
   {
     q: 'What does the error-correction level do?',
     a: 'QR codes carry redundant data so they still scan when part of the code is dirty, creased or covered. Higher levels recover from more damage (roughly 7% at Low up to 30% at High) but leave less room for data, so the code becomes denser. Medium is a good default; raise it if the code will be printed small or placed somewhere it may get scuffed.',
-  },
-  {
-    q: 'Can I change the colours?',
-    a: 'Yes. Pick any foreground and background colour, or start from a preset. Keep the code noticeably darker than its background: scanners rely on that contrast, and the tool warns you if the two colours are too close.',
   },
   {
     q: 'Does it work offline?',
@@ -61,13 +77,16 @@ const schema = {
       applicationCategory: 'DesignApplication',
       operatingSystem: 'Any modern web browser',
       description:
-        'Free QR code generator. Turn any link or text into a QR code, customise the colours, and download as PNG or SVG. Client-side, no ads, no tracking redirect.',
+        'Free QR code generator for links, Wi-Fi, contacts, email, phone and SMS. Custom colours, transparent background, logo and dot styles, with a scan check. Download PNG or SVG. Runs in the browser, no ads, no tracking redirect.',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       featureList: [
-        'Encode any link or text',
-        'Custom foreground and background colours',
+        'Links, text, Wi-Fi, email, phone, SMS and contact cards',
+        'Custom colours and a transparent background',
+        'Square, rounded or dot styles',
+        'Logo in the centre, kept in your browser',
+        'Scan check that reads the code back',
         'Adjustable error-correction level',
-        'Download as PNG or scalable SVG',
+        'Download as PNG up to 2048 pixels or scalable SVG',
         'No tracking redirect. The code points straight at your link',
       ],
       publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
@@ -85,8 +104,8 @@ const schema = {
 ---
 
 <Layout
-  title="QR Code Generator | Custom Colours, No Tracking | Cloudzeta"
-  description="Turn any link into a QR code, customise the colours, download PNG or SVG. Made in your browser with no tracking redirect. Works offline."
+  title="Free QR Code Generator | Colours, Logo, Wi-Fi, No Tracking"
+  description="Turn a link, Wi-Fi network or contact into a QR code. Pick colours, add a logo, go transparent, and check it scans before you download PNG or SVG. No sign-up, no tracking redirect."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -103,7 +122,7 @@ const schema = {
       <div class="max-w-3xl lg:max-w-4xl mx-auto">
         <QrGenerator client:load />
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
-          Turn a link into a QR code, pick your colours, download. No ads, no tracking redirect.
+          Links, Wi-Fi, contacts and more. Pick colours, add a logo, check it scans, download. No ads, no tracking redirect.
         </p>
       </div>
     </section>
@@ -129,7 +148,7 @@ const schema = {
             [
               'The link is encoded directly: no redirect, no expiry, no scan tracking',
               'Generated in your browser; nothing about your link is sent anywhere',
-              'Download as PNG for screens or SVG for print',
+              'Download as PNG for screens or SVG for print, with a scan check first',
               'No ads, no watermark, no account',
             ].map((item) => (
               <li class="flex items-start gap-3 text-tx-primary">
@@ -141,6 +160,53 @@ const schema = {
             ))
           }
         </ul>
+      </div>
+    </section>
+
+    <!--
+      The widget needs input before it shows anything; this is the part a
+      crawler reads, written for the searches the page already appears for:
+      colour codes, links, Wi-Fi, logos and transparent backgrounds.
+    -->
+    <section class="py-16 px-6">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Colour QR codes that still scan</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A scanner reads a QR code by telling dark modules from light ones, so what matters is
+            contrast, not colour. Navy, forest green, burgundy or your brand purple on white all read
+            as reliably as black. The failures come from pairs that are close in brightness, such as
+            yellow on white or grey on grey, and from inverted codes, light on dark, which most phone
+            cameras handle but some older scanner apps do not. The generator flags both, and its scan
+            check reads the finished code back before you download it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Wi-Fi, contacts, email, calls and texts</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            A QR code holds text, and phones recognise a few standard formats in that text. This tool
+            writes them for you:
+          </p>
+          <ul class="list-disc pl-6 space-y-1.5 text-tx-secondary leading-relaxed">
+            <li><strong class="text-tx-primary">Wi-Fi</strong> joins a network without typing the password, using the <span class="font-mono text-sm text-tx-primary">WIFI:T:WPA;S:name;P:password;;</span> format that iPhone and Android cameras read.</li>
+            <li><strong class="text-tx-primary">Contact</strong> saves a person to the address book as a vCard, with name, company, phone, email and website.</li>
+            <li><strong class="text-tx-primary">Email</strong> opens a new message with the address, subject and text filled in.</li>
+            <li><strong class="text-tx-primary">Phone</strong> and <strong class="text-tx-primary">SMS</strong> start a call or a text. Include the country code so it works for visitors from abroad.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Logos and transparent backgrounds</h2>
+          <p class="text-tx-secondary leading-relaxed">
+            QR codes carry redundant data, which is what lets a logo cover the middle. At the High error
+            correction level a scanner can rebuild about 30% of the code, so the logo is capped well below
+            that and the modules behind it are cleared rather than drawn over. For print work, a
+            transparent background lets the code sit directly on your design. Keep it dark on a light
+            area and leave a clear margin around it, because scanners use that quiet zone to find the
+            edges of the code.
+          </p>
+        </div>
       </div>
     </section>
 
