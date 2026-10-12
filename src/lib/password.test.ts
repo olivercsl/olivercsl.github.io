@@ -268,4 +268,15 @@ describe('entropy and strength', () => {
     expect(crackTime(256)).toMatch(/years/);
     expect(typeof crackTime(60)).toBe('string');
   });
+
+  it('labels each range with the right unit', () => {
+    // bits for a given number of seconds at 1e10 guesses/s, half the keyspace
+    const bitsFor = (seconds: number) => Math.log2(seconds * 1e10) + 1;
+    expect(crackTime(bitsFor(30))).toBe('~30 seconds');
+    expect(crackTime(bitsFor(90))).toBe('~1.5 minutes');
+    expect(crackTime(bitsFor(5 * 3600))).toBe('~5 hours');
+    expect(crackTime(bitsFor(3 * 86400))).toBe('~3 days');
+    expect(crackTime(bitsFor(400 * 86400))).toBe('~1.1 years');
+    expect(crackTime(bitsFor(5e6 * 365 * 86400))).toBe('~10^6 years');
+  });
 });

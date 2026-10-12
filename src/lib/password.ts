@@ -28,7 +28,9 @@ export const LENGTH_MIN = 4;
 export const LENGTH_MAX = 40;
 export const LENGTH_DEFAULT = 16;
 /** One-click lengths offered beside the slider. */
-export const LENGTH_PRESETS = [16, 24, 32, 40] as const;
+// Matches what people search for ("8 character password generator" and so on),
+// usually because a site has told them the length it requires.
+export const LENGTH_PRESETS = [8, 12, 16, 20, 32] as const;
 
 export const WORDS_MIN = 3;
 export const WORDS_MAX = 8;
@@ -239,20 +241,21 @@ export function crackTime(bits: number): string {
   const seconds = 2 ** (bits - 1) / GUESSES_PER_SECOND;
 
   if (seconds < 1) return 'instantly';
-  const units: [number, string][] = [
-    [60, 'second'],
+
+  // Each step: how many of the current unit make the next one.
+  const steps: [number, string][] = [
     [60, 'minute'],
-    [24, 'hour'],
-    [365, 'day'],
+    [60, 'hour'],
+    [24, 'day'],
+    [365, 'year'],
   ];
 
   let value = seconds;
   let unit = 'second';
-  for (const [factor, nextUnit] of units) {
+  for (const [factor, nextUnit] of steps) {
     if (value < factor) break;
     value /= factor;
-    unit = nextUnit === 'day' ? 'year' : nextUnit;
-    if (unit === 'year') break;
+    unit = nextUnit;
   }
 
   if (unit === 'year' && value >= 1e6) {

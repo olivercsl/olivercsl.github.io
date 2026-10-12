@@ -367,9 +367,10 @@ export const PasswordGenerator = () => {
                   <span>{LENGTH_MAX}</span>
                 </div>
 
-                {/* Quick presets. Deliberately no sub-16 shortcut — one-click
-                    access to a weak length isn't a good default to offer. */}
-                <div className="flex gap-2 mt-3">
+                {/* Quick presets match the lengths people search for, usually
+                    because a site dictates one. 8 and 12 are offered for that
+                    reason, with a note below rather than a default. */}
+                <div className="flex flex-wrap gap-2 mt-3">
                   {LENGTH_PRESETS.map((n) => (
                     <button
                       key={n}
@@ -386,6 +387,12 @@ export const PasswordGenerator = () => {
                     </button>
                   ))}
                 </div>
+                {pwOpts.length < 12 && (
+                  <p className="text-xs text-amber-700 mt-2">
+                    Fine where a site caps the length. Otherwise choose 16 or more: each extra
+                    character multiplies the time to crack it by up to 86.
+                  </p>
+                )}
               </div>
 
               <div className="divide-y divide-gray-100 border-t border-gray-100">
