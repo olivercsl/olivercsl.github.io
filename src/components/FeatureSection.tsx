@@ -9,8 +9,9 @@ export const FeatureSection = () => {
     <section className="py-32 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-32">
         
-        {/* Feature 1: China Connectivity */}
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        {/* Feature 1: China Connectivity. The id makes it shareable as
+            cloudzeta.solutions/#china-connectivity; scroll-mt clears the fixed navbar. */}
+        <div id="china-connectivity" className="grid md:grid-cols-2 gap-12 items-center scroll-mt-28">
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
