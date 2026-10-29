@@ -9,6 +9,7 @@
  */
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
+import RelatedTools from '../../components/RelatedTools.astro';
 import { IsoDurationConverter } from '../../components/tools/IsoDurationConverter';
 
 const faqs = [
@@ -213,6 +214,8 @@ const schema = {
         </div>
       </div>
     </section>
+
+    <RelatedTools current="/tools/iso-8601-duration-converter/" />
 
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">

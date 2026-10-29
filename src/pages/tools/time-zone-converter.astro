@@ -10,6 +10,7 @@
  */
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
+import RelatedTools from '../../components/RelatedTools.astro';
 import { TimeZoneConverter } from '../../components/tools/TimeZoneConverter';
 
 const faqs = [
@@ -215,6 +216,8 @@ const schema = {
         </div>
       </div>
     </section>
+
+    <RelatedTools current="/tools/time-zone-converter/" />
 
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">

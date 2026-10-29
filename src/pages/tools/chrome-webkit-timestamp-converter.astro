@@ -9,6 +9,7 @@
  */
 import Layout from '../../layouts/Layout.astro';
 import { Navbar } from '../../components/Navbar';
+import RelatedTools from '../../components/RelatedTools.astro';
 import { BrowserTimestampConverter } from '../../components/tools/BrowserTimestampConverter';
 import { BULK, FORMATS, excelFormula } from '../../lib/browsertime';
 
@@ -277,6 +278,8 @@ const schema = {
         </div>
       </div>
     </section>
+
+    <RelatedTools current="/tools/chrome-webkit-timestamp-converter/" />
 
     <footer class="py-12 px-6 border-t border-glass-border">
       <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">

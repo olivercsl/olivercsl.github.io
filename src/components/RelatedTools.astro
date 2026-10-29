@@ -1,0 +1,37 @@
+---
+/**
+ * "Related tools" block for the foot of a tool page: three plain links to
+ * the tools someone is likely to need next. Static HTML, no script, so it
+ * keeps the tool pages' no-tracking promise.
+ */
+import { relatedFor } from '../lib/toolsCatalog';
+
+interface Props {
+  current: string;
+}
+
+const related = relatedFor(Astro.props.current);
+---
+
+{
+  related.length > 0 && (
+    <section class="py-16 px-4 sm:px-6 border-t border-glass-border" aria-labelledby="related-tools">
+      <div class="max-w-5xl mx-auto">
+        <h2 id="related-tools" class="text-xl font-semibold text-tx-primary mb-5">Related tools</h2>
+        <ul class={`grid gap-4 ${related.length > 2 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+          {related.map((t) => (
+            <li>
+              <a
+                href={t.href}
+                class="group flex flex-col h-full bg-white p-5 rounded-2xl border border-glass-border shadow-sm hover:shadow-md transition-all"
+              >
+                <span class="font-semibold text-tx-primary group-hover:text-accent transition-colors mb-1.5">{t.name}</span>
+                <span class="text-sm text-tx-secondary leading-relaxed">{t.desc}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
