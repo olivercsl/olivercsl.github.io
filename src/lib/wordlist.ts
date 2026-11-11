@@ -1,7 +1,10 @@
-// EFF "large" diceware wordlist (7776 words).
+// EFF "large" diceware wordlist (7776 words) minus its four hyphenated words
+// (drop-down, felt-tip, t-shirt, yo-yo): 7772 words. With the default "-"
+// separator those four made a passphrase read as more words than it has and
+// broke "Capitalize" ("T-shirt"), so a hyphen now always marks a word break.
 // Source: https://www.eff.org/dice — licensed CC BY 3.0 US.
 // Loaded lazily (dynamic import) so it only costs bandwidth in passphrase mode.
-// log2(7776) ≈ 12.925 bits of entropy per word.
+// log2(7772) ≈ 12.924 bits of entropy per word.
 
 export const WORDS: readonly string[] = [
   "abacus",
@@ -2012,7 +2015,6 @@ export const WORDS: readonly string[] = [
   "drone",
   "drool",
   "droop",
-  "drop-down",
   "dropbox",
   "dropkick",
   "droplet",
@@ -2531,7 +2533,6 @@ export const WORDS: readonly string[] = [
   "feel",
   "feisty",
   "feline",
-  "felt-tip",
   "feminine",
   "feminism",
   "feminist",
@@ -6643,7 +6644,6 @@ export const WORDS: readonly string[] = [
   "synthetic",
   "syrup",
   "system",
-  "t-shirt",
   "tabasco",
   "tabby",
   "tableful",
@@ -7751,7 +7751,6 @@ export const WORDS: readonly string[] = [
   "yield",
   "yin",
   "yippee",
-  "yo-yo",
   "yodel",
   "yoga",
   "yogurt",

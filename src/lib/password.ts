@@ -208,7 +208,10 @@ export function passwordEntropy(options: PasswordOptions): number {
   return length * Math.log2(pool.length);
 }
 
-export function passphraseEntropy(options: PassphraseOptions, wordlistSize = 7776): number {
+/** Words in src/lib/wordlist.ts; a test keeps the two in step. */
+export const PASSPHRASE_WORDLIST_SIZE = 7772;
+
+export function passphraseEntropy(options: PassphraseOptions, wordlistSize = PASSPHRASE_WORDLIST_SIZE): number {
   const count = Math.min(Math.max(Math.trunc(options.wordCount), WORDS_MIN), WORDS_MAX);
   let bits = count * Math.log2(wordlistSize);
   if (options.includeNumber) bits += Math.log2(100) + Math.log2(count);

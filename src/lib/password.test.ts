@@ -11,6 +11,7 @@ import {
   poolFor,
   SIMILAR_CHARS,
   CHAR_POOLS,
+  PASSPHRASE_WORDLIST_SIZE,
   type PasswordOptions,
 } from './password';
 
@@ -239,7 +240,7 @@ describe('entropy and strength', () => {
       capitalize: false,
       includeNumber: false,
     });
-    expect(bits).toBeCloseTo(4 * Math.log2(7776), 5);
+    expect(bits).toBeCloseTo(4 * Math.log2(PASSPHRASE_WORDLIST_SIZE), 5);
   });
 
   it('grows entropy with length', () => {
@@ -278,5 +279,18 @@ describe('entropy and strength', () => {
     expect(crackTime(bitsFor(3 * 86400))).toBe('~3 days');
     expect(crackTime(bitsFor(400 * 86400))).toBe('~1.1 years');
     expect(crackTime(bitsFor(5e6 * 365 * 86400))).toBe('~10^6 years');
+  });
+});
+
+describe('passphrase wordlist', () => {
+  it('matches the size the entropy figure assumes, with no duplicates', async () => {
+    const { WORDS } = await import('./wordlist');
+    expect(WORDS.length).toBe(PASSPHRASE_WORDLIST_SIZE);
+    expect(new Set(WORDS).size).toBe(WORDS.length);
+  });
+
+  it('has no word containing a hyphen, so the default separator always marks a word break', async () => {
+    const { WORDS } = await import('./wordlist');
+    expect(WORDS.filter((w) => w.includes('-'))).toEqual([]);
   });
 });
