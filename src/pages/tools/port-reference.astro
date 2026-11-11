@@ -26,6 +26,22 @@ const faqs = [
     "a": "Unauthenticated data and management planes: databases such as 3306, 5432, 6379, 27017 and 9200, SMB on 445, RDP on 3389 without a gateway, the Docker API on 2375, and the kubelet on 10250. These are scanned constantly; reach them over VPNs or private networks instead."
   },
   {
+    "q": "What port does ping use?",
+    "a": "None. Ping sends ICMP echo requests and receives echo replies, and ICMP has no port numbers: it sits beside TCP and UDP rather than on top of them. To allow ping through a firewall or a cloud security group, permit the ICMP protocol (echo request, type 8) instead of opening a port."
+  },
+  {
+    "q": "What ports do SSH, DNS, RDP, SMB and NTP use?",
+    "a": "SSH uses TCP 22. DNS uses port 53, over UDP for most queries and TCP for zone transfers and large answers. RDP uses TCP 3389. SMB uses TCP 445. NTP uses UDP 123. The table above lists these with the rest and can be searched by service name."
+  },
+  {
+    "q": "What is the ephemeral port range on Linux and Windows?",
+    "a": "Linux uses 32768 to 60999 by default, set by net.ipv4.ip_local_port_range. Windows since Vista and Server 2008 uses 49152 to 65535, as does macOS, which matches the IANA dynamic range. FreeBSD defaults to 10000 to 65535. A firewall rule for return traffic has to cover the range of the operating system that opened the connection."
+  },
+  {
+    "q": "How do I find which process is using a port?",
+    "a": "On Linux run sudo ss -ltnp and look for the port, or sudo lsof -i :8080. On macOS run sudo lsof -nP -iTCP:8080 -sTCP:LISTEN. On Windows run netstat -ano | findstr :8080 and look up the process ID in the last column with tasklist. Each shows the process holding the port."
+  },
+  {
     "q": "Can a service run on a different port than listed?",
     "a": "Yes, these are defaults and conventions, not rules. Anything can listen anywhere, which is why firewalls that identify traffic by port alone are only a first approximation."
   },
@@ -74,8 +90,8 @@ const schema = {
 ---
 
 <Layout
-  title="Network Port Reference | Common TCP & UDP Ports | Cloudzeta"
-  description="Searchable reference of common TCP and UDP ports: databases, message queues, Kubernetes, mail, VPN and more, with security notes. Free, no ads."
+  title="Common TCP and UDP Ports List | Network Port Reference"
+  description="A searchable list of common TCP and UDP ports: databases, message queues, Kubernetes, mail, VPN and more, with security notes, ephemeral port ranges and how to find what is using a port. Free, no ads."
 >
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
 
@@ -94,6 +110,156 @@ const schema = {
         <p class="text-base text-tx-secondary text-center text-balance mt-6">
           The ports engineers actually meet, searchable by number, service or protocol.
         </p>
+      </div>
+    </section>
+
+    <!--
+      Added 11 Nov 2026. Google crawled this page and declined to index it: the
+      only crawlable copy was the table and five FAQ answers. These sections
+      answer what people search for around ports (autocomplete: "ephemeral port
+      range linux / windows", "check which process is using port", "common
+      ports list").
+      Sources: RFC 6335 section 6 (ranges); Linux Documentation/networking/
+      ip-sysctl.rst (ip_local_port_range default 32768 60999); Microsoft KB
+      929851 (Windows dynamic range 49152 to 65535); macOS sysctl
+      net.inet.ip.portrange.first/last, read on macOS 27; FreeBSD
+      sys/netinet/in_pcb.c (ipport_firstauto = IPPORT_EPHEMERALFIRST, 10000 to
+      65535; 49152 is only the IP_PORTRANGE_HIGH range).
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            How port numbers are divided
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            A port is a 16 bit number, 0 to 65535, that tells the operating system which program a
+            TCP or UDP packet belongs to. IANA splits the space into three ranges:
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead>
+                <tr class="border-b border-glass-border text-tx-primary">
+                  <th class="py-2 pr-4 font-semibold">Range</th>
+                  <th class="py-2 pr-4 font-semibold">Name</th>
+                  <th class="py-2 font-semibold">Used for</th>
+                </tr>
+              </thead>
+              <tbody class="text-tx-secondary">
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">0 to 1023</td>
+                  <td class="py-2 pr-4">System (well-known)</td>
+                  <td class="py-2">Core services such as SSH, DNS and HTTPS. Binding one needs privileges on most systems.</td>
+                </tr>
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">1024 to 49151</td>
+                  <td class="py-2 pr-4">User (registered)</td>
+                  <td class="py-2">Applications that registered a number: databases, message queues, monitoring agents.</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">49152 to 65535</td>
+                  <td class="py-2 pr-4">Dynamic (ephemeral)</td>
+                  <td class="py-2">Never assigned. Operating systems hand these out as the source port of outgoing connections.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Ephemeral port ranges by operating system
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            When a client connects to a server on port 443, its own end of the connection also needs
+            a port. The operating system picks one from its ephemeral range, and not every system
+            follows the IANA range:
+          </p>
+          <div class="overflow-x-auto mb-3">
+            <table class="w-full text-sm text-left">
+              <thead>
+                <tr class="border-b border-glass-border text-tx-primary">
+                  <th class="py-2 pr-4 font-semibold">System</th>
+                  <th class="py-2 pr-4 font-semibold">Default range</th>
+                  <th class="py-2 font-semibold">How to check</th>
+                </tr>
+              </thead>
+              <tbody class="text-tx-secondary">
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4">Linux</td>
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">32768 to 60999</td>
+                  <td class="py-2 font-mono">sysctl net.ipv4.ip_local_port_range</td>
+                </tr>
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4">Windows (Vista, Server 2008 and later)</td>
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">49152 to 65535</td>
+                  <td class="py-2 font-mono">netsh int ipv4 show dynamicport tcp</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-4">macOS</td>
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">49152 to 65535</td>
+                  <td class="py-2 font-mono">sysctl net.inet.ip.portrange.first net.inet.ip.portrange.last</td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-4">FreeBSD</td>
+                  <td class="py-2 pr-4 font-mono whitespace-nowrap">10000 to 65535</td>
+                  <td class="py-2 font-mono">sysctl net.inet.ip.portrange.first net.inet.ip.portrange.last</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-tx-secondary leading-relaxed">
+            This matters wherever a firewall is stateless. A rule that allows inbound 443 is not
+            enough if the replies, addressed to the client's ephemeral port, are dropped on the way
+            back. Stateful firewalls track the connection and allow the reply automatically.
+            Stateless filters, such as network ACLs in a cloud VPC, need an explicit rule covering
+            the ephemeral range of whichever side opened the connection. If you are planning the
+            address space as well, the
+            <a href="/tools/subnet-calculator/" class="text-accent hover:underline">subnet calculator</a>
+            splits a CIDR block into subnets.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Find which process is using a port
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            "Address already in use" means another process is already listening on the port. These
+            commands name it, using 8080 as the example:
+          </p>
+          <pre class="bg-surface border border-glass-border rounded-xl p-4 text-sm text-tx-primary overflow-x-auto mb-3"><code>{`# Linux
+sudo ss -ltnp 'sport = :8080'
+sudo lsof -i :8080
+
+# macOS
+sudo lsof -nP -iTCP:8080 -sTCP:LISTEN
+
+# Windows (Command Prompt): the last column is the process ID
+netstat -ano | findstr :8080
+tasklist /FI "PID eq 1234"
+
+# Windows (PowerShell)
+Get-Process -Id (Get-NetTCPConnection -LocalPort 8080 -State Listen).OwningProcess`}</code></pre>
+          <p class="text-tx-secondary leading-relaxed">
+            Without <code class="font-mono text-sm text-tx-primary">sudo</code> the Linux and macOS
+            commands still list the socket, but hide the name of any process owned by another user.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            Ports that should not face the internet
+          </h2>
+          <p class="text-tx-secondary leading-relaxed">
+            A listed port is a convention, and an open one is an invitation. Databases (3306, 5432,
+            6379, 27017, 9200), SMB on 445, RDP on 3389, the Docker API on 2375 and the kubelet on
+            10250 are scanned for constantly on public addresses.
+            Keep them on private networks and reach them through a VPN or a bastion host. Moving a
+            service to an unusual port reduces log noise, and does nothing against a scanner that
+            checks every port.
+          </p>
+        </div>
       </div>
     </section>
 
