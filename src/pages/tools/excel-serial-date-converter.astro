@@ -64,6 +64,18 @@ const faqs = [
     a: 'For every date from 1 March 1900 onwards, yes. Before that they differ by a day, because Sheets and LibreOffice count from 30 December 1899 without inventing a 29 February. It almost never matters for real data, which is exactly why it catches people out when it does.',
   },
   {
+    q: 'How do I show an Excel serial number as text such as yyyymmdd?',
+    a: 'Use the TEXT function with a format code: =TEXT(A1,"yyyymmdd") turns 45768 into 20250421, and =TEXT(A1,"yyyy-mm-dd") gives 2025-04-21. The result is text, so it survives a CSV export unchanged. To keep a real date and only change how it looks, set the cell format instead.',
+  },
+  {
+    q: 'How do I convert an Excel serial date in Power Automate?',
+    a: "Excel connectors often return a date as its serial number. Add the whole days to 30 December 1899: addDays('1899-12-30', int(variables('serial')), 'yyyy-MM-dd') turns 45768 into 2025-04-21. If the serial has a fraction for the time of day, take the part before the decimal point first, since int() rejects a decimal string.",
+  },
+  {
+    q: 'What is the Excel serial number for today?',
+    a: 'Type =TODAY() and format the cell as General or Number. 11 November 2026 is 46337, and the number goes up by one each day. =NOW() adds the time of day as a fraction. The Date to Excel serial number panel above opens on the current date and time, so it shows the serial for right now.',
+  },
+  {
     q: 'What timezone is an Excel date in?',
     a: 'None. A serial is a calendar date and a clock reading with no zone attached, so 45321.75 is six in the evening on whatever clock the person typing it was looking at. If the values came from a system log in UTC they are UTC; if someone in Sydney typed them in they are Sydney time. The spreadsheet cannot tell you which.',
   },
