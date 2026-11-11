@@ -26,6 +26,14 @@ const faqs = [
     "a": "At a full 1 Gbps, about 22 hours; at 100 Mbps, over nine days. This is why large migrations plan bandwidth first, and why shipping physical drives remains rational for very large datasets over slow links."
   },
   {
+    "q": "What is the bandwidth delay product?",
+    "a": "Bandwidth multiplied by round trip time: the amount of data in flight on a path that is being used fully. A 1 Gbps link with a 100 ms round trip holds 100 megabits, or 12.5 MB. The TCP receive window has to be at least that large for one stream to fill the link, and the calculator shows the figure as data in flight needed."
+  },
+  {
+    "q": "How does latency affect file transfer time?",
+    "a": "TCP sends at most one window of data per round trip, so throughput cannot exceed window size divided by round trip time, whatever the link speed. A 64 KiB window over a 100 ms path carries about 5.2 Mbps, even on a 1 Gbps link. Packet loss lowers the ceiling further. Enter the round trip time and loss above to see the result for your path."
+  },
+  {
     "q": "What efficiency figure should I use?",
     "a": "90% is a reasonable default for TCP on a clean low-latency path. Use lower figures for high-latency links without tuning, many small files, or encrypted tunnels with small MTUs. Line rate, 100%, is a theoretical bound rather than an expectation."
   },
