@@ -38,6 +38,18 @@ const faqs = [
     "a": "It is OOM-killed by the kernel, regardless of QoS class. Exceeding the CPU limit merely throttles. That asymmetry is why the calculator flags missing memory limits: without one, a leak grows until the node itself comes under pressure and the eviction order decides who pays."
   },
   {
+    "q": "How do I check the QoS class of a pod?",
+    "a": "Read status.qosClass: kubectl get pod NAME -o jsonpath='{.status.qosClass}' prints Guaranteed, Burstable or BestEffort. kubectl describe pod NAME shows the same value on its QoS Class line. The class is assigned when the pod is created and does not change afterwards."
+  },
+  {
+    "q": "Is a pod with only limits Guaranteed?",
+    "a": "Yes, if every container sets both a CPU limit and a memory limit. When a limit is set and the request is left out, Kubernetes copies the limit into the request, so request equals limit and the pod is Guaranteed. Setting only requests does not work the other way: the pod is Burstable."
+  },
+  {
+    "q": "What oom_score_adj does each QoS class get?",
+    "a": "Guaranteed containers get -997 and BestEffort containers get 1000. A Burstable container gets 1000 minus a thousand times its memory request divided by the node's memory capacity, kept between 3 and 999. A container requesting 10% of the node therefore gets 900. The kernel kills the process with the highest total score first."
+  },
+  {
     "q": "Is my configuration sent anywhere?",
     "a": "No. Classification happens in your browser and the page works offline."
   }
@@ -134,8 +146,9 @@ const schema = {
           </p>
           <ul class="space-y-2 text-tx-secondary leading-relaxed mb-3">
             <li>
-              <strong class="text-tx-primary">Guaranteed</strong>: every container sets CPU and
-              memory requests and limits, and each request equals its limit.
+<strong class="text-tx-primary">Guaranteed</strong>: every container sets CPU and
+              memory limits, and each request equals its limit. A request you leave out is copied
+              from the limit, so limits alone are enough.
             </li>
             <li>
               <strong class="text-tx-primary">BestEffort</strong>: no container sets any request or
@@ -166,6 +179,80 @@ const schema = {
             Exceeding a CPU limit only throttles it. That asymmetry is why a missing memory limit is
             worth flagging, since without one a leak grows until the node itself is in trouble and
             the eviction order decides who pays for it.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            How to check a pod's QoS class
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            The kubelet records the class in the pod's status, so you can read what a running pod
+            was given instead of working it out:
+          </p>
+          <pre class="bg-surface border border-glass-border rounded-xl p-4 text-sm text-tx-primary overflow-x-auto mb-3"><code>{`# One pod
+kubectl get pod NAME -o jsonpath='{.status.qosClass}'
+
+# Every pod in the cluster
+kubectl get pods -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,QOS:.status.qosClass`}</code></pre>
+          <p class="text-tx-secondary leading-relaxed">
+            <code class="font-mono text-sm text-tx-primary">kubectl describe pod NAME</code> prints
+            the same value on its <strong class="text-tx-primary">QoS Class</strong> line. The class
+            is fixed when the pod is created. To change it, change the requests and limits in the
+            workload and let the pods be replaced.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            QoS class and oom_score_adj
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Eviction by the kubelet is one mechanism. The other is the Linux OOM killer, which acts
+            when the node runs out of memory faster than the kubelet can evict. The kubelet steers
+            it by writing an <code class="font-mono text-sm text-tx-primary">oom_score_adj</code>
+            value for every container, chosen from the QoS class:
+          </p>
+          <div class="overflow-x-auto mb-3">
+            <table class="w-full text-sm text-left">
+              <thead>
+                <tr class="border-b border-glass-border text-tx-primary">
+                  <th class="py-2 pr-4 font-semibold">QoS class</th>
+                  <th class="py-2 font-semibold">oom_score_adj</th>
+                </tr>
+              </thead>
+              <tbody class="text-tx-secondary">
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4">Guaranteed</td>
+                  <td class="py-2 font-mono">-997</td>
+                </tr>
+                <tr class="border-b border-glass-border">
+                  <td class="py-2 pr-4">Burstable</td>
+                  <td class="py-2">
+                    <span class="font-mono">1000 - (1000 x memory request / node memory)</span>,
+                    kept between 3 and 999
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 pr-4">BestEffort</td>
+                  <td class="py-2 font-mono">1000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            The kernel adds this number to a score based on how much of the node's memory the
+            process is using, and kills the highest total. A Burstable container that requests 256
+            MiB on a 16 GiB node gets 985, so it is killed almost as readily as a BestEffort one. A
+            container that requests 10% of the node gets 900. The larger the request, the better
+            protected the container, which is one more reason to set requests honestly.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            The calculator above shows the value for each container. Node memory means the
+            capacity the node reports, which is a little under the instance's nominal size:
+            <code class="font-mono text-sm text-tx-primary">kubectl describe node NAME</code> lists
+            it under Capacity. To see the live value, run
+            <code class="font-mono text-sm text-tx-primary">kubectl exec POD -- cat /proc/1/oom_score_adj</code>.
           </p>
         </div>
 

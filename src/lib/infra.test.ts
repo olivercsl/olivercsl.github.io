@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { toBytes, toBitsPerSecond, transferSeconds, formatSeconds, sizeBreakdown } from './bandwidth';
 import { parseNumbers, percentile, latencyStats, littlesLaw, rateBreakdown } from './capacity';
 import { cutoverPlan, formatTtl } from './dnsttl';
-import { qosClass, qosFindings } from './k8sqos';
+import { containerOomScores, oomScoreAdj, qosClass, qosFindings } from './k8sqos';
 import { PORTS, searchPorts } from './ports';
 
 describe('bandwidth', () => {
@@ -124,6 +124,50 @@ describe('kubernetes qos', () => {
         { cpuRequest: 100 },
       ]),
     ).toBe('Burstable');
+  });
+
+  // The API server defaults an omitted request to the limit, so limits alone
+  // are enough: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/#guaranteed
+  it('classifies limits without requests as Guaranteed', () => {
+    expect(qosClass([{ cpuLimit: 500, memLimit: 512 }])).toBe('Guaranteed');
+    expect(qosClass([{ cpuLimit: 500, memRequest: 512, memLimit: 512 }])).toBe('Guaranteed');
+    expect(qosClass([{ cpuLimit: 500 }])).toBe('Burstable');
+    expect(qosClass([{ cpuLimit: 500, memRequest: 256, memLimit: 512 }])).toBe('Burstable');
+  });
+
+  // Expected values worked by hand from GetContainerOOMScoreAdjust in
+  // pkg/kubelet/qos/policy.go, whose own comment gives the 10% -> 900 case.
+  it('computes oom_score_adj as the kubelet does', () => {
+    expect(oomScoreAdj('Guaranteed', 512, 16384)).toBe(-997);
+    expect(oomScoreAdj('BestEffort', null, 16384)).toBe(1000);
+    expect(oomScoreAdj('Burstable', 1638.4, 16384)).toBe(900); // 10% of the node
+    expect(oomScoreAdj('Burstable', 256, 16384)).toBe(985); // 1000 - floor(15.625)
+    expect(oomScoreAdj('Burstable', null, 16384)).toBe(999); // no request: 1000 lowered to 999
+    expect(oomScoreAdj('Burstable', 8, 16384)).toBe(999); // floor(0.488) = 0, so 1000 -> 999
+    expect(oomScoreAdj('Burstable', 16384, 16384)).toBe(3); // 0 raised to 3
+    expect(oomScoreAdj('Burstable', 16350, 16384)).toBe(3); // 1000 - 997 = 3
+    expect(oomScoreAdj('Burstable', 16300, 16384)).toBe(6); // 1000 - floor(994.87)
+    expect(oomScoreAdj('Burstable', 256, 0)).toBeNull();
+  });
+
+  it('scores each container of a pod, using the defaulted request', () => {
+    expect(
+      containerOomScores(
+        [
+          { cpuRequest: 250, cpuLimit: 500, memRequest: 256, memLimit: 512 },
+          { memLimit: 4096 }, // request defaults to the 4096 limit: 1000 - 250
+          {},
+        ],
+        16384,
+      ),
+    ).toEqual([985, 750, 999]);
+    expect(containerOomScores([{ cpuLimit: 500, memLimit: 512 }], 16384)).toEqual([-997]);
+    expect(containerOomScores([{}], 16384)).toEqual([1000]);
+  });
+
+  it('does not report a missing CPU request when a limit supplies one', () => {
+    expect(qosFindings([{ cpuLimit: 500, memLimit: 512 }]).some((x) => x.message.includes('no CPU request'))).toBe(false);
+    expect(qosFindings([{ memLimit: 512 }]).some((x) => x.message.includes('no CPU request'))).toBe(true);
   });
 
   it('flags a missing memory limit as a risk', () => {

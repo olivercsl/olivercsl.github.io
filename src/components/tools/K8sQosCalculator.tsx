@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { qosClass, qosFindings, type ContainerResources } from '../../lib/k8sqos';
+import { containerOomScores, qosClass, qosFindings, type ContainerResources } from '../../lib/k8sqos';
 
 interface Row extends ContainerResources {
   id: number;
@@ -32,8 +32,12 @@ export const K8sQosCalculator = () => {
     { id: seq++, cpuRequest: 250, cpuLimit: 500, memRequest: 256, memLimit: 512 },
   ]);
 
+  const [nodeGiB, setNodeGiB] = useState('16');
+
   const cls = qosClass(rows);
   const findings = qosFindings(rows);
+  const nodeMiB = Number(nodeGiB) * 1024;
+  const oomScores = containerOomScores(rows, nodeMiB);
 
   const setField = (id: number, key: keyof ContainerResources, raw: string) => {
     const v = raw.trim() === '' ? null : Number(raw);
@@ -104,6 +108,41 @@ export const K8sQosCalculator = () => {
           <div className="text-xs font-semibold uppercase tracking-wide mb-1">QoS class</div>
           <div className="text-2xl font-bold mb-1">{cls}</div>
           <p className="text-sm leading-relaxed">{CLASS_BLURB[cls]}</p>
+        </div>
+
+        <div className="rounded-xl border border-glass-border p-4 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h3 className="text-sm font-semibold text-tx-primary">
+              OOM score adjustment <span className="font-mono font-normal">(oom_score_adj)</span>
+            </h3>
+            <label className="flex items-center gap-2 text-xs text-tx-secondary">
+              Node memory
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                value={nodeGiB}
+                onChange={(e) => setNodeGiB(e.target.value)}
+                aria-label="Node memory capacity in GiB"
+                className="w-20 px-2.5 py-1.5 rounded-lg border border-glass-border bg-white font-mono text-sm text-tx-primary tabular-nums focus:outline-none focus:ring-2 focus:ring-accent/40"
+              />
+              <span className="text-[11px]">GiB</span>
+            </label>
+          </div>
+          <ul className="divide-y divide-glass-border">
+            {rows.map((row, i) => (
+              <li key={row.id} className="flex items-center justify-between py-1.5 text-sm">
+                <span className="text-tx-secondary">Container {i + 1}</span>
+                <span className="font-mono font-semibold text-tx-primary tabular-nums">
+                  {oomScores[i] ?? 'enter node memory'}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-tx-secondary leading-relaxed mt-3">
+            What the kubelet writes for the container's processes. When the node itself runs out of
+            memory, the kernel kills the highest score first: 1000 goes before 3, and -997 last.
+          </p>
         </div>
 
         {findings.length > 0 && (
