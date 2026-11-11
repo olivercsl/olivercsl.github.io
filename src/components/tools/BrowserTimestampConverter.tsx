@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocalZone } from './useLocalZone';
 import {
   decodeAll,
   isSentinel,
@@ -52,6 +53,7 @@ function Copy({ text, label, onCopy }: { text: string; label: string; onCopy: (t
 }
 
 export const BrowserTimestampConverter = () => {
+  const zone = useLocalZone();
   const [input, setInput] = useState('');
   const [expanded, setExpanded] = useState<BrowserTimeFormat | null>(null);
   const [dateInput, setDateInput] = useState('');
@@ -260,7 +262,7 @@ export const BrowserTimestampConverter = () => {
                   dateMode === m ? 'bg-white text-accent shadow-sm' : 'text-tx-secondary hover:text-tx-primary'
                 }`}
               >
-                {m === 'utc' ? 'UTC' : localZone()}
+                {m === 'utc' ? 'UTC' : zone}
               </button>
             ))}
           </div>

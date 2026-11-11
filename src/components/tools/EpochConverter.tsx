@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocalZone } from './useLocalZone';
 import {
   smartParse,
   epochStrings,
@@ -78,6 +79,7 @@ function CopyRow({
 export const EpochConverter = () => {
   // Ticking clock; null until mounted so SSR and client agree.
   const [now, setNow] = useState<number | null>(null);
+  const zone = useLocalZone();
   const [input, setInput] = useState('');
   const [forcedUnit, setForcedUnit] = useState<EpochUnit | 'auto'>('auto');
   const [dateInput, setDateInput] = useState('');
@@ -189,7 +191,7 @@ export const EpochConverter = () => {
             )}
             <div className="rounded-xl border border-glass-border px-4 py-1">
               <CopyRow label="ISO 8601 UTC" value={isoUtc(parsed.ms)} onCopy={copy} />
-              <CopyRow label={localZone()} value={localString(parsed.ms)} onCopy={copy} />
+              <CopyRow label={zone} value={localString(parsed.ms)} onCopy={copy} />
               <CopyRow label="Relative" value={formatRelative(parsed.ms, now)} mono={false} onCopy={copy} />
               {parsed.kind === 'date' && (
                 <>
@@ -210,7 +212,7 @@ export const EpochConverter = () => {
             <CopyRow label="Seconds" value={nowStrings.s} onCopy={copy} />
             <CopyRow label="Milliseconds" value={nowStrings.ms} onCopy={copy} />
             <CopyRow label="ISO 8601 UTC" value={isoUtc(now!)} onCopy={copy} />
-            <CopyRow label={localZone()} value={localString(now!)} onCopy={copy} />
+            <CopyRow label={zone} value={localString(now!)} onCopy={copy} />
           </div>
         ) : (
           <div className="h-24 rounded-xl bg-surface animate-pulse" />
@@ -304,7 +306,7 @@ export const EpochConverter = () => {
                   dateMode === m ? 'bg-white text-accent shadow-sm' : 'text-tx-secondary hover:text-tx-primary'
                 }`}
               >
-                {m === 'local' ? localZone() : 'UTC'}
+                {m === 'local' ? zone : 'UTC'}
               </button>
             ))}
           </div>

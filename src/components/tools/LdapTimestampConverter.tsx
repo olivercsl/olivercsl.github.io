@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocalZone } from './useLocalZone';
 import {
   parseLdap,
   msToFiletime,
@@ -72,6 +73,7 @@ function Row({
 }
 
 export const LdapTimestampConverter = () => {
+  const zone = useLocalZone();
   const [input, setInput] = useState('');
   const [attribute, setAttribute] = useState('');
   const [dateInput, setDateInput] = useState('');
@@ -327,7 +329,7 @@ export const LdapTimestampConverter = () => {
                   dateMode === m ? 'bg-white text-accent shadow-sm' : 'text-tx-secondary hover:text-tx-primary'
                 }`}
               >
-                {m === 'utc' ? 'UTC' : localZone()}
+                {m === 'utc' ? 'UTC' : zone}
               </button>
             ))}
           </div>
