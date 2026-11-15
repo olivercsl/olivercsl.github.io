@@ -44,6 +44,12 @@ export const categories: { name: string; tools: ToolEntry[] }[] = [
         desc: 'Searchable reference of the TCP and UDP ports engineers actually meet, with security notes.',
         tags: ['Ports', 'TCP/UDP', 'Reference'],
       },
+      {
+        href: '/tools/eks-max-pods-calculator/',
+        name: 'EKS Max Pods Calculator',
+        desc: 'Max pods per node for any EC2 instance type on Amazon EKS, with prefix delegation, custom networking and the managed node group caps.',
+        tags: ['EKS', 'Kubernetes', 'AWS'],
+      },
     ],
   },
   {
@@ -183,7 +189,7 @@ const EXTRA: Record<string, ToolEntry> = {
  * (epochconverter.com, calculator.net) carry the same kind of block.
  */
 const RELATED: Record<string, string[]> = {
-  '/tools/subnet-calculator/': ['/tools/port-reference/', '/tools/bandwidth-calculator/', '/tools/dns-ttl-planner/'],
+  '/tools/subnet-calculator/': ['/tools/port-reference/', '/tools/bandwidth-calculator/', '/tools/eks-max-pods-calculator/'],
   '/tools/bandwidth-calculator/': ['/tools/latency-budget-calculator/', '/tools/subnet-calculator/', '/tools/kubernetes-resource-units-converter/'],
   '/tools/dns-ttl-planner/': ['/tools/dns-zone-file-checker/', '/blog/how-to-migrate-dns-to-cloudflare/', '/tools/port-reference/'],
   '/tools/dns-zone-file-checker/': ['/tools/dns-ttl-planner/', '/blog/how-to-migrate-dns-to-cloudflare/', '/tools/port-reference/'],
@@ -194,8 +200,10 @@ const RELATED: Record<string, string[]> = {
   '/tools/retry-backoff-calculator/': ['/tools/sla-calculator/', '/tools/littles-law-calculator/', '/tools/downtime-cost-calculator/'],
   '/tools/downtime-cost-calculator/': ['/tools/sla-calculator/', '/tools/latency-budget-calculator/', '/tools/retry-backoff-calculator/'],
   '/tools/latency-budget-calculator/': ['/tools/latency-percentile-calculator/', '/tools/bandwidth-calculator/', '/tools/sla-calculator/'],
-  '/tools/kubernetes-resource-units-converter/': ['/tools/kubernetes-qos-calculator/', '/tools/bandwidth-calculator/', '/tools/iso-8601-duration-converter/'],
-  '/tools/kubernetes-qos-calculator/': ['/tools/kubernetes-resource-units-converter/', '/tools/littles-law-calculator/', '/tools/sla-calculator/'],
+  '/tools/kubernetes-resource-units-converter/': ['/tools/kubernetes-qos-calculator/', '/tools/bandwidth-calculator/', '/tools/eks-max-pods-calculator/'],
+  '/tools/kubernetes-qos-calculator/': ['/tools/kubernetes-resource-units-converter/', '/tools/eks-max-pods-calculator/', '/tools/littles-law-calculator/'],
+  // Pods on EKS take VPC addresses, and prefix delegation takes them in /28 blocks.
+  '/tools/eks-max-pods-calculator/': ['/tools/subnet-calculator/', '/tools/kubernetes-qos-calculator/', '/tools/kubernetes-resource-units-converter/'],
   '/tools/time-zone-converter/': ['/tools/epoch-converter/', '/tools/iso-8601-duration-converter/', '/tools/excel-serial-date-converter/'],
   '/tools/excel-serial-date-converter/': ['/tools/epoch-converter/', '/tools/iso-8601-duration-converter/', '/tools/time-zone-converter/'],
   // The LDAP tool decodes Active Directory durations such as maxPwdAge.

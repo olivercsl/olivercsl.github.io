@@ -1,0 +1,317 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ *
+ * Research (15 Nov 2026): autocomplete for "eks max pods" returns calculator,
+ * per node and per instance type suggestions; page one is AWS docs, re:Post,
+ * GitHub issues, blog posts and a few small calculators. Rules and data are
+ * AWS's own: see src/lib/eksmaxpods.ts and src/lib/eksInstances.ts. Every
+ * number on this page is computed from them at build time.
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import RelatedTools from '../../components/RelatedTools.astro';
+import { EksMaxPodsCalculator } from '../../components/tools/EksMaxPodsCalculator';
+import { findInstance, maxPods, INSTANCE_TYPES } from '../../lib/eksmaxpods';
+import { EKS_DATA_SOURCE } from '../../lib/eksInstances';
+
+const off = { prefixDelegation: false, customNetworking: false };
+const pd = { prefixDelegation: true, customNetworking: false };
+const cn = { prefixDelegation: false, customNetworking: true };
+const calc = (type: string, o = off) => maxPods(findInstance(type)!, o);
+
+const TABLE = [
+  't3.medium', 't3.large', 't3.xlarge', 't3.2xlarge',
+  'm5.large', 'm5.xlarge', 'm5.2xlarge', 'm5.4xlarge',
+  'm6i.large', 'm6i.xlarge', 'm6i.2xlarge', 'm6i.8xlarge',
+  'm7g.large', 'm7g.xlarge', 'c6i.large', 'c6i.2xlarge',
+  'r6i.large', 'r6i.xlarge', 'r6i.4xlarge', 'c5.24xlarge',
+].filter((t) => findInstance(t)).map((type) => {
+  const s = findInstance(type)!;
+  return {
+    type,
+    vcpus: s.vcpus,
+    standard: calc(type).ipCapacity,
+    managed: calc(type).managed,
+    prefix: calc(type, pd).managed,
+    custom: calc(type, cn).managed,
+    auto: calc(type).autoMode,
+  };
+});
+
+const t3m = calc('t3.medium');
+const t3mPd = calc('t3.medium', pd);
+const m5l = calc('m5.large');
+const m5lCn = calc('m5.large', cn);
+const m5lPd = calc('m5.large', pd);
+const fmt = (n: number) => n.toLocaleString('en-US');
+
+const faqs = [
+  {
+    q: 'What is the max pods for a t3.medium on EKS?',
+    a: `${t3m.ipCapacity} by default: 3 network interfaces x (6 addresses - 1) + 2. With prefix delegation on a managed node group it rises to ${t3mPd.managed}, the cap for instances with up to 30 vCPUs. EKS Auto Mode allows ${t3m.autoMode}.`,
+  },
+  {
+    q: 'How does EKS calculate max pods?',
+    a: 'From the instance type\'s network limits: the number of network interfaces on the default network card, times the IPv4 addresses each one holds minus one, plus two. The first address of each interface belongs to the interface itself, and the two extra pods are the VPC CNI and kube-proxy, which use the node\'s own address. AWS publishes this rule in the EKS User Guide, and nodeadm applies it on EKS-optimized Amazon Linux 2023 nodes.',
+  },
+  {
+    q: 'Why did max pods not go up after I enabled prefix delegation?',
+    a: `Managed node groups without a custom AMI work the new value out for you. Self-managed nodes and managed node groups with a custom AMI do not: nodeadm keeps the default formula unless you set maxPods yourself. An m5.large stays at ${m5lPd.selfManagedDefault} until you set it, even though prefixes allow ${fmt(m5lPd.ipCapacity)} addresses; AWS caps the recommended value at ${m5lPd.selfManagedRecommended}. maxPods is written into the kubelet configuration when a node bootstraps, and AWS's procedure deploys a new node group after the change.`,
+  },
+  {
+    q: 'Why is max pods capped at 110 or 250?',
+    a: 'Managed node groups without a custom AMI cap maxPods at 110 for instances with less than 30 vCPUs and 250 for larger ones, whether prefix delegation is on or not. 110 is also the kubelet\'s own default and EKS Auto Mode\'s cap. The cap reflects Kubernetes scalability guidance rather than a network limit, which is why prefix delegation on a small instance ends at 110 even when the addresses allow thousands.',
+  },
+  {
+    q: 'What does "Too many pods" mean?',
+    a: 'It is the scheduler saying every node it considered has reached its max pods. kubectl describe pod shows it in the events as, for example, "0/3 nodes are available: 3 Too many pods". The fix is more nodes, larger instance types, or prefix delegation on Nitro instances.',
+  },
+  {
+    q: 'How do I check the max pods of a node?',
+    a: "kubectl get node NODE -o jsonpath='{.status.allocatable.pods}' prints it. kubectl describe node NODE shows the same figure under Capacity and Allocatable as pods.",
+  },
+  {
+    q: 'Does custom networking reduce max pods?',
+    a: `Yes. With custom networking the primary network interface stays on the node's subnet and carries no pods, so one interface fewer counts. An m5.large drops from ${m5l.ipCapacity} to ${m5lCn.ipCapacity}. On self-managed nodes the default ignores this, so set maxPods to the lower value.`,
+  },
+  {
+    q: 'Which instance types support prefix delegation?',
+    a: 'Nitro-based and bare metal instance types, with version 1.9.0 or later of the Amazon VPC CNI add-on for IPv4 clusters. Older Xen families such as t2, m4, c4 and r4 keep assigning individual addresses. The node\'s subnet also needs free contiguous /28 blocks; when it has none, the VPC CNI logs InsufficientCidrBlocks even if single addresses remain.',
+  },
+  {
+    q: 'Is anything I enter sent to a server?',
+    a: 'No. The instance data is part of the page and everything is worked out in your browser, which also means it works offline.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/eks-max-pods-calculator/';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta EKS Max Pods Calculator',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free Amazon EKS max pods calculator. Max pods per node for any EC2 instance type on managed node groups, self-managed nodes and EKS Auto Mode, with prefix delegation and custom networking, from AWS\'s own instance data. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        `Max pods for ${fmt(INSTANCE_TYPES.length)} EC2 instance types, from AWS's nodeadm data`,
+        'Managed node groups, self-managed nodes and EKS Auto Mode',
+        'Prefix delegation and custom networking',
+        'The 110 and 250 managed node group caps',
+        'NodeConfig snippet for self-managed nodes',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
+        { '@type': 'ListItem', position: 3, name: 'EKS Max Pods Calculator', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="EKS Max Pods Calculator | Pods per Node by Instance Type"
+  description="Max pods per node for any EC2 instance type on Amazon EKS: managed node groups, self-managed nodes and Auto Mode, with prefix delegation and custom networking. Uses AWS's own instance data. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          EKS Max Pods Calculator
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <EksMaxPodsCalculator client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          How many pods an EC2 instance type takes on Amazon EKS, and which setting decides it.
+        </p>
+      </div>
+    </section>
+
+    <section class="py-16 px-4 sm:px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">How EKS works out max pods</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Every pod on an EKS node gets a real address from your VPC, so the limit comes from how many
+            addresses the instance can hold. The rule, published in the EKS User Guide and applied by
+            nodeadm on EKS-optimized Amazon Linux 2023 nodes, is:
+          </p>
+          <pre class="bg-surface border border-glass-border rounded-xl p-4 text-sm text-tx-primary overflow-x-auto mb-3"><code>max pods = ENIs x (IPv4 addresses per ENI - 1) + 2</code></pre>
+          <p class="text-tx-secondary leading-relaxed">
+            ENIs means the network interfaces on the instance's default network card. One address on each
+            interface belongs to the interface itself, hence the minus one. The plus two covers the VPC CNI
+            and kube-proxy pods, which run on the node's own address. An m5.large has 3 interfaces of 10
+            addresses, so {m5l.ipCapacity} pods.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Managed node groups, self-managed nodes and Auto Mode</h2>
+          <ul class="space-y-2 text-tx-secondary leading-relaxed">
+            <li>
+              <strong class="text-tx-primary">Managed node groups</strong> without a custom AMI: EKS works the
+              value out, prefix delegation included, and caps it at 110 for instances with up to 30 vCPUs and
+              250 above. The cap wins over any other setting.
+            </li>
+            <li>
+              <strong class="text-tx-primary">Self-managed nodes</strong>, and managed node groups with a custom
+              AMI: nodeadm applies the formula above unless you set <code class="font-mono text-sm text-tx-primary">maxPods</code>
+              in the kubelet configuration or a <code class="font-mono text-sm text-tx-primary">maxPodsExpression</code>
+              in NodeConfig. It does not adjust for prefix delegation or custom networking on its own.
+            </li>
+            <li>
+              <strong class="text-tx-primary">EKS Auto Mode</strong>: the lower of 110 and ENIs x (IPv4 per ENI -
+              1), without the plus two.
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Prefix delegation</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            With prefix delegation on, the VPC CNI places a /28 prefix of 16 addresses in each slot that would
+            otherwise hold one secondary address, so the address limit becomes
+            <code class="font-mono text-sm text-tx-primary">ENIs x ((IPv4 per ENI - 1) x 16) + 2</code>. On an
+            m5.large that is {fmt(m5lPd.ipCapacity)}, far past the {m5lPd.cap} cap, so the cap decides.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            It needs a Nitro-based or bare metal instance and version 1.9.0 or later of the VPC CNI add-on,
+            switched on with <code class="font-mono text-sm text-tx-primary">ENABLE_PREFIX_DELEGATION=true</code>
+            on the aws-node daemonset. Each node then takes addresses from its subnet 16 at a time, so the subnet
+            needs free contiguous /28 blocks. The <a href="/tools/subnet-calculator/" class="text-tx-primary hover:text-accent font-medium">subnet
+            calculator</a> helps size one with room for them.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Max pods for common instance types</h2>
+          <p class="text-tx-secondary leading-relaxed mb-4">
+            Worked out from AWS's instance data with the rules above. "Default" is the formula on its own; the
+            other columns are what a managed node group sets.
+          </p>
+          <div class="overflow-x-auto rounded-2xl border border-glass-border bg-white">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-[11px] uppercase tracking-wide text-tx-secondary border-b border-glass-border bg-surface/60">
+                  <th class="py-2.5 px-3 font-semibold">Instance</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">vCPUs</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Default</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Managed</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Prefixes</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Custom net.</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">Auto Mode</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50 font-mono tabular-nums">
+                {
+                  TABLE.map((r) => (
+                    <tr>
+                      <td class="py-2 px-3 text-tx-primary font-semibold">{r.type}</td>
+                      <td class="py-2 px-3 text-right text-tx-secondary">{r.vcpus}</td>
+                      <td class="py-2 px-3 text-right text-tx-secondary">{fmt(r.standard)}</td>
+                      <td class="py-2 px-3 text-right text-tx-primary">{fmt(r.managed)}</td>
+                      <td class="py-2 px-3 text-right text-tx-primary">{fmt(r.prefix)}</td>
+                      <td class="py-2 px-3 text-right text-tx-primary">{fmt(r.custom)}</td>
+                      <td class="py-2 px-3 text-right text-tx-primary">{fmt(r.auto)}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Pods stuck in Pending: "Too many pods"</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            When every node is at its max pods, new pods stay Pending and
+            <code class="font-mono text-sm text-tx-primary">kubectl describe pod</code> shows an event such as
+            <code class="font-mono text-sm text-tx-primary">0/3 nodes are available: 3 Too many pods</code>.
+            Check the limit a node actually has:
+          </p>
+          <pre class="bg-surface border border-glass-border rounded-xl p-4 text-sm text-tx-primary overflow-x-auto"><code>{`kubectl get node NODE -o jsonpath='{.status.allocatable.pods}'`}</code></pre>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Sources</h2>
+          <ul class="space-y-1.5 text-sm text-tx-secondary leading-relaxed list-disc pl-5">
+            <li><a href="https://docs.aws.amazon.com/eks/latest/userguide/choosing-instance-type.html" class="text-tx-primary hover:text-accent">Choose an optimal Amazon EC2 node instance type</a>, Amazon EKS User Guide (how maxPods is determined, Auto Mode)</li>
+            <li><a href="https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses-procedure.html" class="text-tx-primary hover:text-accent">Increase the available IP addresses for your Amazon EKS node</a>, Amazon EKS User Guide (prefix delegation, managed node group caps)</li>
+            <li>awslabs/amazon-eks-ami: nodeadm instance data and max pods calculation (commit {EKS_DATA_SOURCE.eksAmiCommit})</li>
+            <li>aws/amazon-vpc-cni-k8s: instance network limits and prefix delegation support (commit {EKS_DATA_SOURCE.vpcCniCommit})</li>
+          </ul>
+          <p class="text-sm text-tx-secondary leading-relaxed mt-3">
+            Instance data covers {fmt(INSTANCE_TYPES.length)} types and was updated on {EKS_DATA_SOURCE.generated}.
+            For a newer type, enter its numbers by hand above.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">EKS max pods FAQs</h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <RelatedTools current="/tools/eks-max-pods-calculator/" />
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        See all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>
