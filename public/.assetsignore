@@ -1,0 +1,2 @@
+# Files in dist that Cloudflare should not upload (wrangler.jsonc). GitHub Pages needs CNAME; Cloudflare does not.
+CNAME

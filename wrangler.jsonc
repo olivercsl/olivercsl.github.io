@@ -1,0 +1,24 @@
+// Cloudflare hosting for cloudzeta.solutions: the built site in ./dist served as static files, with no
+// Worker code. Static asset requests are free and unlimited on the Workers Free plan.
+// https://developers.cloudflare.com/workers/static-assets/
+//
+// Deployed by .github/workflows/cloudflare.yml. Until "routes" is added, the site is only served on the
+// workers.dev test address (kept out of search results by public/_headers) and GitHub Pages stays live.
+// Cutover, when the Google core update has settled:
+//   "routes": [{ "pattern": "cloudzeta.solutions/*", "zone_name": "cloudzeta.solutions" }]
+// Rolling back is removing the route (in this file or in the Cloudflare dashboard): requests then go to
+// GitHub Pages again, as long as that deploy is still running.
+{
+  "name": "cloudzeta-solutions",
+  "compatibility_date": "2026-11-18",
+  // Don't send Wrangler usage data to Cloudflare from CI or local runs.
+  "send_metrics": false,
+  "assets": {
+    "directory": "./dist",
+    // /page -> /page/ for directory pages. Cloudflare uses a 307 for this; dist/_redirects (written at
+    // build time by astro.config.mjs) makes those permanent 301s, as on GitHub Pages.
+    "html_handling": "auto-trailing-slash",
+    // Unknown paths get dist/404.html with a 404 status, as on GitHub Pages.
+    "not_found_handling": "404-page"
+  }
+}

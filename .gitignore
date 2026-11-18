@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # superpowers brainstorm scratch
 .superpowers/
+
+# Cloudflare wrangler local state
+.wrangler/

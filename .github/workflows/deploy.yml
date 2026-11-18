@@ -52,6 +52,10 @@ jobs:
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build
 
+      # Cloudflare reads these (cloudflare.yml); GitHub Pages would serve them as files.
+      - name: Leave out Cloudflare-only files
+        run: rm -f dist/_headers dist/_redirects dist/.assetsignore
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
