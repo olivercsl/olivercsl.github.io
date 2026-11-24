@@ -36,6 +36,9 @@ jobs:
       - name: Checkout
         if: steps.cf.outputs.enabled == 'true'
         uses: actions/checkout@v4
+        with:
+          # Full history: the sitemap's lastmod dates come from git (astro.config.mjs).
+          fetch-depth: 0
 
       - name: Setup Node
         if: steps.cf.outputs.enabled == 'true'
