@@ -104,7 +104,7 @@ const lastmodFor = (path) => {
   if (!fullHistory) return undefined;
   const files = path === '/blog/' ? ['src/pages/blog/index.astro'] : pageSources(path);
   if (!files.length) return undefined;
-  const dates = [git(['log', '-1', '--format=%cs', '--', ...new Set(files)])];
+  const dates = [git(['log', '-1', '--format=%cI', '--', ...new Set(files)])];
   if (path === '/blog/') dates.push(...postDates().map((p) => p.date));
   return dates.filter(Boolean).sort().pop();
 };
