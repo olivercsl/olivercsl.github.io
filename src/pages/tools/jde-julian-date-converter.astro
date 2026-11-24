@@ -1,0 +1,344 @@
+---
+/**
+ * ============================================================================
+ *  DO NOT ADD ANALYTICS, ADS, OR THIRD-PARTY SCRIPTS TO THIS PAGE.
+ * ============================================================================
+ *  Same commitment as the other tools: no ads, no trackers, works offline.
+ *  Any external script makes those published claims false.
+ * ============================================================================
+ */
+import Layout from '../../layouts/Layout.astro';
+import { Navbar } from '../../components/Navbar';
+import RelatedTools from '../../components/RelatedTools.astro';
+import { JdeJulianConverter } from '../../components/tools/JdeJulianConverter';
+import { jdeToDate, dateToJde } from '../../lib/jde';
+
+// The format, from Oracle: "The Julian (*JUL) date format is CYYDDD, where: C is
+// added to 19 to create the century ... YY is the year within the century, DDD
+// is the day in the year." Examples there: 098185 is July 4, 1998 and 117001 is
+// Jan. 1, 2017. https://docs.oracle.com/cd/E26228_01/doc.93/e21961/julian_date_conv.htm
+// EnterpriseOne, same format: "the date June 1, 1999 corresponds to the Julian
+// date 099152, and the date June 1, 2000 corresponds to the Julian date 100153."
+// https://docs.oracle.com/en/applications/jd-edwards/financials/9.2/eoaap/required-fields.html
+// 0 and 999999, and YYYYDDD = JDE + 1900000, from Oracle's JD Edwards World
+// JDBC driver guide: "JDE Julian date = (IBM Julian date - 1900000)" and
+// "when SHUPMJ=0 then NULL when SHUPMJ=999999 then date('9999365')".
+// https://docs.oracle.com/cd/E59116_01/doc.94/e58808/ch_driver_data_feat.htm
+// The astronomical Julian Date is "a continuous count of days and fractions
+// since noon Universal Time on January 1, 4713 BC". https://aa.usno.navy.mil/data/JulianDate
+//
+// The Python and JavaScript recipes were run against Oracle's two examples,
+// 126328 (24 November 2026), 124366 (31 December 2024) and 100060 (29 February
+// 2000). The others rest on each vendor's documentation:
+// - Excel DATE: "If day is greater than the number of days in the month
+//   specified, day adds that number of days to the first day in the month."
+//   https://support.microsoft.com/en-us/office/date-function-e36c0c8c-4104-49da-ab83-82328b832349
+// - Google Sheets DATE: "DATE(1969,1,32) ... will create a date of 2/1/1969."
+//   https://support.google.com/docs/answer/3092969
+// - SQL Server: DATEFROMPARTS, DATEADD and DATEPART(DAYOFYEAR, ...).
+//   https://learn.microsoft.com/en-us/sql/t-sql/functions/datefromparts-transact-sql
+//   https://learn.microsoft.com/en-us/sql/t-sql/functions/datepart-transact-sql
+// - Oracle: the DDD format element is "Day of year (1-366)" and works in TO_DATE.
+//   https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Format-Models.html
+// - Db2 for i: DATE accepts "A string with an actual length of 7 that represents
+//   a valid date in the form yyyynnn"; DIGITS returns digits only, with leading
+//   zeros; DAYOFYEAR returns 1 to 366.
+//   https://www.ibm.com/docs/en/i/7.5.0?topic=functions-date
+//   https://www.ibm.com/docs/en/i/7.5.0?topic=functions-digits
+//   https://www.ibm.com/docs/en/i/7.5.0?topic=functions-dayofyear
+// - Python: %j is "Day of the year as a zero-padded decimal number" (001 to 366).
+//   https://docs.python.org/3/library/datetime.html
+const recipes = [
+  {
+    lang: 'Excel and Google Sheets',
+    toDate: '=DATE(1900+INT(A2/1000),1,MOD(A2,1000))',
+    toJde: '=(YEAR(B2)-1900)*1000+B2-DATE(YEAR(B2),1,1)+1',
+  },
+  {
+    lang: 'SQL Server',
+    toDate: 'DATEADD(DAY, CAST(jde AS INT) % 1000 - 1, DATEFROMPARTS(1900 + CAST(jde AS INT) / 1000, 1, 1))',
+    toJde: '(YEAR(d) - 1900) * 1000 + DATEPART(DAYOFYEAR, d)',
+  },
+  {
+    lang: 'Oracle',
+    toDate: "TO_DATE(TO_CHAR(jde + 1900000), 'YYYYDDD')",
+    toJde: "TO_NUMBER(TO_CHAR(d, 'YYYYDDD')) - 1900000",
+  },
+  {
+    lang: 'Db2 for IBM i',
+    toDate: 'DATE(DIGITS(DEC(jde + 1900000, 7, 0)))',
+    toJde: '(YEAR(d) - 1900) * 1000 + DAYOFYEAR(d)',
+  },
+  {
+    lang: 'Python',
+    toDate: 'datetime.strptime(str(jde + 1900000), "%Y%j").date()',
+    toJde: '(d.year - 1900) * 1000 + d.timetuple().tm_yday',
+  },
+  {
+    lang: 'JavaScript',
+    toDate: 'new Date(Date.UTC(1900 + Math.floor(jde / 1000), 0, jde % 1000))',
+    toJde: '(d.getUTCFullYear() - 1900) * 1000 + (d - Date.UTC(d.getUTCFullYear(), 0, 1)) / 864e5 + 1',
+  },
+];
+
+// Worked numbers in the copy come from the library, so they can't drift from the converter.
+const example = jdeToDate(126001)!;
+const nov24 = dateToJde({ year: 2026, month: 11, day: 24 });
+const jan2027 = dateToJde({ year: 2027, month: 1, day: 1 });
+const y2100 = dateToJde({ year: 2100, month: 1, day: 1 });
+
+const faqs = [
+  {
+    q: 'What is a JDE Julian date?',
+    a: `The way JD Edwards stores a date: a number in CYYDDD form. C is the century, added to 19 (0 for the 1900s, 1 for the 2000s), YY is the year within the century and DDD is the day of the year. So 126001 is 1 January 2026 and 126365 is 31 December 2026. Oracle documents the same format for JD Edwards World and EnterpriseOne.`,
+  },
+  {
+    q: 'How do I convert a JDE Julian date in Excel?',
+    a: 'Use =DATE(1900+INT(A2/1000),1,MOD(A2,1000)) and format the cell as a date. INT(A2/1000) gives the years since 1900 and MOD(A2,1000) the day of the year; DATE then counts that many days into January, rolling into later months as Excel documents. The same formula works in Google Sheets. To go back, =(YEAR(B2)-1900)*1000+B2-DATE(YEAR(B2),1,1)+1 turns a date into a JDE number; if the result shows as a date, set the cell to General.',
+  },
+  {
+    q: 'How do I convert a JDE date to a regular date in SQL?',
+    a: "In Oracle, TO_DATE(TO_CHAR(jde + 1900000), 'YYYYDDD'). In SQL Server, DATEADD(DAY, CAST(jde AS INT) % 1000 - 1, DATEFROMPARTS(1900 + CAST(jde AS INT) / 1000, 1, 1)). On IBM i, DATE(DIGITS(DEC(jde + 1900000, 7, 0))). Adding 1900000 turns CYYDDD into a year and day such as 2026001, which Oracle's YYYYDDD format and Db2's DATE function both read. The CAST in SQL Server keeps the division whole when the column is a decimal type.",
+  },
+  {
+    q: "What is today's JDE Julian date?",
+    a: `The converter above shows it in your time zone, in the Today row. The number goes up by one each day: 24 November 2026 is ${nov24}, and on 1 January 2027 it jumps to ${jan2027}.`,
+  },
+  {
+    q: 'Why do some JDE dates have only five digits?',
+    a: 'Because the century digit for the 1900s is 0, and a number drops its leading zero. Oracle writes 4 July 1998 as 098185; a table or an export holds it as 98185. Any five-digit JDE date is in the 1900s. If five-digit values came from a system that writes plain YYDDD, they may be 2000s dates instead, which the converter points out.',
+  },
+  {
+    q: 'Is a JDE Julian date the same as an astronomical Julian date?',
+    a: 'No. The astronomical Julian Date, used by the US Naval Observatory and astronomers, is a continuous count of days since noon Universal Time on 1 January 4713 BC, and is around 2.46 million for dates in the 2020s. A JDE date is a year and a day of that year written together. Paste one into the other kind of converter and the answer is nonsense, which is why this one recognises Julian Day Numbers and says so.',
+  },
+  {
+    q: 'What happens to JDE dates after 2099?',
+    a: `The century digit becomes 2, since 2 added to 19 gives 21. 1 January 2100 is ${y2100}. The format runs out after 2899, when the century digit would need two places.`,
+  },
+  {
+    q: 'Why is day 366 sometimes rejected?',
+    a: 'Day 366 only exists in leap years. 2024 had 366 days, so 124366 is 31 December 2024; 2025 had 365, so 125366 is not a date. Century years are leap years only when divisible by 400: 2000 was one and 1900 was not.',
+  },
+  {
+    q: 'What is a seven-digit Julian date such as 2026001?',
+    a: `A four-digit year followed by the day of the year, YYYYDDD. It is what Oracle's YYYYDDD format and Db2's DATE function read, and it is the JDE number plus 1900000: 2026001 is 1 January 2026, which is ${dateToJde({ year: 2026, month: 1, day: 1 })} in JD Edwards. Paste one into the converter and it says so.`,
+  },
+  {
+    q: 'What do 0 and 999999 mean in a JDE date field?',
+    a: "Neither is a date. Oracle's JDBC driver for JD Edwards World reads 0 as NULL, no date at all, and 999999 as 31 December 9999. The converter does the same: in a pasted column, 0 comes out blank and 999999 as 9999-12-31. The formulas on this page know nothing about either, so leave them out first, for example with WHERE jde NOT IN (0, 999999), or they turn into wrong dates or errors.",
+  },
+  {
+    q: 'Is anything I paste sent to a server?',
+    a: 'No. The conversion runs entirely in your browser and the page works offline.',
+  },
+];
+
+const pageUrl = 'https://cloudzeta.solutions/tools/jde-julian-date-converter/';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${pageUrl}#app`,
+      name: 'Cloudzeta JDE Julian Date Converter',
+      url: pageUrl,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any modern web browser',
+      description:
+        'Free JD Edwards Julian date converter. Turns CYYDDD numbers into calendar dates and dates back into CYYDDD, converts a whole pasted column, and gives formulas for Excel, SQL Server, Oracle, Db2, Python and JavaScript. No ads, no tracking.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      featureList: [
+        'JDE Julian date (CYYDDD) to calendar date',
+        "Calendar date to JDE Julian date, with today's value",
+        'Whole-column conversion that keeps blank rows in place',
+        'Five-digit 1900s values and YYDDD look-alikes explained',
+        'Recognises seven-digit YYYYDDD dates and astronomical Julian Day Numbers',
+        'Treats 0 as no date and 999999 as 9999-12-31, as Oracle\'s JDBC driver does',
+        'Formulas for Excel, Google Sheets, SQL Server, Oracle, Db2 for IBM i, Python and JavaScript',
+        'Runs offline. Nothing is sent to a server',
+      ],
+      publisher: { '@type': 'Organization', name: 'Cloudzeta Solutions', url: 'https://cloudzeta.solutions' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cloudzeta.solutions/' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://cloudzeta.solutions/tools/' },
+        { '@type': 'ListItem', position: 3, name: 'JDE Julian Date Converter', item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title="JDE Julian Date Converter | JD Edwards CYYDDD to Date"
+  description="Convert JD Edwards Julian dates (CYYDDD) to calendar dates and back, one value or a whole column, with Excel, SQL and Python formulas. Free, no ads."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
+
+  <Navbar minimal client:load />
+
+  <main>
+    <section class="pt-20 pb-12 md:pt-28 md:pb-16 px-4 sm:px-6 bg-[radial-gradient(78%_120%_at_50%_-8%,#eef5ff_0%,#ffffff_58%)]">
+      <div class="max-w-5xl mx-auto text-center mb-6 md:mb-7">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tx-primary leading-[1.08]">
+          JDE Julian Date Converter
+        </h1>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <JdeJulianConverter client:load />
+        <p class="text-base text-tx-secondary text-center text-balance mt-6">
+          The six-digit dates in JD Edwards tables and exports, turned into calendar dates, and back.
+        </p>
+      </div>
+    </section>
+
+    <!--
+      Page one for this search is forums, Oracle's conversion charts and an
+      astronomy converter that reads a different kind of Julian date. The
+      explanation lives here in plain HTML.
+    -->
+    <section class="py-16 px-6 border-t border-glass-border">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">How JD Edwards stores a date</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            As a six-digit number in the form CYYDDD. Oracle's documentation spells it out: C is added to
+            19 to give the century, YY is the year within the century, and DDD is the day of the year. So
+            <span class="font-mono text-sm text-tx-primary">126001</span> breaks into 1, 26 and 001: the
+            first day of {example.year}. The last three digits count from 001 on 1 January to 365, or 366
+            in a leap year, on 31 December.
+          </p>
+          <p class="text-tx-secondary leading-relaxed">
+            Two things follow from that. Dates in the 1900s have a century digit of 0, so a table holding
+            them as numbers shows five digits: Oracle's 098185, 4 July 1998, appears as
+            <span class="font-mono text-sm text-tx-primary">98185</span>. And the arithmetic is simple:
+            the year is 1900 plus the value divided by 1000, ignoring the remainder, and the remainder is
+            the day of the year. Every formula below is a version of those two steps. Oracle's
+            EnterpriseOne guide uses the same numbers: 099152 is 1 June 1999 and 100153 is 1 June 2000,
+            one day further into the year because 2000 was a leap year.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">
+            JDE dates in Excel, SQL Server, Oracle, Db2, Python and JavaScript
+          </h2>
+          <p class="text-tx-secondary leading-relaxed mb-5">
+            JDE dates usually turn up outside JD Edwards in an export or a query. In each recipe,
+            <span class="font-mono text-sm text-tx-primary">jde</span> or A2 is the JDE number and
+            <span class="font-mono text-sm text-tx-primary">d</span> or B2 is a date. The Python and
+            JavaScript versions were run against Oracle's examples and the leap days that catch out
+            naive versions; the Excel and SQL versions use each vendor's documented functions.
+          </p>
+          <div class="space-y-5">
+            {
+              recipes.map((r) => (
+                <div class="rounded-2xl border border-glass-border bg-white overflow-hidden">
+                  <div class="px-4 py-2.5 border-b border-glass-border bg-surface/60 text-sm font-semibold text-tx-primary">
+                    {r.lang}
+                  </div>
+                  <dl class="divide-y divide-gray-50">
+                    {[
+                      { label: 'To date', code: r.toDate },
+                      { label: 'To JDE', code: r.toJde },
+                    ].map((row) => (
+                      <div class="px-4 py-2.5 sm:flex sm:gap-4 sm:items-baseline">
+                        <dt class="text-xs font-semibold uppercase tracking-wide text-tx-secondary sm:w-20 shrink-0 mb-1 sm:mb-0">
+                          {row.label}
+                        </dt>
+                        <dd class="font-mono text-[13px] text-tx-primary [overflow-wrap:anywhere]">{row.code}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))
+            }
+          </div>
+          <p class="text-tx-secondary leading-relaxed mt-5">
+            In Excel, format the result of the first formula as a date, and if the second shows a date
+            instead of a number, set the cell to General. In SQL Server the CAST matters when the column is
+            a decimal type, because dividing a decimal by 1000 keeps the fraction. The Oracle and Db2
+            versions add 1900000 to turn CYYDDD into YYYYDDD, a four-digit year followed by the day, which
+            both databases read directly. Leave out 0 and 999999 before converting, since neither is a
+            date. And a JDE date has no time zone and no time of day, just the day.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold text-tx-primary mb-3">Other dates called Julian</h2>
+          <p class="text-tx-secondary leading-relaxed mb-3">
+            Three different things share the name, and searching for a Julian date converter turns up all
+            of them:
+          </p>
+          <ul class="space-y-2 text-tx-secondary leading-relaxed list-disc pl-5">
+            <li>
+              <span class="font-semibold text-tx-primary">JD Edwards CYYDDD</span>, six digits such as
+              126001. What this page converts.
+            </li>
+            <li>
+              <span class="font-semibold text-tx-primary">Year and day, YYYYDDD or YYDDD</span>, such as
+              2026001 or 26001. A seven-digit YYYYDDD is the JDE number plus 1900000, as Oracle's
+              guide to its JD Edwards World JDBC driver spells out. A five-digit YYDDD looks exactly
+              like a 1900s JDE date, so where the value came from decides what it means.
+            </li>
+            <li>
+              <span class="font-semibold text-tx-primary">The astronomical Julian Date</span>, a running
+              count of days since 4713 BC that is about 2.46 million today. It has nothing to do with
+              JD Edwards, and a converter built for it reads a CYYDDD value as a day thousands of years
+              ago.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6 bg-surface border-t border-glass-border">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-semibold text-tx-primary mb-12 text-center">JDE Julian date FAQs</h2>
+        <div class="space-y-3">
+          {
+            faqs.map((faq) => (
+              <details class="group bg-white border border-glass-border rounded-2xl overflow-hidden shadow-sm">
+                <summary class="flex items-center justify-between gap-4 cursor-pointer p-6 font-semibold text-tx-primary list-none hover:text-accent transition-colors">
+                  {faq.q}
+                  <svg class="w-5 h-5 shrink-0 text-tx-secondary transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </summary>
+                <p class="px-6 pb-6 text-tx-secondary leading-relaxed">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <RelatedTools current="/tools/jde-julian-date-converter/" />
+
+    <footer class="py-12 px-6 border-t border-glass-border">
+      <p class="max-w-3xl mx-auto text-center text-sm text-tx-secondary leading-relaxed">
+        A free tool from <a href="/" class="text-tx-primary hover:text-accent font-medium">Cloudzeta
+        Solutions</a>. No ads, no tracking, no account. It stays that way.
+        <br class="hidden sm:block" />
+        Dates in a spreadsheet as five-digit numbers instead? Try the
+        <a href="/tools/excel-serial-date-converter/" class="text-tx-primary hover:text-accent font-medium">Excel serial date converter</a>,
+        or see all <a href="/tools/" class="text-tx-primary hover:text-accent font-medium">free tools</a>.
+      </p>
+    </footer>
+  </main>
+</Layout>

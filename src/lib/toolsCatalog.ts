@@ -121,6 +121,12 @@ export const categories: { name: string; tools: ToolEntry[] }[] = [
         tags: ['Excel', 'Dates', 'Spreadsheets'],
       },
       {
+        href: '/tools/jde-julian-date-converter/',
+        name: 'JDE Julian Date Converter',
+        desc: 'JD Edwards CYYDDD dates such as 126001 to calendar dates and back, a whole column at a time, with Excel, SQL and Python formulas.',
+        tags: ['JD Edwards', 'Dates', 'ERP'],
+      },
+      {
         href: '/tools/iso-8601-duration-converter/',
         name: 'ISO 8601 Duration Converter',
         desc: 'PT1H30M and P3DT4H5M6S to words, seconds and clock time, with an exact answer for durations containing months rather than a guess at 30 days.',
@@ -205,7 +211,9 @@ const RELATED: Record<string, string[]> = {
   // Pods on EKS take VPC addresses, and prefix delegation takes them in /28 blocks.
   '/tools/eks-max-pods-calculator/': ['/tools/subnet-calculator/', '/tools/kubernetes-qos-calculator/', '/tools/kubernetes-resource-units-converter/'],
   '/tools/time-zone-converter/': ['/tools/epoch-converter/', '/tools/iso-8601-duration-converter/', '/tools/excel-serial-date-converter/'],
-  '/tools/excel-serial-date-converter/': ['/tools/epoch-converter/', '/tools/iso-8601-duration-converter/', '/tools/time-zone-converter/'],
+  '/tools/excel-serial-date-converter/': ['/tools/epoch-converter/', '/tools/jde-julian-date-converter/', '/tools/time-zone-converter/'],
+  // JD Edwards dates usually reach people in an Excel export.
+  '/tools/jde-julian-date-converter/': ['/tools/excel-serial-date-converter/', '/tools/epoch-converter/', '/tools/time-zone-converter/'],
   // The LDAP tool decodes Active Directory durations such as maxPwdAge.
   '/tools/iso-8601-duration-converter/': ['/tools/epoch-converter/', '/tools/excel-serial-date-converter/', '/tools/ldap-timestamp-converter/'],
   '/tools/chrome-webkit-timestamp-converter/': ['/tools/epoch-converter/', '/tools/ldap-timestamp-converter/', '/tools/excel-serial-date-converter/'],
